@@ -1,0 +1,18 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "@blueprintjs/tslint-config"
+  ],
+  "rules": {
+    "file-header": [true,
+      "Copyright \\d{4} Palantir Technologies, Inc."
+    ],
+    "no-implicit-dependencies": false
+  },
+  "linterOptions": {
+    "exclude": [
+        "**/__generated__/**",
+        "**/__tests__/resources/**"
+    ]
+  }
+}

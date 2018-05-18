@@ -1,0 +1,35 @@
+# MacOS
+.DS_Store
+Thumbs.db
+
+# NPM
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Application
+packages/*/dist
+packages/*/distributions
+tmp/
+
+# VSCode
+.vscode/
+
+# Lerna
+lerna-debug.log
+yerna.log
+
+# awesome-typescript-loader
+.awcache
+
+# Testing
+packages/*/coverage
+test-report.xml
+.jest-cache
+
+# IntelliJ
+.idea/
+*.ipr
+*.iws
+*.iml
+out/
