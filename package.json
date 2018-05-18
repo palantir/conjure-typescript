@@ -11,7 +11,6 @@
     "lint-fix": "lerna run lint-fix",
     "test": "lerna run test",
     "verify": "lerna run verify",
-    "circle-publish": "circle-publish:lerna",
     "circle-publish:lerna": "lerna publish --skip-git --yes --force-publish=* --repo-version $CIRCLE_TAG",
     "circle-publish:dist": "echo 'temporarily disabled' && exit 1 && lerna run publish-dist"
   },
