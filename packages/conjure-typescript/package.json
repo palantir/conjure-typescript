@@ -8,13 +8,12 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "compile": "tsc -p src/",
-    "circle-generate-npmrc": "circle-generate-npmrc",
     "clean": "rm -rf dist distributions tmp coverage",
     "lint": "tslint 'src/**/*.ts*' --format codeFrame --project ./src/tsconfig.json",
     "lint-fix": "yarn lint -- --fix --project ./src/tsconfig.json",
     "test": "jest --config ../../config/jest.config.js --rootDir ./",
     "verify": "npm-run-all lint test",
-    "publish-dist": "npm-run-all create-dist run-publish",
+    "publish-dist": "echo 'temporarily disabled' && exit 1 && npm-run-all create-dist run-publish",
     "run-publish": "../../scripts/publish-dist.sh dist/conjure-typescript.tgz",
     "create-dist": "webpack --config webpack.config.js && tar -czf dist/conjure-typescript.tgz dist/bundle"
   },
