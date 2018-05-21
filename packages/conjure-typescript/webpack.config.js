@@ -1,5 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
+const { TsConfigPathsPlugin } = require('awesome-typescript-loader');
 
 module.exports = {
     mode: "production",
@@ -7,9 +8,7 @@ module.exports = {
     entry: "./src/cli.ts",
     resolve: {
         extensions: [ ".js", ".ts", ".json" ],
-        alias: {
-            "@conjure": path.resolve(__dirname, "../src/__generated__")
-        }
+        plugins: [new TsConfigPathsPlugin({ configFileName: "./src/tsconfig.json" })]
     },
     output: {
         path: path.resolve(__dirname, 'dist/bundle'),

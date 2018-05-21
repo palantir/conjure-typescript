@@ -13,8 +13,8 @@
     "lint-fix": "yarn lint -- --fix --project ./src/tsconfig.json",
     "test": "jest --config ../../config/jest.config.js --rootDir ./",
     "verify": "npm-run-all lint test",
-    "publish-dist": "echo 'temporarily disabled' && exit 1 && npm-run-all create-dist run-publish",
-    "run-publish": "../../scripts/publish-dist.sh dist/conjure-typescript.tgz",
+    "publish-dist": "npm-run-all create-dist run-publish",
+    "run-publish": "../../scripts/circle-publish-dist.sh dist/conjure-typescript.tgz",
     "create-dist": "webpack --config webpack.config.js && tar -czf dist/conjure-typescript.tgz dist/bundle"
   },
   "dependencies": {
