@@ -11,8 +11,9 @@
     "lint-fix": "lerna run lint-fix",
     "test": "lerna run test",
     "verify": "lerna run verify",
+    "circle-publish": "npm-run-all circle-publish:lerna circle-publish:dist",
     "circle-publish:lerna": "lerna publish --skip-git --yes --force-publish=* --repo-version $CIRCLE_TAG",
-    "circle-publish:dist": "echo 'temporarily disabled' && exit 1 && lerna run publish-dist"
+    "circle-publish:dist": "lerna run publish-dist"
   },
   "devDependencies": {
     "@blueprintjs/tslint-config": "^1.3.1",
