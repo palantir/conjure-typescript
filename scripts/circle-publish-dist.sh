@@ -11,5 +11,5 @@ artifact_file="conjure-typescript-$artifact_version.tgz"
 upload_url="https://api.bintray.com/content/palantir/conjure-typescript/com/palantir/conjure/typescript/conjure-typescript/${artifact_version}/${artifact_file}"
 echo "publishing $1 to $upload_url"
 set +x
-curl --fail -v -X PUT "$upload_url" -T "$1" -u $BINTRAY_USERNAME:$BINTRAY_PASSWORD
+curl --fail -v -X PUT "$upload_url?publish=1" -T "$1" -u $BINTRAY_USERNAME:$BINTRAY_PASSWORD
 set -x
