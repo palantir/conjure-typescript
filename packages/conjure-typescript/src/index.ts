@@ -63,7 +63,7 @@ function createPackageJson(packageName: string, version: string) {
         peerDependencies,
         devDependencies: {
             ...peerDependencies,
-            typescript: packageJson.devDependencies["typescript"],
+            typescript: packageJson.devDependencies.typescript,
         },
         author: "Conjure",
         license: "UNLICENSED",
