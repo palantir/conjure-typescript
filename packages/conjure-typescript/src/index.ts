@@ -27,6 +27,11 @@ export interface IGeneratorConfig {
     version: string;
 }
 
+export interface IPackageJson {
+    dependencies: { [dependency: string]: string };
+    devDependencies: { [dependency: string]: string };
+}
+
 export function generateCode(config: IGeneratorConfig): Promise<void> {
     if (!fs.existsSync(config.output)) {
         throw new Error(`Directory ${config.output} does not exist`);
@@ -41,16 +46,15 @@ export function generateCode(config: IGeneratorConfig): Promise<void> {
 export function generateModule(packageName: string, version: string, outDir: string) {
     fs.writeFileSync(
         path.join(outDir, "package.json"),
-        JSON.stringify(createPackageJson(packageName, version), null, "    "),
+        JSON.stringify(createPackageJson(require("../package.json"), packageName, version), null, "    "),
     );
     fs.writeFileSync(path.join(outDir, `tsconfig.json`), JSON.stringify(createTsconfigJson(), null, "    "));
 }
 
-function createPackageJson(packageName: string, version: string) {
+export function createPackageJson(projectPackageJson: IPackageJson, packageName: string, version: string) {
     // To conform with standard package.json structure
-    const packageJson = require("../package.json");
     const peerDependencies = {
-        "conjure-client": packageJson.dependencies["conjure-client"],
+        "conjure-client": projectPackageJson.dependencies["conjure-client"],
     };
     // tslint:disable:object-literal-sort-keys
     return {
@@ -63,7 +67,7 @@ function createPackageJson(packageName: string, version: string) {
         peerDependencies,
         devDependencies: {
             ...peerDependencies,
-            typescript: packageJson.devDependencies.typescript,
+            typescript: projectPackageJson.devDependencies.typescript,
         },
         author: "Conjure",
         license: "UNLICENSED",
