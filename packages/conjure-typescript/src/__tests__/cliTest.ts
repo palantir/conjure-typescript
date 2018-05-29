@@ -39,31 +39,7 @@ describe("cli", () => {
         const version = "1.0.0";
         generateModule(packageName, version, output);
 
-        // tslint:disable:object-literal-sort-keys
-        expect(JSON.parse(fs.readFileSync(path.join(output, "package.json"), "utf8"))).toEqual({
-            name: "somePackage",
-            version: "1.0.0",
-            sideEffects: false,
-            peerDependencies: {
-                "conjure-client": require("../../package.json").dependencies["conjure-client"],
-            },
-            author: "Conjure",
-            license: "UNLICENSED",
-        });
-        expect(JSON.parse(fs.readFileSync(path.join(output, "tsconfig.json"), "utf8"))).toEqual({
-            compilerOptions: {
-                declaration: true,
-                inlineSourceMap: true,
-                inlineSources: true,
-                module: process.env.CONJURE_TYPESCRIPT_MODULE === "common" ? "commonjs" : "es2015",
-                moduleResolution: "node",
-                noImplicitAny: true,
-                removeComments: false,
-                stripInternal: true,
-                target: "es5",
-                typeRoots: [],
-            },
-        });
-        // tslint:enable:object-literal-sort-keys
+        expect(fs.existsSync(path.join(output, "package.json"))).toBeTruthy();
+        expect(fs.existsSync(path.join(output, "tsconfig.json"))).toBeTruthy();
     });
 });

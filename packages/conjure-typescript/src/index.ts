@@ -48,13 +48,22 @@ export function generateModule(packageName: string, version: string, outDir: str
 
 function createPackageJson(packageName: string, version: string) {
     // To conform with standard package.json structure
+    const packageJson = require("../package.json");
+    const peerDependencies = {
+        "conjure-client": packageJson.dependencies["conjure-client"],
+    };
     // tslint:disable:object-literal-sort-keys
     return {
         name: `${packageName}`,
         version,
+        scripts: {
+            buildAndPublish: "tsc && npm publish",
+        },
         sideEffects: false,
-        peerDependencies: {
-            "conjure-client": require("../package.json").dependencies["conjure-client"],
+        peerDependencies,
+        devDependencies: {
+            ...peerDependencies,
+            typescript: packageJson.devDependencies["typescript"],
         },
         author: "Conjure",
         license: "UNLICENSED",
