@@ -61,6 +61,9 @@ export function createPackageJson(projectPackageJson: IPackageJson, packageName:
         name: `${packageName}`,
         version,
         sideEffects: false,
+        scripts: {
+            build: "tsc",
+        },
         peerDependencies,
         devDependencies: {
             ...peerDependencies,

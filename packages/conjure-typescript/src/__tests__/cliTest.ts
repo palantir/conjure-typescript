@@ -53,6 +53,9 @@ describe("cli", () => {
             name: "foo",
             version: "1.0.0",
             sideEffects: false,
+            scripts: {
+                build: "tsc",
+            },
             peerDependencies: { "conjure-client": "1.0.0" },
             devDependencies: {
                 "conjure-client": "1.0.0",
