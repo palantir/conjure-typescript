@@ -18,7 +18,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { directory, file } from "tempy";
-import { generateCode, generateModule } from "../index";
+import { createPackageJson, generateCode, generateModule, IPackageJson } from "../index";
 
 describe("cli", () => {
     let output: string;
@@ -39,30 +39,30 @@ describe("cli", () => {
         const version = "1.0.0";
         generateModule(packageName, version, output);
 
+        expect(fs.existsSync(path.join(output, "package.json"))).toBeTruthy();
+        expect(fs.existsSync(path.join(output, "tsconfig.json"))).toBeTruthy();
+    });
+
+    it("generates correct packageJson", () => {
+        const inputPackage: IPackageJson = {
+            dependencies: { "conjure-client": "1.0.0" },
+            devDependencies: { typescript: "2.7.2" },
+        };
         // tslint:disable:object-literal-sort-keys
-        expect(JSON.parse(fs.readFileSync(path.join(output, "package.json"), "utf8"))).toEqual({
-            name: "somePackage",
+        expect(createPackageJson(inputPackage, "foo", "1.0.0")).toEqual({
+            name: "foo",
             version: "1.0.0",
             sideEffects: false,
-            peerDependencies: {
-                "conjure-client": require("../../package.json").dependencies["conjure-client"],
+            scripts: {
+                build: "tsc",
+            },
+            peerDependencies: { "conjure-client": "1.0.0" },
+            devDependencies: {
+                "conjure-client": "1.0.0",
+                typescript: "2.7.2",
             },
             author: "Conjure",
             license: "UNLICENSED",
-        });
-        expect(JSON.parse(fs.readFileSync(path.join(output, "tsconfig.json"), "utf8"))).toEqual({
-            compilerOptions: {
-                declaration: true,
-                inlineSourceMap: true,
-                inlineSources: true,
-                module: process.env.CONJURE_TYPESCRIPT_MODULE === "common" ? "commonjs" : "es2015",
-                moduleResolution: "node",
-                noImplicitAny: true,
-                removeComments: false,
-                stripInternal: true,
-                target: "es5",
-                typeRoots: [],
-            },
         });
         // tslint:enable:object-literal-sort-keys
     });
