@@ -60,9 +60,6 @@ export function createPackageJson(projectPackageJson: IPackageJson, packageName:
     return {
         name: `${packageName}`,
         version,
-        scripts: {
-            buildAndPublish: "tsc && npm publish",
-        },
         sideEffects: false,
         peerDependencies,
         devDependencies: {

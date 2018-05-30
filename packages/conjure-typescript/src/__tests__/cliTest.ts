@@ -52,9 +52,6 @@ describe("cli", () => {
         expect(createPackageJson(inputPackage, "foo", "1.0.0")).toEqual({
             name: "foo",
             version: "1.0.0",
-            scripts: {
-                buildAndPublish: "tsc && npm publish",
-            },
             sideEffects: false,
             peerDependencies: { "conjure-client": "1.0.0" },
             devDependencies: {
