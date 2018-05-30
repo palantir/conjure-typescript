@@ -96,7 +96,7 @@ function createTsconfigJson() {
 }
 
 function isValid(version: string) {
-    const versionRegex = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-rc([0-9]+))?(?:-([0-9]+)-g([a-f0-9]+))?$/;
+    const versionRegex = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-rc([0-9]+))?(?:-([0-9]+)-g([a-f0-9]+))?(\.dirty)?$/;
     return versionRegex.test(version);
 }
 
