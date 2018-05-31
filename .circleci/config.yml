@@ -10,7 +10,7 @@ jobs:
           keys:
             - yarn-packages-{{ checksum "yarn.lock" }}
             - yarn-packages-
-      - run: yarn install --non-interactive --cache-folder ~/.cache/yarn --frozen-lockfile
+      - run: yarn install --non-interactive --frozen-lockfile
       - save_cache:
           key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
