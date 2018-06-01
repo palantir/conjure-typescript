@@ -1,9 +1,7 @@
 !LICENSE
 !README.md
-**/__tests__
-.npmrc
-dist
-jest.config.js
-tslint.json
-webpack.config.js
-yarn.lock
+!bin/*
+!lib/*
+!lib/generate/**/*
+!lib/__generated__/**/*
+*

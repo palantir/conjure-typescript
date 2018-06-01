@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "A conjure generator for Typescript",
   "bin": {
-    "conjure": "./bin/conjure"
+    "conjure-typescript": "./bin/conjure-typescript"
   },
   "sideEffects": false,
   "main": "lib/index.js",
