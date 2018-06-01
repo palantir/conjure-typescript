@@ -15,7 +15,6 @@
     "compile-ts": "tsc -p ./src",
     "lint": "tslint 'src/**/*.ts*' --project ./src/tsconfig.json",
     "lint-fix": "yarn lint -- --fix --project ./src/tsconfig.json",
-    "run-publish": "../../scripts/circle-publish-dist.sh dist/conjure-typescript.tgz",
     "test": "jest --config ./jest.config.js --rootDir ./",
     "verify": "npm-run-all -p test lint"
   },
