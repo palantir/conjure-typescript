@@ -1,9 +1,11 @@
 {
   "name": "conjure-typescript",
   "version": "0.0.0",
+  "description": "A conjure generator for Typescript",
   "bin": {
     "conjure": "./bin/conjure"
   },
+  "sideEffects": false,
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
