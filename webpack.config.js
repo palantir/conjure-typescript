@@ -11,7 +11,7 @@ module.exports = {
         plugins: [new TsConfigPathsPlugin({ configFileName: "./src/tsconfig.json" })]
     },
     output: {
-        path: path.resolve(__dirname, 'dist/bundle'),
+        path: path.resolve(__dirname, 'dist'),
         filename: "conjure-typescript.bundle.js"
     },
     target: "node",
