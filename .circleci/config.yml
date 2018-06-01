@@ -16,6 +16,16 @@ jobs:
           paths:
             - /root/project/node_modules
       - run: yarn build
+
+      - run: |
+          cd packages/conjure-typescript
+          yarn create-dist
+          yarn create-standalone-dist
+          ./dist/standalone/conjure-typescript.bundle-linux --help
+
+      - store_artifacts:
+          path: ./packages/conjure-typescript/dist/standalone
+
       - store_test_results:
           path: /tmp/reports
       - deploy:
