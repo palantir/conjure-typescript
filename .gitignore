@@ -8,9 +8,8 @@ npm-debug.log
 yarn-error.log
 
 # Application
-packages/*/dist
-packages/*/distributions
-tmp/
+lib
+dist
 
 # VSCode
 .vscode/
