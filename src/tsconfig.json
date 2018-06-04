@@ -17,6 +17,13 @@
         "sourceMap": true,
         "strict": true,
         "stripInternal": true,
-        "target": "es5"
+        "target": "es5",
+        "outDir": "../lib",
+        "baseUrl": ".",
+        "paths": {
+            "@conjure/*": [
+                "__generated__/*"
+            ]
+        }
     }
 }

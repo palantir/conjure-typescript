@@ -1,4 +1,7 @@
+!LICENSE
 !README.md
-!package.json
-**/__tests__/*
-.npmrc
+!bin/*
+!lib/*
+!lib/generate/**/*
+!lib/__generated__/**/*
+*
