@@ -15,32 +15,26 @@
  * limitations under the License.
  */
 
-import * as fs from "fs";
+import * as fs from "fs-extra";
 import * as path from "path";
-import { directory, file } from "tempy";
-import { createPackageJson, generateCode, generateModule, IPackageJson } from "../index";
+import { directory } from "tempy";
+import { createPackageJson, generateModule, IPackageJson } from "../index";
 
-describe("cli", () => {
+describe("module generation", () => {
     let output: string;
-    let input: string;
-    beforeEach(() => {
-        input = file();
-        output = directory();
-    });
 
-    it("throws on missing directory", () => {
-        expect(() => generateCode({ input, output: "missing", packageName: "foo", version: "1.0.0" })).toThrow(
-            "Directory missing does not exist",
-        );
+    beforeEach(() => {
+        output = directory();
     });
 
     it("generates correct module", () => {
         const packageName = "somePackage";
         const version = "1.0.0";
-        generateModule(packageName, version, output);
+        generateModule(packageName, version, "commonjs", output);
 
         expect(fs.existsSync(path.join(output, "package.json"))).toBeTruthy();
         expect(fs.existsSync(path.join(output, "tsconfig.json"))).toBeTruthy();
+        expect(fs.readJSONSync(path.join(output, "tsconfig.json")).compilerOptions.module).toEqual("commonjs");
     });
 
     it("generates correct packageJson", () => {
