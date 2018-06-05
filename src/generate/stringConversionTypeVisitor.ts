@@ -25,7 +25,7 @@ import {
     ITypeName,
     ITypeVisitor,
     PrimitiveType,
-} from "@conjure/conjure-api";
+} from "conjure-api";
 
 export class StringConversionTypeVisitor implements ITypeVisitor<string> {
     private static NO_CONVERSION = "";

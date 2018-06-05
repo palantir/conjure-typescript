@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { IErrorDefinition, IType, ITypeDefinition } from "@conjure/conjure-api";
+import { IErrorDefinition, IType, ITypeDefinition } from "conjure-api";
 import { ImportDeclarationStructure } from "ts-simple-ast";
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { IEnumDefinition, IObjectDefinition, IType, ITypeDefinition, IUnionDefinition } from "@conjure/conjure-api";
+import { IEnumDefinition, IObjectDefinition, IType, ITypeDefinition, IUnionDefinition } from "conjure-api";
 import {
     FunctionDeclarationStructure,
     ImportDeclarationStructure,

@@ -1795,6 +1795,10 @@ config-chain@^1.1.11:
     ini "^1.3.4"
     proto-list "~1.2.1"
 
+conjure-api@^0.4.0:
+  version "0.4.0"
+  resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/conjure-api/-/conjure-api-0.4.0.tgz?dl=https://registry.yarnpkg.com/conjure-api/-/conjure-api-0.4.0.tgz#1aac64a077700433e13fe79c63de16604b59bb5f"
+
 conjure-client@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/conjure-client/-/conjure-client-0.2.0.tgz#4f3bce7be4c5485bd02770aae5c3a6abadf4cf9b"
@@ -3826,7 +3830,7 @@ istanbul-api@^1.1.14:
     mkdirp "^0.5.1"
     once "^1.4.0"
 
-istanbul-lib-coverage@^1.1.1, istanbul-lib-coverage@^1.1.2, istanbul-lib-coverage@^1.2.0:
+istanbul-lib-coverage@^1.1.1, istanbul-lib-coverage@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/istanbul-lib-coverage/-/istanbul-lib-coverage-1.2.0.tgz#f7d8f2e42b97e37fe796114cb0f9d68b5e3a4341"
 
@@ -5997,10 +6001,6 @@ safe-regex@^1.1.0:
   dependencies:
     ret "~0.1.10"
 
-"safer-buffer@>= 2.1.2 < 3":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
-
 sane@^2.0.0:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/sane/-/sane-2.5.2.tgz#b4dc1861c21b427e929507a3e751e2a2cb8ab3fa"
@@ -7414,4 +7414,3 @@ yeoman-generator@^2.0.4:
     text-table "^0.2.0"
     through2 "^2.0.0"
     yeoman-environment "^2.0.5"
-

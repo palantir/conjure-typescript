@@ -23,7 +23,7 @@ import {
     ITypeDefinition,
     ITypeDefinitionVisitor,
     IUnionDefinition,
-} from "@conjure/conjure-api";
+} from "conjure-api";
 import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";

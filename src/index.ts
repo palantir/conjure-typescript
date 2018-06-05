@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { IConjureDefinition } from "@conjure/conjure-api";
+import { IConjureDefinition } from "conjure-api";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { generate } from "./generate";

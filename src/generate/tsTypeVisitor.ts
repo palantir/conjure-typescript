@@ -26,7 +26,7 @@ import {
     ITypeName,
     ITypeVisitor,
     PrimitiveType,
-} from "@conjure/conjure-api";
+} from "conjure-api";
 import { createHashableTypeName } from "./utils";
 
 export class TsTypeVisitor implements ITypeVisitor<string> {

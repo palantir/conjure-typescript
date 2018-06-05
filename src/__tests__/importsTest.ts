@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { IType, ITypeDefinition, PrimitiveType } from "@conjure/conjure-api";
+import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { ImportsVisitor, sortImports } from "../generate/imports";
 import { createHashableTypeName } from "../generate/utils";
 import { foreignObject, importsLocalObject as localObject } from "./testTypesGeneratorTest";
