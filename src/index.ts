@@ -18,6 +18,7 @@
 import { IConjureDefinition } from "conjure-api";
 import * as fs from "fs-extra";
 import * as path from "path";
+import { isValid } from "sls-version";
 import { generate } from "./generate";
 
 export interface IGeneratorConfig {
@@ -96,11 +97,6 @@ function createTsconfigJson(module: string) {
         },
     };
     // tslint:enable:object-literal-sort-keys
-}
-
-function isValid(version: string) {
-    const versionRegex = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-rc([0-9]+))?(?:-([0-9]+)-g([a-f0-9]+))?(\.dirty)?$/;
-    return versionRegex.test(version);
 }
 
 function runGenerator(irPath: string, outputDir: string) {
