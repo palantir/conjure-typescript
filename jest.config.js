@@ -41,9 +41,6 @@ module.exports = {
         },
     },
     mapCoverage: true,
-    moduleNameMapper: {
-        "@conjure/": "<rootDir>/src/__generated__/conjure-api"
-    },
     moduleFileExtensions: ["js", "json", "ts", "tsx"],
     // rootDir is set at the package level and assumed to be the package root
     // setupFiles: ["<rootDir>/src/testBootstrap.js"],

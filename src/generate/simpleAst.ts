@@ -17,7 +17,7 @@
 
 import * as path from "path";
 
-import { ITypeName } from "@conjure/conjure-api";
+import { ITypeName } from "conjure-api";
 import Ast, { Options, SourceFile } from "ts-simple-ast";
 import { dir, module } from "./imports";
 

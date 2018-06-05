@@ -26,7 +26,7 @@ import {
     ITypeName,
     ITypeVisitor,
     PrimitiveType,
-} from "@conjure/conjure-api";
+} from "conjure-api";
 import * as path from "path";
 import { ImportDeclarationStructure, ImportSpecifierStructure } from "ts-simple-ast";
 import { TsTypeVisitor } from "./tsTypeVisitor";

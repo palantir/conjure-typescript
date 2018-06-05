@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { ErrorCode, HttpMethod, PrimitiveType } from "@conjure/conjure-api";
+import { ErrorCode, HttpMethod, PrimitiveType } from "conjure-api";
 import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";

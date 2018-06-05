@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { ITypeDefinition } from "@conjure/conjure-api";
+import { ITypeDefinition } from "conjure-api";
 import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";

@@ -25,7 +25,7 @@ import {
     IType,
     ITypeDefinition,
     PrimitiveType,
-} from "@conjure/conjure-api";
+} from "conjure-api";
 import {
     CodeBlockWriter,
     ImportDeclarationStructure,

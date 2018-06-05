@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { ITypeName } from "@conjure/conjure-api";
+import { ITypeName } from "conjure-api";
 
 export const CONJURE_CLIENT = "conjure-client";
 
