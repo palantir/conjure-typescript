@@ -6129,6 +6129,10 @@ slide@^1.1.5:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/slide/-/slide-1.1.6.tgz#56eb027d65b4d2dce6cb2e2d32c4d4afc9e1d707"
 
+sls-version@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/sls-version/-/sls-version-0.2.2.tgz#05e77e4a7a0bec6030e4016cb14eaed2b7c1244b"
+
 snapdragon-node@^2.0.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/snapdragon-node/-/snapdragon-node-2.1.1.tgz#6c175f86ff14bdb0724563e8f3c1b021a286853b"

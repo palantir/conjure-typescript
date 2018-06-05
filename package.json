@@ -30,6 +30,7 @@
     "mkdirp": "^0.5.1",
     "path": "^0.12.7",
     "semver": "^5.5.0",
+    "sls-version": "^0.2.2",
     "ts-simple-ast": "^11.2.0"
   },
   "devDependencies": {
