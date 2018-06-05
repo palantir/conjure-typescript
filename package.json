@@ -10,7 +10,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "npm-run-all clean verify compile",
-    "circle-publish": "npm-run-all ./scripts/circle-publish-npm ./scripts/circle-publish-dist",
+    "circle-publish": "./scripts/circle-publish-npm && ./scripts/circle-publish-dist",
     "clean": "rm -rf dist lib",
     "compile": "npm-run-all -p compile-ts compile-dist",
     "compile-dist": "webpack --config webpack.config.js",
