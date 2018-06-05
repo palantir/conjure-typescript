@@ -8,6 +8,9 @@ if [ -z ${CIRCLECI+x} ]; then
     exit 1
 fi
 
+# Defend against yarn adding enviroment variables for config
+unset $(env | awk -F= '$1 ~ /^npm_/ {print $1}')
+
 echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > .npmrc
 
 yarn publish --new-version "$CIRCLE_TAG" --access public
