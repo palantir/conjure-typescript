@@ -8,12 +8,6 @@ if [ -z ${CIRCLECI+x} ]; then
     exit 1
 fi
 
-# Generate npmrc, ensure it is readable
 echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > .npmrc
-chmod +r .npmrc
 
-# Change package version to latest tag
-npm version "$CIRCLE_TAG" --no-git-tag-version
-
-# Package and publish
-npm publish --access public
+yarn publish --new-version "$CIRCLE_TAG" --access public
