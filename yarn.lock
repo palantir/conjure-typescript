@@ -1797,7 +1797,7 @@ config-chain@^1.1.11:
 
 conjure-api@^0.4.1:
   version "0.4.1"
-  resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/conjure-api/-/conjure-api-0.4.1.tgz?dl=https://registry.yarnpkg.com/conjure-api/-/conjure-api-0.4.1.tgz#9743d8276dc1fc89ca0397c703043d8993859aee"
+  resolved "https://registry.yarnpkg.com/conjure-api/-/conjure-api-0.4.1.tgz#9743d8276dc1fc89ca0397c703043d8993859aee"
 
 conjure-client@^0.2.0:
   version "0.2.0"
@@ -7414,4 +7414,3 @@ yeoman-generator@^2.0.4:
     text-table "^0.2.0"
     through2 "^2.0.0"
     yeoman-environment "^2.0.5"
-
