@@ -25,6 +25,7 @@ export interface IGeneratorConfig {
     output: string;
     packageName: string;
     version: string;
+    moduleType: string;
 }
 
 export interface IPackageJson {
@@ -32,23 +33,25 @@ export interface IPackageJson {
     devDependencies: { [dependency: string]: string };
 }
 
-export function generateCode(config: IGeneratorConfig): Promise<void> {
+export async function generateCode(config: IGeneratorConfig): Promise<void> {
     if (!fs.existsSync(config.output)) {
-        throw new Error(`Directory ${config.output} does not exist`);
+        throw new Error(`Directory "${config.output}" does not exist`);
     } else if (!isValid(config.version)) {
         throw new Error(`Expected version to be valid SLS version but found "${config.version}"`);
+    } else if (config.moduleType !== "es2015" && config.moduleType !== "commonjs") {
+        throw new Error(`Expected moduleType to be either "es2015" or "commonjs", but found "${config.moduleType}"`);
     }
 
-    generateModule(config.packageName, config.version, config.output);
+    generateModule(config.packageName, config.version, config.moduleType, config.output);
     return runGenerator(config.input, config.output);
 }
 
-export function generateModule(packageName: string, version: string, outDir: string) {
+export function generateModule(packageName: string, version: string, moduleType: string, outDir: string) {
     fs.writeFileSync(
         path.join(outDir, "package.json"),
         JSON.stringify(createPackageJson(require("../package.json"), packageName, version), null, "    "),
     );
-    fs.writeFileSync(path.join(outDir, `tsconfig.json`), JSON.stringify(createTsconfigJson(), null, "    "));
+    fs.writeFileSync(path.join(outDir, `tsconfig.json`), JSON.stringify(createTsconfigJson(moduleType), null, "    "));
 }
 
 export function createPackageJson(projectPackageJson: IPackageJson, packageName: string, version: string) {
@@ -75,7 +78,7 @@ export function createPackageJson(projectPackageJson: IPackageJson, packageName:
     // tslint:enable:object-literal-sort-keys
 }
 
-function createTsconfigJson() {
+function createTsconfigJson(module: string) {
     // To conform with standard package.json structure
     // tslint:disable:object-literal-sort-keys
     return {
@@ -83,7 +86,7 @@ function createTsconfigJson() {
             declaration: true,
             inlineSourceMap: true,
             inlineSources: true,
-            module: process.env.CONJURE_TYPESCRIPT_MODULE === "common" ? "commonjs" : "es2015",
+            module,
             moduleResolution: "node",
             noImplicitAny: true,
             removeComments: false,

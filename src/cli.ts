@@ -21,9 +21,11 @@ import { generateCode } from "./";
 function main() {
     program
         .command("generate <input> <packageName> <version> <output>")
-        .action((input: string, packageName: string, version: string, output: string) =>
+        .option("-m, --moduleType <type>", "Type of module to generate", "es2015")
+        .action((input: string, packageName: string, version: string, output: string, cmd) =>
             generateCode({
                 input,
+                moduleType: cmd.opts().moduleType,
                 output,
                 packageName,
                 version,
@@ -35,6 +37,7 @@ function main() {
         .action((input: string, packageName: string, version: string, output: string) =>
             generateCode({
                 input,
+                moduleType: "es2015",
                 output,
                 packageName,
                 version,

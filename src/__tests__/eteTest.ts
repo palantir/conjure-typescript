@@ -30,24 +30,36 @@ describe("end to end tests", () => {
     });
 
     it("generates code", async () => {
-        await generateCode({ input, output: outDir, packageName: "foo", version: "1.0.0" });
+        await generateCode({ input, output: outDir, packageName: "foo", version: "1.0.0", moduleType: "es2015" });
         expect(fs.existsSync(path.join(outDir, "index.ts"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "package.json"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "tsconfig.json"))).toBeTruthy();
     });
 
     it("generated code installs dependencies", async () => {
-        await generateCode({ input, output: outDir, packageName: "foo", version: "1.0.0" });
+        await generateCode({ input, output: outDir, packageName: "foo", version: "1.0.0", moduleType: "es2015" });
         await executeCommand("yarn install --no-lockfile", outDir);
         expect(fs.existsSync(path.join(outDir, "node_modules"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "node_modules/typescript/bin/tsc")));
     });
 
     it("generated code compiles", async () => {
-        await generateCode({ input, output: outDir, packageName: "foo", version: "1.0.0" });
+        await generateCode({ input, output: outDir, packageName: "foo", version: "1.0.0", moduleType: "es2015" });
         await executeCommand("yarn install --no-lockfile", outDir);
         await executeCommand("yarn build", outDir);
         expect(fs.existsSync(path.join(outDir, "index.js"))).toBeTruthy();
+    });
+
+    it("throws if invalid moduleType", async () => {
+        await expect(
+            generateCode({ input, output: outDir, packageName: "foo", version: "1.0.0", moduleType: "foo" }),
+        ).rejects.toThrowError('Expected moduleType to be either "es2015" or "commonjs", but found "foo"');
+    });
+
+    it("throws on missing directory", async () => {
+        await expect(
+            generateCode({ input, output: "missing", packageName: "foo", version: "1.0.0", moduleType: "es2015" }),
+        ).rejects.toThrowError('Directory "missing" does not exist');
     });
 
     function executeCommand(command: string, cwd: string) {
