@@ -19,9 +19,9 @@ import { HttpMethod, IParameterType, IType, PrimitiveType } from "conjure-api";
 import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";
-import { generateService } from "../generate/serviceGenerator";
-import { SimpleAst } from "../generate/simpleAst";
-import { createHashableTypeName } from "../generate/utils";
+import { generateService } from "../serviceGenerator";
+import { SimpleAst } from "../simpleAst";
+import { createHashableTypeName } from "../utils";
 import {
     assertOutputAndExpectedAreEqual,
     foreignObject,

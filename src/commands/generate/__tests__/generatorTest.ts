@@ -19,7 +19,7 @@ import { ITypeDefinition } from "conjure-api";
 import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";
-import { generate } from "../generate";
+import { generate } from "../generator";
 
 describe("generator", () => {
     let outDir: string;

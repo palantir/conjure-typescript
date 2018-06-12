@@ -40,7 +40,6 @@ module.exports = {
             tsConfigFile: "src/tsconfig.json",
         },
     },
-    mapCoverage: true,
     moduleFileExtensions: ["js", "json", "ts", "tsx"],
     // rootDir is set at the package level and assumed to be the package root
     // setupFiles: ["<rootDir>/src/testBootstrap.js"],

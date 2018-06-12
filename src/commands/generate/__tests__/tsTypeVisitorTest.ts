@@ -16,8 +16,8 @@
  */
 
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
-import { TsTypeVisitor } from "../generate/tsTypeVisitor";
-import { createHashableTypeName } from "../generate/utils";
+import { TsTypeVisitor } from "../tsTypeVisitor";
+import { createHashableTypeName } from "../utils";
 
 describe("TsTypeVisitor", () => {
     const objectName = { name: "Object", package: "" };

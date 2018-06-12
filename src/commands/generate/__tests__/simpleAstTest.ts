@@ -19,10 +19,10 @@ import { ErrorCode, HttpMethod, PrimitiveType } from "conjure-api";
 import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";
-import { generateError } from "../generate/errorGenerator";
-import { generateService } from "../generate/serviceGenerator";
-import { SimpleAst } from "../generate/simpleAst";
-import { generateEnum } from "../generate/typeGenerator";
+import { generateError } from "../errorGenerator";
+import { generateService } from "../serviceGenerator";
+import { SimpleAst } from "../simpleAst";
+import { generateEnum } from "../typeGenerator";
 
 describe("simpleAst", () => {
     let outDir: string;
