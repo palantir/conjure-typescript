@@ -4,13 +4,13 @@ const webpack = require("webpack");
 module.exports = {
     mode: "production",
     devtool: false,
-    entry: "./src/cli.ts",
+    entry: "./src/conjureTypeScript.ts",
     resolve: {
         extensions: [ ".js", ".ts", ".json" ],
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: "conjure-typescript.bundle.js"
+        filename: "conjure-typescript"
     },
     target: "node",
     module: {

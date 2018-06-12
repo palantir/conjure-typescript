@@ -19,8 +19,8 @@ import { IType, ITypeDefinition, ITypeName } from "conjure-api";
 import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";
-import { SimpleAst } from "../generate/simpleAst";
-import { generateType } from "../generate/typeGenerator";
+import { SimpleAst } from "../simpleAst";
+import { generateType } from "../typeGenerator";
 
 export function assertOutputAndExpectedAreEqual(outDir: string, expectedDir: string, fname: string) {
     const actual = fs.readFileSync(path.join(outDir, fname), "utf8");

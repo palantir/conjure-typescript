@@ -16,8 +16,8 @@
  */
 
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
-import { ImportsVisitor, sortImports } from "../generate/imports";
-import { createHashableTypeName } from "../generate/utils";
+import { ImportsVisitor, sortImports } from "../imports";
+import { createHashableTypeName } from "../utils";
 import { foreignObject, importsLocalObject as localObject } from "./testTypesGeneratorTest";
 
 describe("imports", () => {

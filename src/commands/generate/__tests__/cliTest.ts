@@ -19,46 +19,88 @@ import * as child_process from "child_process";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
-import { generateCode } from "../index";
+import { IPackageJson } from "../../../utils";
+import { createPackageJson, createTsconfigJson, GenerateCommand } from "../index";
 
-describe("end to end tests", () => {
+describe("generate command", () => {
     let outDir: string;
     const input = path.join(__dirname, "./resources/ir/service.json");
+    const generateCommand = new GenerateCommand();
 
     beforeEach(() => {
         outDir = directory();
     });
 
+    it("generates correct packageJson", () => {
+        const inputPackage: IPackageJson = {
+            dependencies: { "conjure-client": "1.0.0" },
+            devDependencies: { typescript: "2.7.2" },
+        };
+        expect(createPackageJson(inputPackage, "foo", "1.0.0")).toEqual({
+            name: "foo",
+            version: "1.0.0",
+            sideEffects: false,
+            scripts: {
+                build: "tsc",
+            },
+            peerDependencies: { "conjure-client": "1.0.0" },
+            devDependencies: {
+                "conjure-client": "1.0.0",
+                typescript: "2.7.2",
+            },
+            author: "Conjure",
+            license: "UNLICENSED",
+        });
+    });
+
+    it("generates correct tsconfig", () => {
+        expect(createTsconfigJson(true).compilerOptions.module).toEqual("commonjs");
+        expect(createTsconfigJson(false).compilerOptions.module).toEqual("es2015");
+    });
+
     it("generates code", async () => {
-        await generateCode({ input, output: outDir, packageName: "foo", version: "1.0.0", moduleType: "es2015" });
+        jest.setTimeout(10000);
+        await generateCommand.handler({
+            _: ["generate", input, outDir],
+            packageName: "foo",
+            packageVersion: "1.0.0",
+        });
         expect(fs.existsSync(path.join(outDir, "index.ts"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "package.json"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "tsconfig.json"))).toBeTruthy();
     });
 
     it("generated code installs dependencies", async () => {
-        await generateCode({ input, output: outDir, packageName: "foo", version: "1.0.0", moduleType: "es2015" });
+        jest.setTimeout(10000);
+        await generateCommand.handler({
+            _: ["generate", input, outDir],
+            packageName: "foo",
+            packageVersion: "1.0.0",
+        });
         await executeCommand("yarn install --no-lockfile", outDir);
         expect(fs.existsSync(path.join(outDir, "node_modules"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "node_modules/typescript/bin/tsc")));
     });
 
     it("generated code compiles", async () => {
-        await generateCode({ input, output: outDir, packageName: "foo", version: "1.0.0", moduleType: "es2015" });
+        jest.setTimeout(10000);
+        await generateCommand.handler({
+            _: ["generate", input, outDir],
+            packageName: "foo",
+            packageVersion: "1.0.0",
+        });
         await executeCommand("yarn install --no-lockfile", outDir);
         await executeCommand("yarn build", outDir);
         expect(fs.existsSync(path.join(outDir, "index.js"))).toBeTruthy();
     });
 
-    it("throws if invalid moduleType", async () => {
-        await expect(
-            generateCode({ input, output: outDir, packageName: "foo", version: "1.0.0", moduleType: "foo" }),
-        ).rejects.toThrowError('Expected moduleType to be either "es2015" or "commonjs", but found "foo"');
-    });
-
     it("throws on missing directory", async () => {
         await expect(
-            generateCode({ input, output: "missing", packageName: "foo", version: "1.0.0", moduleType: "es2015" }),
+            generateCommand.handler({
+                _: ["generate", input, "missing"],
+                packageName: "foo",
+                packageVersion: "1.0.0",
+            }),
         ).rejects.toThrowError('Directory "missing" does not exist');
     });
 
