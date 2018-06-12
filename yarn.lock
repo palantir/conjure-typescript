@@ -130,7 +130,7 @@
 
 "@types/yargs@^11.0.0":
   version "11.0.0"
-  resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/@types/yargs/-/yargs-11.0.0.tgz?dl=https://registry.yarnpkg.com/@types/yargs/-/yargs-11.0.0.tgz#124b9ed9c65b7091cc36da59ae12cbd47d8745ea"
+  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-11.0.0.tgz#124b9ed9c65b7091cc36da59ae12cbd47d8745ea"
 
 "@webassemblyjs/ast@1.5.12":
   version "1.5.12"
