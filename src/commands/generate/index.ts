@@ -65,7 +65,7 @@ export class GenerateCommand implements CommandModule {
             })
             .option("nodeCompatibleModules", {
                 default: undefined,
-                describe: "Generate node comaptible javascript",
+                describe: "Generate node compatible javascript",
                 type: "boolean",
             })
             .demand(2);
