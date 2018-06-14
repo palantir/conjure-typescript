@@ -88,13 +88,15 @@ export class GenerateCommand implements CommandModule {
             ...JSON.parse(contents),
         };
 
+        const srcDir = path.join(output, "src");
+        fs.mkdirpSync(srcDir);
         return Promise.all([
             writeJson(
                 path.join(output, "package.json"),
                 createPackageJson(require("../../../package.json"), packageName, packageVersion),
             ),
-            writeJson(path.join(output, "tsconfig.json"), createTsconfigJson(nodeCompatibleModules)),
-            generate(conjureDefinition, output),
+            writeJson(path.join(srcDir, "tsconfig.json"), createTsconfigJson(nodeCompatibleModules)),
+            generate(conjureDefinition, srcDir),
         ]);
     };
 }
@@ -106,9 +108,11 @@ export function createPackageJson(projectPackageJson: IPackageJson, packageName:
     return {
         name: `${packageName}`,
         version,
+        main: "dist/index.js",
+        types: "dist/index.d.ts",
         sideEffects: false,
         scripts: {
-            build: "tsc",
+            build: "tsc -p src",
         },
         peerDependencies,
         devDependencies: {
@@ -126,6 +130,7 @@ export function createTsconfigJson(generateNodeCompatibleModule: boolean | undef
             declaration: true,
             inlineSourceMap: true,
             inlineSources: true,
+            outDir: "../dist",
             module: generateNodeCompatibleModule ? "commonjs" : "es2015",
             moduleResolution: "node",
             noImplicitAny: true,
