@@ -2,7 +2,7 @@
 
 tarBall=dist/conjure-typescript.tgz
 chmod +x dist/conjure-typescript
-tar -czf "$tarBall" -C dist conjure-typescript
+tar -czf "$tarBall" dist/bin
 artifact_version=$CIRCLE_TAG
 artifact_file="conjure-typescript-$artifact_version.tgz"
 

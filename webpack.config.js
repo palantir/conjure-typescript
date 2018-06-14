@@ -9,7 +9,7 @@ module.exports = {
         extensions: [ ".js", ".ts", ".json" ],
     },
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'dist/bin'),
         filename: "conjure-typescript"
     },
     target: "node",
