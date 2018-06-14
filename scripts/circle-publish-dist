@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
-tarBall=dist/conjure-typescript.tgz
-chmod +x dist/conjure-typescript
-tar -czf "$tarBall" -C dist conjure-typescript
-artifact_version=$CIRCLE_TAG
-artifact_file="conjure-typescript-$artifact_version.tgz"
+set -eux
 
-upload_url="https://api.bintray.com/content/palantir/releases/conjure-typescript/${artifact_version}/com/palantir/conjure/typescript/conjure-typescript/${artifact_version}/${artifact_file}"
-echo "publishing $tarBall to $upload_url"
+mkdir -p "dist/conjure-typecript-$CIRCLE_TAG"
+chmod +x dist/bin/conjure-typescript
+cp -rf dist/bin "dist/conjure-typecript-$CIRCLE_TAG/"
+
+OUTPUT="dist/conjure-typescript-$CIRCLE_TAG.tgz"
+tar -czf "$OUTPUT" -C dist "conjure-typecript-$CIRCLE_TAG/bin"
+
+UPLOAD_URL="https://api.bintray.com/content/palantir/releases/conjure-typescript/${CIRCLE_TAG}/com/palantir/conjure/typescript/conjure-typescript/${CIRCLE_TAG}/conjure-typescript-${CIRCLE_TAG}.tgz"
+echo "publishing $OUTPUT to $UPLOAD_URL"
 set +x
-curl --fail -v -X PUT "$upload_url?publish=1" -T "$tarBall" -u $BINTRAY_USERNAME:$BINTRAY_PASSWORD
+curl --fail -v -X PUT "$UPLOAD_URL?publish=1" -T "$OUTPUT" -u "$BINTRAY_USERNAME:$BINTRAY_PASSWORD"
 set -x

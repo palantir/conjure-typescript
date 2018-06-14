@@ -9,6 +9,7 @@ if [ -z ${CIRCLECI+x} ]; then
 fi
 
 # Defend against yarn adding enviroment variables for config  https://github.com/yarnpkg/yarn/issues/4475
+# shellcheck disable=SC2046
 unset $(env | awk -F= '$1 ~ /^npm_/ {print $1}')
 
 # Generate npmrc, ensure it is readable
