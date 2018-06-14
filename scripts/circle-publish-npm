@@ -8,7 +8,7 @@ if [ -z ${CIRCLECI+x} ]; then
     exit 1
 fi
 
-# Defend against yarn adding enviroment variables for config  https://github.com/yarnpkg/yarn/issues/4475
+# Defend against yarn adding environment variables for config  https://github.com/yarnpkg/yarn/issues/4475
 # shellcheck disable=SC2046
 unset $(env | awk -F= '$1 ~ /^npm_/ {print $1}')
 
