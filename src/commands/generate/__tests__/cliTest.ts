@@ -39,9 +39,11 @@ describe("generate command", () => {
         expect(createPackageJson(inputPackage, "foo", "1.0.0")).toEqual({
             name: "foo",
             version: "1.0.0",
+            main: "dist/index.js",
+            types: "dist/index.d.ts",
             sideEffects: false,
             scripts: {
-                build: "tsc",
+                build: "tsc -p src",
             },
             peerDependencies: { "conjure-client": "1.0.0" },
             devDependencies: {
@@ -65,9 +67,9 @@ describe("generate command", () => {
             packageName: "foo",
             packageVersion: "1.0.0",
         });
-        expect(fs.existsSync(path.join(outDir, "index.ts"))).toBeTruthy();
+        expect(fs.existsSync(path.join(outDir, "src/index.ts"))).toBeTruthy();
+        expect(fs.existsSync(path.join(outDir, "src/tsconfig.json"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "package.json"))).toBeTruthy();
-        expect(fs.existsSync(path.join(outDir, "tsconfig.json"))).toBeTruthy();
     });
 
     it("generated code installs dependencies", async () => {
@@ -91,7 +93,7 @@ describe("generate command", () => {
         });
         await executeCommand("yarn install --no-lockfile", outDir);
         await executeCommand("yarn build", outDir);
-        expect(fs.existsSync(path.join(outDir, "index.js"))).toBeTruthy();
+        expect(fs.existsSync(path.join(outDir, "dist/index.js"))).toBeTruthy();
     });
 
     it("throws on missing directory", async () => {
