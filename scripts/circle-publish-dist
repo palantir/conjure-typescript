@@ -2,12 +2,12 @@
 
 set -eux
 
-mkdir -p "dist/conjure-typecript-$CIRCLE_TAG"
+mkdir -p "dist/conjure-typescript-$CIRCLE_TAG"
 chmod +x dist/bin/conjure-typescript
-cp -rf dist/bin "dist/conjure-typecript-$CIRCLE_TAG/"
+cp -rf dist/bin "dist/conjure-typescript-$CIRCLE_TAG/"
 
 OUTPUT="dist/conjure-typescript-$CIRCLE_TAG.tgz"
-tar -czf "$OUTPUT" -C dist "conjure-typecript-$CIRCLE_TAG/bin"
+tar -czf "$OUTPUT" -C dist "conjure-typescript-$CIRCLE_TAG/bin"
 
 UPLOAD_URL="https://api.bintray.com/content/palantir/releases/conjure-typescript/${CIRCLE_TAG}/com/palantir/conjure/typescript/conjure-typescript/${CIRCLE_TAG}/conjure-typescript-${CIRCLE_TAG}.tgz"
 echo "publishing $OUTPUT to $UPLOAD_URL"
