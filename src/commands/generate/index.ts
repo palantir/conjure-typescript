@@ -128,8 +128,6 @@ export function createTsconfigJson(generateNodeCompatibleModule: boolean | undef
     return {
         compilerOptions: {
             declaration: true,
-            inlineSourceMap: true,
-            inlineSources: true,
             outDir: "../dist",
             module: generateNodeCompatibleModule ? "commonjs" : "es2015",
             moduleResolution: "node",
