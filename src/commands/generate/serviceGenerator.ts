@@ -185,8 +185,8 @@ function generateEndpointBody(
         }
         return `"${paramId}": ${argDefinition.argName},`;
     });
-    const requestMediaType = mediaType(returnType);
-    const responseMediaType = mediaType(bodyType);
+    const requestMediaType = mediaType(bodyType);
+    const responseMediaType = mediaType(returnType);
 
     return writer => {
         writer.write(`return this.${BRIDGE}.callEndpoint<${returnTsType}>(`).inlineBlock(() => {

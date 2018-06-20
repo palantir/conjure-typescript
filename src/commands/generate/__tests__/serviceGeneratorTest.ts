@@ -117,6 +117,31 @@ describe("serviceGenerator", () => {
             {
                 endpoints: [
                     {
+                        args: [],
+                        endpointName: "foo",
+                        httpMethod: HttpMethod.GET,
+                        httpPath: "/bar",
+                        markers: [],
+                        returns: { primitive: PrimitiveType.BINARY, type: "primitive" },
+                    },
+                ],
+                serviceName: { name: "MyService", package: "com.palantir.services" },
+            },
+            new Map(),
+            simpleAst,
+        );
+        const outFile = path.join(outDir, "services/myService.ts");
+        const contents = fs.readFileSync(outFile, "utf8");
+        expect(contents).toContain("foo(): Promise<any>;");
+        expect(contents).toContain(`requestMediaType: MediaType.APPLICATION_JSON`);
+        expect(contents).toContain(`responseMediaType: MediaType.APPLICATION_OCTET_STREAM`);
+    });
+
+    it("handle binary return and json request types", async () => {
+        await generateService(
+            {
+                endpoints: [
+                    {
                         args: [
                             {
                                 argName: "body",
