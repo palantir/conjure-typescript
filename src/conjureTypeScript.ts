@@ -20,7 +20,6 @@ import { GenerateCommand } from "./commands/generate";
 
 (async function main() {
     yargs
-        .strict()
         .wrap(130)
         .command(new GenerateCommand())
         .demandCommand()
