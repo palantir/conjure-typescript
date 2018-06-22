@@ -109,17 +109,15 @@ export class GenerateCommand implements CommandModule {
             ...JSON.parse(contents),
         };
 
-        const srcDir = path.join(output);
-        fs.mkdirpSync(srcDir);
         return Promise.all([
             writeJson(
                 path.join(output, "package.json"),
                 createPackageJson(require("../../../package.json"), packageName, packageVersion),
             ),
-            writeJson(path.join(srcDir, "tsconfig.json"), createTsconfigJson(nodeCompatibleModules)),
+            writeJson(path.join(output, "tsconfig.json"), createTsconfigJson(nodeCompatibleModules)),
             fs.writeFile(path.join(output, ".npmignore"), ["*.ts", "!*.d.ts", "tsconfig.json"].join("\n")),
             maybeGenerateGitIgnore(output, generateGitIgnore),
-            generate(conjureDefinition, srcDir),
+            generate(conjureDefinition, output),
         ]);
     };
 }
