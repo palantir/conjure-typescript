@@ -66,6 +66,8 @@ describe("generate command", () => {
             _: ["generate", input, outDir],
             packageName: "foo",
             packageVersion: "1.0.0",
+            nodeCompatibleModules: false,
+            generateGitIgnore: false,
         });
         expect(fs.existsSync(path.join(outDir, "src/index.ts"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "src/tsconfig.json"))).toBeTruthy();
@@ -78,6 +80,8 @@ describe("generate command", () => {
             _: ["generate", input, outDir],
             packageName: "foo",
             packageVersion: "1.0.0",
+            nodeCompatibleModules: false,
+            generateGitIgnore: false,
         });
         await executeCommand("yarn install --no-lockfile", outDir);
         expect(fs.existsSync(path.join(outDir, "node_modules"))).toBeTruthy();
@@ -90,10 +94,34 @@ describe("generate command", () => {
             _: ["generate", input, outDir],
             packageName: "foo",
             packageVersion: "1.0.0",
+            nodeCompatibleModules: false,
+            generateGitIgnore: false,
         });
         await executeCommand("yarn install --no-lockfile", outDir);
         await executeCommand("yarn build", outDir);
         expect(fs.existsSync(path.join(outDir, "dist/index.js"))).toBeTruthy();
+    });
+
+    it("generates .gitignore files", async () => {
+        await generateCommand.handler({
+            _: ["generate", input, outDir],
+            packageName: "foo",
+            packageVersion: "1.0.0",
+            nodeCompatibleModules: false,
+            generateGitIgnore: true,
+        });
+        expect(fs.existsSync(path.join(outDir, ".gitignore"))).toBeTruthy();
+    });
+
+    it("tolerates existing .gitignore files", async () => {
+        fs.writeFileSync(path.join(outDir, ".gitignore"), "");
+        await generateCommand.handler({
+            _: ["generate", input, outDir],
+            packageName: "foo",
+            packageVersion: "1.0.0",
+            nodeCompatibleModules: false,
+            generateGitIgnore: true,
+        });
     });
 
     it("throws on missing directory", async () => {
@@ -102,6 +130,8 @@ describe("generate command", () => {
                 _: ["generate", input, "missing"],
                 packageName: "foo",
                 packageVersion: "1.0.0",
+                nodeCompatibleModules: false,
+                generateGitIgnore: false,
             }),
         ).rejects.toThrowError('Directory "missing" does not exist');
     });
