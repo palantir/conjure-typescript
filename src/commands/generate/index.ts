@@ -96,6 +96,7 @@ export class GenerateCommand implements CommandModule {
                 createPackageJson(require("../../../package.json"), packageName, packageVersion),
             ),
             writeJson(path.join(srcDir, "tsconfig.json"), createTsconfigJson(nodeCompatibleModules)),
+            fs.writeFile(path.join(output, ".npmignore"), "*.ts\n!*.d.ts"),
             generate(conjureDefinition, srcDir),
         ]);
     };
