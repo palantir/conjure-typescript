@@ -102,6 +102,19 @@ describe("generate command", () => {
         expect(fs.existsSync(path.join(outDir, "dist/index.js"))).toBeTruthy();
     });
 
+    it("generates .npmignore file", async () => {
+        jest.setTimeout(10000);
+        await generateCommand.handler({
+            _: ["generate", input, outDir],
+            packageName: "foo",
+            packageVersion: "1.0.0",
+            nodeCompatibleModules: false,
+            generateGitIgnore: false,
+        });
+        expect(fs.existsSync(path.join(outDir, ".npmignore"))).toBeTruthy();
+        expect(fs.readFileSync(path.join(outDir, ".npmignore"), { encoding: "utf8" })).toEqual("*.ts\n!*.d.ts");
+    });
+
     it("generates .gitignore files", async () => {
         await generateCommand.handler({
             _: ["generate", input, outDir],
