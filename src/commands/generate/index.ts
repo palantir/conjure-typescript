@@ -26,14 +26,30 @@ import { generate } from "./generator";
 export * from "./generator";
 
 export interface IGenerateCommandArgs {
-    /* Positional arguments */
+    /*
+     * Positional arguments
+     */
     _: string[];
 
-    packageVersion: string;
-
+    /*
+     * The name of the package to generate
+     */
     packageName: string;
 
-    nodeCompatibleModules?: boolean;
+    /*
+     * The version of the package to generate
+     */
+    packageVersion: string;
+
+    /*
+     * Configure TypeScript compilation to generate modules that are node compatible
+     */
+    nodeCompatibleModules: boolean;
+
+    /*
+     * Generate a .gitignore file to exclude all generated code from a git tree
+     */
+    generateGitIgnore: boolean;
 }
 
 export class GenerateCommand implements CommandModule {
@@ -64,15 +80,20 @@ export class GenerateCommand implements CommandModule {
                 type: "string",
             })
             .option("nodeCompatibleModules", {
-                default: undefined,
+                default: false,
                 describe: "Generate node compatible javascript",
+                type: "boolean",
+            })
+            .option("generateGitIgnore", {
+                default: false,
+                describe: "Generate .gitignore file to exclude all generated code from a git tree",
                 type: "boolean",
             })
             .demand(2);
     }
 
     public handler = async (args: IGenerateCommandArgs) => {
-        const { packageName, packageVersion, nodeCompatibleModules } = args;
+        const { packageName, packageVersion, nodeCompatibleModules, generateGitIgnore } = args;
         const [, input, output] = args._;
         if (!fs.existsSync(output)) {
             throw new Error(`Directory "${output}" does not exist`);
@@ -97,6 +118,7 @@ export class GenerateCommand implements CommandModule {
             ),
             writeJson(path.join(srcDir, "tsconfig.json"), createTsconfigJson(nodeCompatibleModules)),
             fs.writeFile(path.join(output, ".npmignore"), "*.ts\n!*.d.ts"),
+            maybeGenerateGitIgnore(output, generateGitIgnore),
             generate(conjureDefinition, srcDir),
         ]);
     };
@@ -125,7 +147,7 @@ export function createPackageJson(projectPackageJson: IPackageJson, packageName:
     };
 }
 
-export function createTsconfigJson(generateNodeCompatibleModule: boolean | undefined) {
+export function createTsconfigJson(generateNodeCompatibleModule: boolean) {
     return {
         compilerOptions: {
             declaration: true,
@@ -139,4 +161,11 @@ export function createTsconfigJson(generateNodeCompatibleModule: boolean | undef
             typeRoots: [],
         },
     };
+}
+
+async function maybeGenerateGitIgnore(output: string, generateGitIgnore: boolean) {
+    const ignoredFiles = ["*.js", "*.ts", ".npmrc", "package.json", "tsconfig.json", "node_modules", ".npmignore"];
+    if (generateGitIgnore) {
+        return fs.writeFile(path.join(output, ".gitignore"), ignoredFiles.join("\n"));
+    }
 }
