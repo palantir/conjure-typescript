@@ -39,11 +39,11 @@ describe("generate command", () => {
         expect(createPackageJson(inputPackage, "foo", "1.0.0")).toEqual({
             name: "foo",
             version: "1.0.0",
-            main: "dist/index.js",
-            types: "dist/index.d.ts",
+            main: "index.js",
+            types: "index.d.ts",
             sideEffects: false,
             scripts: {
-                build: "tsc -p src",
+                build: "tsc",
             },
             peerDependencies: { "conjure-client": "1.0.0" },
             devDependencies: {
@@ -69,8 +69,8 @@ describe("generate command", () => {
             nodeCompatibleModules: false,
             generateGitIgnore: false,
         });
-        expect(fs.existsSync(path.join(outDir, "src/index.ts"))).toBeTruthy();
-        expect(fs.existsSync(path.join(outDir, "src/tsconfig.json"))).toBeTruthy();
+        expect(fs.existsSync(path.join(outDir, "index.ts"))).toBeTruthy();
+        expect(fs.existsSync(path.join(outDir, "tsconfig.json"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "package.json"))).toBeTruthy();
     });
 
@@ -99,7 +99,7 @@ describe("generate command", () => {
         });
         await executeCommand("yarn install --no-lockfile", outDir);
         await executeCommand("yarn build", outDir);
-        expect(fs.existsSync(path.join(outDir, "dist/index.js"))).toBeTruthy();
+        expect(fs.existsSync(path.join(outDir, "index.js"))).toBeTruthy();
     });
 
     it("generates .npmignore file", async () => {
@@ -112,7 +112,9 @@ describe("generate command", () => {
             generateGitIgnore: false,
         });
         expect(fs.existsSync(path.join(outDir, ".npmignore"))).toBeTruthy();
-        expect(fs.readFileSync(path.join(outDir, ".npmignore"), { encoding: "utf8" })).toEqual("*.ts\n!*.d.ts");
+        expect(fs.readFileSync(path.join(outDir, ".npmignore"), { encoding: "utf8" })).toEqual(
+            "*.ts\n!*.d.ts\ntsconfig.json",
+        );
     });
 
     it("generates .gitignore files", async () => {

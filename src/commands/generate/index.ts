@@ -109,7 +109,7 @@ export class GenerateCommand implements CommandModule {
             ...JSON.parse(contents),
         };
 
-        const srcDir = path.join(output, "src");
+        const srcDir = path.join(output);
         fs.mkdirpSync(srcDir);
         return Promise.all([
             writeJson(
@@ -117,7 +117,7 @@ export class GenerateCommand implements CommandModule {
                 createPackageJson(require("../../../package.json"), packageName, packageVersion),
             ),
             writeJson(path.join(srcDir, "tsconfig.json"), createTsconfigJson(nodeCompatibleModules)),
-            fs.writeFile(path.join(output, ".npmignore"), "*.ts\n!*.d.ts"),
+            fs.writeFile(path.join(output, ".npmignore"), ["*.ts", "!*.d.ts", "tsconfig.json"].join("\n")),
             maybeGenerateGitIgnore(output, generateGitIgnore),
             generate(conjureDefinition, srcDir),
         ]);
@@ -131,11 +131,11 @@ export function createPackageJson(projectPackageJson: IPackageJson, packageName:
     return {
         name: `${packageName}`,
         version,
-        main: "dist/index.js",
-        types: "dist/index.d.ts",
+        main: "index.js",
+        types: "index.d.ts",
         sideEffects: false,
         scripts: {
-            build: "tsc -p src",
+            build: "tsc",
         },
         peerDependencies,
         devDependencies: {
@@ -151,7 +151,6 @@ export function createTsconfigJson(generateNodeCompatibleModule: boolean) {
     return {
         compilerOptions: {
             declaration: true,
-            outDir: "../dist",
             module: generateNodeCompatibleModule ? "commonjs" : "es2015",
             moduleResolution: "node",
             noImplicitAny: true,
