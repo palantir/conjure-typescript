@@ -45,11 +45,6 @@ export interface IGenerateCommandArgs {
      * Configure TypeScript compilation to generate modules that are node compatible
      */
     nodeCompatibleModules: boolean;
-
-    /*
-     * Generate a .gitignore file to exclude all generated code from a git tree
-     */
-    generateGitIgnore: boolean;
 }
 
 export class GenerateCommand implements CommandModule {
@@ -84,16 +79,11 @@ export class GenerateCommand implements CommandModule {
                 describe: "Generate node compatible javascript",
                 type: "boolean",
             })
-            .option("generateGitIgnore", {
-                default: false,
-                describe: "Generate .gitignore file to exclude all generated code from a git tree",
-                type: "boolean",
-            })
             .demand(2);
     }
 
     public handler = async (args: IGenerateCommandArgs) => {
-        const { packageName, packageVersion, nodeCompatibleModules, generateGitIgnore } = args;
+        const { packageName, packageVersion, nodeCompatibleModules } = args;
         const [, input, output] = args._;
         if (!fs.existsSync(output)) {
             throw new Error(`Directory "${output}" does not exist`);
@@ -116,7 +106,6 @@ export class GenerateCommand implements CommandModule {
             ),
             writeJson(path.join(output, "tsconfig.json"), createTsconfigJson(nodeCompatibleModules)),
             fs.writeFile(path.join(output, ".npmignore"), ["*.ts", "!*.d.ts", "tsconfig.json"].join("\n")),
-            maybeGenerateGitIgnore(output, generateGitIgnore),
             generate(conjureDefinition, output),
         ]);
     };
@@ -158,11 +147,4 @@ export function createTsconfigJson(generateNodeCompatibleModule: boolean) {
             typeRoots: [],
         },
     };
-}
-
-async function maybeGenerateGitIgnore(output: string, generateGitIgnore: boolean) {
-    const ignoredFiles = ["*.js", "*.ts", ".npmrc", "package.json", "tsconfig.json", "node_modules", ".npmignore"];
-    if (generateGitIgnore) {
-        return fs.writeFile(path.join(output, ".gitignore"), ignoredFiles.join("\n"));
-    }
 }
