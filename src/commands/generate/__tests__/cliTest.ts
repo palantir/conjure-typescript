@@ -103,7 +103,6 @@ describe("generate command", () => {
             packageName: "foo",
             packageVersion: "1.0.0",
             nodeCompatibleModules: false,
-            generateGitIgnore: false,
         });
         expect(fs.existsSync(path.join(outDir, ".npmignore"))).toBeTruthy();
         expect(fs.readFileSync(path.join(outDir, ".npmignore"), { encoding: "utf8" })).toEqual(
