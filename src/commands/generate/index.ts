@@ -117,8 +117,8 @@ export function createPackageJson(projectPackageJson: IPackageJson, packageName:
     return {
         name: `${packageName}`,
         version,
-        main: "dist/index.js",
-        types: "dist/index.d.ts",
+        main: "index.js",
+        types: "index.d.ts",
         sideEffects: false,
         scripts: {
             build: "tsc",
@@ -137,7 +137,6 @@ export function createTsconfigJson(generateNodeCompatibleModule: boolean) {
     return {
         compilerOptions: {
             declaration: true,
-            outDir: "../dist",
             module: generateNodeCompatibleModule ? "commonjs" : "es2015",
             moduleResolution: "node",
             noImplicitAny: true,
