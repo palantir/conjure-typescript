@@ -26,14 +26,25 @@ import { generate } from "./generator";
 export * from "./generator";
 
 export interface IGenerateCommandArgs {
-    /* Positional arguments */
+    /*
+     * Positional arguments
+     */
     _: string[];
 
-    packageVersion: string;
-
+    /*
+     * The name of the package to generate
+     */
     packageName: string;
 
-    nodeCompatibleModules?: boolean;
+    /*
+     * The version of the package to generate
+     */
+    packageVersion: string;
+
+    /*
+     * Configure TypeScript compilation to generate modules that are node compatible
+     */
+    nodeCompatibleModules: boolean;
 }
 
 export class GenerateCommand implements CommandModule {
@@ -64,7 +75,7 @@ export class GenerateCommand implements CommandModule {
                 type: "string",
             })
             .option("nodeCompatibleModules", {
-                default: undefined,
+                default: false,
                 describe: "Generate node compatible javascript",
                 type: "boolean",
             })
@@ -94,7 +105,6 @@ export class GenerateCommand implements CommandModule {
                 createPackageJson(require("../../../package.json"), packageName, packageVersion),
             ),
             writeJson(path.join(output, "tsconfig.json"), createTsconfigJson(nodeCompatibleModules)),
-            fs.writeFile(path.join(output, ".npmignore"), ["*.ts", "!*.d.ts", "tsconfig.json"].join("\n")),
             generate(conjureDefinition, output),
         ]);
     };
@@ -107,8 +117,8 @@ export function createPackageJson(projectPackageJson: IPackageJson, packageName:
     return {
         name: `${packageName}`,
         version,
-        main: "index.js",
-        types: "index.d.ts",
+        main: "dist/index.js",
+        types: "dist/index.d.ts",
         sideEffects: false,
         scripts: {
             build: "tsc",
@@ -123,10 +133,11 @@ export function createPackageJson(projectPackageJson: IPackageJson, packageName:
     };
 }
 
-export function createTsconfigJson(generateNodeCompatibleModule: boolean | undefined) {
+export function createTsconfigJson(generateNodeCompatibleModule: boolean) {
     return {
         compilerOptions: {
             declaration: true,
+            outDir: "../dist",
             module: generateNodeCompatibleModule ? "commonjs" : "es2015",
             moduleResolution: "node",
             noImplicitAny: true,
