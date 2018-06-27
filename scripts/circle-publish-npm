@@ -13,7 +13,9 @@ fi
 unset $(env | awk -F= '$1 ~ /^npm_/ {print $1}')
 
 # Generate npmrc, ensure it is readable
+set +x
 echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > .npmrc
+set -x
 chmod +r .npmrc
 
 # Change package version to latest tag
