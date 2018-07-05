@@ -16,6 +16,7 @@ jobs:
           paths:
             - /root/project/node_modules
       - run: yarn build
+      - run: yarn spec
       - deploy:
           command: |
             if echo "${CIRCLE_TAG}" | grep -Eq '[0-9]+(\.[0-9]+)+(-[a-zA-Z]+[0-9]*)*'; then
