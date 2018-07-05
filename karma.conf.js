@@ -1,14 +1,23 @@
 module.exports = function(config) {
   config.set({
-    frameworks: ['mocha', 'chai'],
-    files: ['spec/**/*.js'],
-    reporters: ['progress'],
+    frameworks: ['mocha', 'chai', 'karma-typescript'],
+    files: [
+      'src/__integTest__/**/*.ts'
+    ],
+    preprocessors: {
+      'src/__integTest__/**/*.ts': 'karma-typescript'
+    },
+    karmaTypescriptConfig: {
+      tsconfig: 'src/tsconfig.json'
+    },
+    reporters: ['progress', 'karma-typescript'],
     port: 9876,  // karma web server port
     colors: true,
     logLevel: config.LOG_INFO,
     browsers: ['ChromeHeadless'],
     autoWatch: false,
     // singleRun: false, // Karma captures browsers, runs the tests and exits
-    concurrency: Infinity
+    concurrency: Infinity,
+    coverage: false
   })
 }
