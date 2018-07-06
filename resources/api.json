@@ -778,6 +778,48 @@
       "package" : "com.palantir.conjure.verifier"
     },
     "endpoints" : [ {
+      "endpointName" : "confirm",
+      "httpMethod" : "POST",
+      "httpPath" : "/confirm/{endpoint}/{index}",
+      "args" : [ {
+        "argName" : "endpoint",
+        "type" : {
+          "type" : "primitive",
+          "primitive" : "STRING"
+        },
+        "paramType" : {
+          "type" : "path",
+          "path" : { }
+        },
+        "docs" : "The name of the endpoint where the automatic test case request was made.",
+        "markers" : [ ]
+      }, {
+        "argName" : "index",
+        "type" : {
+          "type" : "primitive",
+          "primitive" : "INTEGER"
+        },
+        "paramType" : {
+          "type" : "path",
+          "path" : { }
+        },
+        "docs" : "The index of the positive automatic test case.",
+        "markers" : [ ]
+      }, {
+        "argName" : "body",
+        "type" : {
+          "type" : "primitive",
+          "primitive" : "ANY"
+        },
+        "paramType" : {
+          "type" : "body",
+          "body" : { }
+        },
+        "markers" : [ ]
+      } ],
+      "docs" : "Send the response received for positive test cases here to verify that it has been serialized and deserialized properly.\n",
+      "markers" : [ ]
+    }, {
       "endpointName" : "receiveBearerTokenExample",
       "httpMethod" : "GET",
       "httpPath" : "/receiveBearerTokenExample/{index}",

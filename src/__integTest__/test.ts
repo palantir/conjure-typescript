@@ -17,50 +17,44 @@
 
 import { assert } from "chai";
 import { DefaultHttpApiBridge } from "conjure-client";
-import * as fs from "fs-extra";
-import * as path from "path";
 import { AutoDeserializeService, ITestCasesYml } from "./__generated__";
+// HACKHACK to load test-cases
+// tslint:disable:no-var-requires
+const testCasesFile: ITestCasesYml = require("../../resources/test-cases.json");
 
 describe("Array", () => {
-    let testService: AutoDeserializeService;
-    beforeAll(() => {
-        testService = new AutoDeserializeService(
-            new DefaultHttpApiBridge({
-                baseUrl: "localhost:8080",
-                userAgent: {
-                    productName: "conjure-typescript",
-                    productVersion: "0.0.0",
-                },
-            }),
-        );
-    });
+    const testService = new AutoDeserializeService(
+        new DefaultHttpApiBridge({
+            baseUrl: "http://localhost:8000",
+            userAgent: {
+                productName: "conjure-typescript",
+                productVersion: "0.0.0",
+            },
+        }),
+    );
 
-    const testCasesFile: ITestCasesYml = fs.readJsonSync(path.join(__dirname, "../../resources/test-cases.json"), {
-        encoding: "utf8",
-    });
     Object.keys(testCasesFile.autoDeserialize).map(endpointName => {
         const testCases = testCasesFile.autoDeserialize[endpointName];
         testCases.positive.map((_, i) => {
-            it(`${endpointName}_${i}`, automaticTest(testService, endpointName, i, true));
+            it(`${endpointName}_${i}_pass`, automaticTest(testService, endpointName, i, true));
         });
         testCases.negative.map((_, i) => {
-            it(`${endpointName}_${i}`, automaticTest(testService, endpointName, i + testCases.positive.length, false));
+            const index = i + testCases.positive.length;
+            it(`${endpointName}_${index}_fail`, automaticTest(testService, endpointName, index, false));
         });
     });
 });
 
 function automaticTest(testService: AutoDeserializeService, endpointName: string, index: number, shouldPass: boolean) {
     return async () => {
-        let response: any;
+        let response: any = null;
         try {
-            response = (testService as any)[endpointName](index);
-        } catch (e) {
+            response = await (testService as any)[endpointName](index);
+        } finally {
+            assert.equal((!shouldPass && response == null) || (shouldPass && response != null), true);
             if (shouldPass) {
-                assert.fail();
+                await testService.confirm(endpointName, index, response);
             }
-            response = "Error";
         }
-        // tslint:disable:no-console
-        console.log(response);
     };
 }
