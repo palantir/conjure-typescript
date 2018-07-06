@@ -19,5 +19,8 @@
         "stripInternal": true,
         "target": "es5",
         "outDir": "../lib"
-    }
+    },
+    "exclude": [
+        "**/__integTest__/*"
+    ]
 }

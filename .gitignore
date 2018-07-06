@@ -22,7 +22,7 @@ yerna.log
 .awcache
 
 # Testing
-packages/*/coverage
+coverage
 test-report.xml
 .jest-cache
 

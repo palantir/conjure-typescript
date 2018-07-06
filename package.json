@@ -9,7 +9,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "npm-run-all clean verify compile",
+    "build": "npm-run-all clean compile verify",
     "circle-publish": "./scripts/circle-publish-npm && ./scripts/circle-publish-dist",
     "clean": "rm -rf dist lib",
     "compile": "npm-run-all -p compile-ts compile-dist",
@@ -17,9 +17,10 @@
     "compile-ts": "tsc -p ./src",
     "lint": "tslint 'src/**/*.ts*' --project ./src/tsconfig.json",
     "lint-fix": "yarn lint -- --fix --project ./src/tsconfig.json",
-    "test": "jest --config ./jest.config.js --rootDir ./",
-    "verify": "npm-run-all -p test lint",
-    "spec": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
+    "generateSpecBindings": "./bin/conjure-typescript generate resources/verifier-spec.json src/__integTest__/__generated__ --packageName generated --packageVersion 0.0.0",
+    "test:integration": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
+    "test:unit": "jest --config ./jest.config.js --rootDir ./",
+    "verify": "npm-run-all -p test lint"
   },
   "dependencies": {
     "commander": "^2.15.1",

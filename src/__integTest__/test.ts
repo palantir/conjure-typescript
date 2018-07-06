@@ -16,17 +16,51 @@
  */
 
 import { assert } from "chai";
+import { DefaultHttpApiBridge } from "conjure-client";
+import * as fs from "fs-extra";
+import * as path from "path";
+import { AutoDeserializeService, ITestCasesYml } from "./__generated__";
 
 describe("Array", () => {
-    describe("#indexOf()", () => {
-        it("should return -1 when the value is not present", () => {
-            assert.equal(-1, [1, 2, 3].indexOf(4));
-            // TODO(dfox): try to use 'expect' (same as jest) instead of chai
-        });
+    let testService: AutoDeserializeService;
+    beforeAll(() => {
+        testService = new AutoDeserializeService(
+            new DefaultHttpApiBridge({
+                baseUrl: "localhost:8080",
+                userAgent: {
+                    productName: "conjure-typescript",
+                    productVersion: "0.0.0",
+                },
+            }),
+        );
     });
-    describe("dumb things", () => {
-        it("should barf", () => {
-            assert.equal(false, true);
+
+    const testCasesFile: ITestCasesYml = fs.readJsonSync(path.join(__dirname, "../../resources/test-cases.json"), {
+        encoding: "utf8",
+    });
+    Object.keys(testCasesFile.autoDeserialize).map(endpointName => {
+        const testCases = testCasesFile.autoDeserialize[endpointName];
+        testCases.positive.map((_, i) => {
+            it(`${endpointName}_${i}`, automaticTest(testService, endpointName, i, true));
+        });
+        testCases.negative.map((_, i) => {
+            it(`${endpointName}_${i}`, automaticTest(testService, endpointName, i + testCases.positive.length, false));
         });
     });
 });
+
+function automaticTest(testService: AutoDeserializeService, endpointName: string, index: number, shouldPass: boolean) {
+    return async () => {
+        let response: any;
+        try {
+            response = (testService as any)[endpointName](index);
+        } catch (e) {
+            if (shouldPass) {
+                assert.fail();
+            }
+            response = "Error";
+        }
+        // tslint:disable:no-console
+        console.log(response);
+    };
+}
