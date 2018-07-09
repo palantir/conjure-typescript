@@ -17,13 +17,12 @@
 
 import { assert } from "chai";
 import { DefaultHttpApiBridge, isConjureError } from "conjure-client";
-import { AutoDeserializeService, ITestCases } from "./__generated__";
-import { AutoDeserializeConfirmService } from "./__generated__/conjure-compliance";
+import { AutoDeserializeConfirmService, AutoDeserializeService, ITestCases } from "./__generated__";
 // HACKHACK to load test-cases
 // tslint:disable:no-var-requires
 const testCasesFile: ITestCases = require("../../resources/test-cases.json");
 
-describe("Array", () => {
+describe("Auto deserialize", () => {
     const bridge = new DefaultHttpApiBridge({
         baseUrl: "http://localhost:8000",
         userAgent: {
