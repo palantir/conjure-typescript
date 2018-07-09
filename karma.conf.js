@@ -2,10 +2,13 @@ module.exports = function (config) {
     config.set({
         frameworks: ["mocha", "chai", "karma-typescript"],
         files: [
-            "src/__integTest__/**/*.ts"
+            "src/**/*.ts",
+        ],
+        exclude: [
+            "**/__tests__/*.ts"
         ],
         preprocessors: {
-            "src/__integTest__/**/*.ts": "karma-typescript"
+            "src/**/*.ts": "karma-typescript",
         },
         karmaTypescriptConfig: {
             tsconfig: "src/tsconfig.karma.json"
