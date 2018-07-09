@@ -15,10 +15,10 @@
     "compile": "npm-run-all -p compile-ts compile-dist",
     "compile-dist": "webpack --config webpack.config.js",
     "compile-ts": "tsc -p ./src",
+    "generateSpecBindings": "./scripts/generate-test-bindings.sh",
     "lint": "tslint 'src/**/*.ts*' --project ./src/tsconfig.json",
     "lint-fix": "yarn lint -- --fix --project ./src/tsconfig.json",
     "test": "npm-run-all generateSpecBindings test:unit test:integration",
-    "generateSpecBindings": "./bin/conjure-typescript generate resources/api.json src/__integTest__/__generated__ --packageName generated --packageVersion 0.0.0 && rm src/__integTest__/__generated__/*.json src/__integTest__/__generated__/.npmignore",
     "test:integration": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
     "test:unit": "jest --config ./jest.config.js --rootDir ./",
     "verify": "npm-run-all lint test"
