@@ -34,17 +34,22 @@ export interface IGenerateCommandArgs {
     /*
      * The name of the package to generate
      */
-    packageName: string;
+    packageName?: string;
 
     /*
      * The version of the package to generate
      */
-    packageVersion: string;
+    packageVersion?: string;
 
     /*
      * Configure TypeScript compilation to generate modules that are node compatible
      */
     nodeCompatibleModules: boolean;
+
+    /*
+     * Generate raw source without any package metadata
+     */
+    rawSource: boolean;
 }
 
 export class GenerateCommand implements CommandModule {
@@ -65,13 +70,11 @@ export class GenerateCommand implements CommandModule {
             .option("packageVersion", {
                 default: undefined,
                 describe: "The version of the generated package",
-                required: true,
                 type: "string",
             })
             .option("packageName", {
                 default: undefined,
                 describe: "The name of the generated package",
-                required: true,
                 type: "string",
             })
             .option("nodeCompatibleModules", {
@@ -79,15 +82,22 @@ export class GenerateCommand implements CommandModule {
                 describe: "Generate node compatible javascript",
                 type: "boolean",
             })
+            .option("rawSource", {
+                default: false,
+                describe: "Generate raw source without any package metadata",
+                type: "boolean",
+            })
             .demand(2);
     }
 
     public handler = async (args: IGenerateCommandArgs) => {
-        const { packageName, packageVersion, nodeCompatibleModules } = args;
+        const { packageName, packageVersion, nodeCompatibleModules, rawSource } = args;
         const [, input, output] = args._;
-        if (!fs.existsSync(output)) {
+        if (!rawSource && (packageName == null || packageVersion == null)) {
+            throw Error('Must either specify "rawSource" or specify "packageName" and "packageVersion"');
+        } else if (!fs.existsSync(output)) {
             throw new Error(`Directory "${output}" does not exist`);
-        } else if (!isValid(packageVersion)) {
+        } else if (!rawSource && !isValid(packageVersion!)) {
             throw new Error(`Expected version to be valid SLS version but found "${packageVersion}"`);
         }
 
@@ -99,15 +109,20 @@ export class GenerateCommand implements CommandModule {
             ...JSON.parse(contents),
         };
 
-        return Promise.all([
-            writeJson(
-                path.join(output, "package.json"),
-                createPackageJson(require("../../../package.json"), packageName, packageVersion),
-            ),
-            writeJson(path.join(output, "tsconfig.json"), createTsconfigJson(nodeCompatibleModules)),
-            fs.writeFile(path.join(output, ".npmignore"), ["*.ts", "!*.d.ts", "tsconfig.json"].join("\n")),
-            generate(conjureDefinition, output),
-        ]);
+        const generatePromise = generate(conjureDefinition, output);
+        if (rawSource) {
+            return generatePromise;
+        } else {
+            return Promise.all([
+                writeJson(
+                    path.join(output, "package.json"),
+                    createPackageJson(require("../../../package.json"), packageName!, packageVersion!),
+                ),
+                writeJson(path.join(output, "tsconfig.json"), createTsconfigJson(nodeCompatibleModules)),
+                fs.writeFile(path.join(output, ".npmignore"), ["*.ts", "!*.d.ts", "tsconfig.json"].join("\n")),
+                generatePromise,
+            ]);
+        }
     };
 }
 
