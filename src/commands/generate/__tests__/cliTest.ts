@@ -65,7 +65,7 @@ describe("generate command", () => {
         expect(fs.existsSync(path.join(outDir, "index.ts"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "tsconfig.json"))).toBeFalsy();
         expect(fs.existsSync(path.join(outDir, "package.json"))).toBeFalsy();
-    })
+    });
 
     it("generates correct tsconfig", () => {
         expect(createTsconfigJson(true).compilerOptions.module).toEqual("commonjs");
