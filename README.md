@@ -1,55 +1,49 @@
 # conjure-typescript
 
-conjure-typescript is a [Conjure]() generator for TypeScript, written in 
-TypeScript. It replaces the [Java implementation](), 
-which is deprecated.
+conjure-typescript is a [Conjure](https://github.com/palantir/conjure) generator for TypeScript, written in TypeScript. 
 
 ## Overview
 
-conjure-typescript is intended to be used by back end as well as front end repositories. Back end repositories 
-should generate and publish TypeScript bindings for their APIs as part of their builds. Usage by front end repositories 
-allows for more control over the version of the generator used, and decouples API changes from generator changes but 
-at the cost of package size.
-
-The Conjure definitions that the generator takes as input are expected to be in the [intermediate 
-representation](), or IR, 
-format.
-
+conjure-typescript is tool that allows you to generate TypeScript clients for a Conjure-defined API. 
+The generated clients provide a simple Promise based interface for executing strongly typed remote procedure calls from
+the browser or server.
 
 ## Usage
-For usage by API defining services see their language specific build tools: [Java]()
 
-For usage by front end repositories add `conjure-typescript` to your project's package.json file in the 
-`devDependencies` block. This is where you will specify the version of the generator to use.
+The easiest way to use conjure-typescript is through one of the follow build tools:
+- [Gradle](https://github.com/palantir/gradle-conjure)
 
-You consume conjure APIs in the typical manner by adding them to the `dependencies` block in your package.json. 
-When installed these modules will use your specified generator to bootstrap themselves.
+Usage from a npm package is also supported by adding a devDependency on the `conjure-typescript` and invoking the exposed script:
+```json
+{
+  "devDependencies": {
+    "conjure-typescript": "^1.0.0"
+  }
+}
+```
 
-## Local Development
+Usage from any other environment is supported by downloading a standalone executable from
+[bintray](https://dl.bintray.com/palantir/releases/) at `com.palantir.conjure.typescript:conjure-typscript:<version>`
+maven coordinates.
 
-### Prerequisites: 
+The conjure-typescript cli has the following command:
+```
+conjure-typescript generate
 
-- Node 8+ (On macOS: `brew install node`)
-- Yarn package manager 1.2+ (On macOS: `brew install yarn`; note that this is not the Hadoop package)
+Generate TypeScript bindings for a conjure API
 
-### One-time setup for development
+Positionals:
+  input   The location of the apis IR
+  output  The output location of the generated code
 
-1. Clone the repo and run `yarn` to install dependencies.
-1. `yarn build` to build all packages once.
-1. Install [VSCode](https://code.visualstudio.com/), recommended extensions: [TSLint](https://github.com/Microsoft/vscode-tslint), [Auto Import](https://github.com/soates/Auto-Import)
+Options:
+  --version                Show version number                                                                           [boolean]
+  --help                   Show help                                                                                     [boolean]
+  --packageVersion         The version of the generated package                                                [string] [required]
+  --packageName            The name of the generated package                                                   [string] [required]
+  --nodeCompatibleModules  Generate node compatible javascript                                          [boolean] [default: false]
+```
 
-### Development tips
+## Contributing
 
-- Use `yarn test -- --watch` from the `packages/conjure-typescript` directory for a quick feedback loop while developing.
-- To regenerate the expected test files, run `RECREATE=true yarn test`.
-
-### Adding dependencies
-
-- To add a global dependency shared across packages in the monorepo, use `yarn add`.
-    - This includes global build tooling and common `@types` packages.
-- To add a dependency for a frontend package, update its `package.json` and run `yarn` at the root.
-
-## Publishing Releases
-
-1. Tag a release from the GitHub UI.
-
+See the [CONTRIBUTING.md](./CONTRIBUTING.md) document.
