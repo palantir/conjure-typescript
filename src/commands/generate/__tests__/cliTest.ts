@@ -60,6 +60,8 @@ describe("generate command", () => {
         await generateCommand.handler({
             _: ["generate", input, outDir],
             rawSource: true,
+            packageName: "foo",
+            packageVersion: "1.0.0",
             nodeCompatibleModules: false,
         });
         expect(fs.existsSync(path.join(outDir, "index.ts"))).toBeTruthy();
@@ -123,6 +125,15 @@ describe("generate command", () => {
         expect(fs.readFileSync(path.join(outDir, ".npmignore"), { encoding: "utf8" })).toEqual(
             "*.ts\n!*.d.ts\ntsconfig.json",
         );
+    });
+
+    it("throws if missing rawSource or packageName/Version", async () => {
+        await expect(
+            generateCommand.handler({
+                _: ["generate", input, outDir],
+                nodeCompatibleModules: false,
+            }),
+        ).rejects.toThrowError('Must either specify "rawSource" or specify "packageName" and "packageVersion"');
     });
 
     it("throws on missing directory", async () => {

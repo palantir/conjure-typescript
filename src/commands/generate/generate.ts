@@ -87,16 +87,15 @@ export class GenerateCommand implements CommandModule {
                 describe: "Generate raw source without any package metadata",
                 type: "boolean",
             })
-            .conflicts("rawSource", ["packageName", "packageVersion"])
             .demand(2);
     }
 
     public handler = async (args: IGenerateCommandArgs) => {
         const { packageName, packageVersion, nodeCompatibleModules, rawSource } = args;
         const [, input, output] = args._;
-        const packageDetailsExist = packageName != null && packageVersion;
-        if ((rawSource && packageDetailsExist) || (!rawSource && !packageDetailsExist)) {
-            throw Error('Must either specify "rawSource" or specify a packageName and packageVersion');
+        const packageDetailsExist = packageName != null && packageVersion != null;
+        if (rawSource == null && !packageDetailsExist) {
+            throw Error('Must either specify "rawSource" or specify "packageName" and "packageVersion"');
         } else if (!fs.existsSync(output)) {
             throw new Error(`Directory "${output}" does not exist`);
         } else if (!rawSource && !isValid(packageVersion!)) {
