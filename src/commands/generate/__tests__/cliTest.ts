@@ -55,6 +55,18 @@ describe("generate command", () => {
         });
     });
 
+    it("only generates raw source", async () => {
+        jest.setTimeout(10000);
+        await generateCommand.handler({
+            _: ["generate", input, outDir],
+            rawSource: true,
+            nodeCompatibleModules: false,
+        });
+        expect(fs.existsSync(path.join(outDir, "index.ts"))).toBeTruthy();
+        expect(fs.existsSync(path.join(outDir, "tsconfig.json"))).toBeFalsy();
+        expect(fs.existsSync(path.join(outDir, "package.json"))).toBeFalsy();
+    })
+
     it("generates correct tsconfig", () => {
         expect(createTsconfigJson(true).compilerOptions.module).toEqual("commonjs");
         expect(createTsconfigJson(false).compilerOptions.module).toEqual("es2015");
