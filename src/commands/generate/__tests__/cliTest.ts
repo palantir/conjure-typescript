@@ -81,6 +81,7 @@ describe("generate command", () => {
             packageName: "foo",
             packageVersion: "1.0.0",
             nodeCompatibleModules: false,
+            rawSource: false,
         });
         expect(fs.existsSync(path.join(outDir, "index.ts"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "tsconfig.json"))).toBeTruthy();
@@ -94,6 +95,7 @@ describe("generate command", () => {
             packageName: "foo",
             packageVersion: "1.0.0",
             nodeCompatibleModules: false,
+            rawSource: false,
         });
         await executeCommand("yarn install --no-lockfile", outDir);
         expect(fs.existsSync(path.join(outDir, "node_modules"))).toBeTruthy();
@@ -107,6 +109,7 @@ describe("generate command", () => {
             packageName: "foo",
             packageVersion: "1.0.0",
             nodeCompatibleModules: false,
+            rawSource: false,
         });
         await executeCommand("yarn install --no-lockfile", outDir);
         await executeCommand("yarn build", outDir);
@@ -120,6 +123,7 @@ describe("generate command", () => {
             packageName: "foo",
             packageVersion: "1.0.0",
             nodeCompatibleModules: false,
+            rawSource: false,
         });
         expect(fs.existsSync(path.join(outDir, ".npmignore"))).toBeTruthy();
         expect(fs.readFileSync(path.join(outDir, ".npmignore"), { encoding: "utf8" })).toEqual(
@@ -132,6 +136,7 @@ describe("generate command", () => {
             generateCommand.handler({
                 _: ["generate", input, outDir],
                 nodeCompatibleModules: false,
+                rawSource: false,
             }),
         ).rejects.toThrowError('Must either specify "rawSource" or specify "packageName" and "packageVersion"');
     });
@@ -143,6 +148,7 @@ describe("generate command", () => {
                 packageName: "foo",
                 packageVersion: "1.0.0",
                 nodeCompatibleModules: false,
+                rawSource: false,
             }),
         ).rejects.toThrowError('Directory "missing" does not exist');
     });
