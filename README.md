@@ -4,7 +4,7 @@ conjure-typescript is a [Conjure](https://github.com/palantir/conjure) generator
 
 ## Overview
 
-conjure-typescript is tool that allows your to generate TypeScript clients for a Conjure-defined API. 
+conjure-typescript is tool that allows you to generate TypeScript clients for a Conjure-defined API. 
 The generated clients provide a simple Promise based interface for executing strongly typed remote procedure calls from
 the browser or server.
 
