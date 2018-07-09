@@ -6,8 +6,8 @@
         "negative" : [ "{\"value\":null}", "{}", "{\"value\":\" space\"}", "{\"value\":\"space \"}", "{\"value\":\"with space\"}", "{\"value\":\"\"}", "{\"value\":\"#\"}", "{\"value\":\" \"}", "{\"value\":\"(\"}", "{\"value\":\"=\"}", "{\"value\":\"=a\"}" ]
       },
       "receiveBooleanExample" : {
-        "positive" : [ "{\"value\":false}", "{\"value\":true}", "{\"value\":null}" ],
-        "negative" : [ "{}", "{\"value\":0}", "{\"value\":\"true\"}" ]
+        "positive" : [ "{\"value\":false}", "{\"value\":true}" ],
+        "negative" : [ "{}", "{\"value\":null}", "{\"value\":0}", "{\"value\":\"true\"}" ]
       },
       "receiveDateTimeExample" : {
         "positive" : [ "{\"value\":\"2017-01-02T03:04:05Z\"}", "{\"value\":\"2017-01-02T03:04:05.000Z\"}", "{\"value\":\"2017-01-02T03:04:05.000000Z\"}", "{\"value\":\"2017-01-02T03:04:05.000000000Z\"}", "{\"value\":\"2017-01-02T04:04:05.000000000+01:00\"}", "{\"value\":\"2017-01-02T05:04:05.000000000+02:00\"}", "{\"value\":\"2017-01-02T04:04:05.000000000+01:00[Europe/Berlin]\"}" ],
@@ -38,8 +38,8 @@
         "negative" : [ "{\"value\":null}", "{}", "{\"value\":\"\"}", "{\"value\":\"80e6dd13-5f42-4e33-ad18\"}" ]
       },
       "receiveAnyExample" : {
-        "positive" : [ "{\"value\":0}", "{\"value\":\"content\"}", "{\"value\":true}" ],
-        "negative" : [ "{\"value\":null}", "{\"value\":[1,2,3]}", "{\"value\":{\"key\":3}}", "{\"value\":{\"key\":{\"inner-key\":[1,2,3]}}}" ]
+        "positive" : [ "{\"value\":0}", "{\"value\":\"content\"}", "{\"value\":true}", "{\"value\":[1,2,3]}", "{\"value\":{\"key\":3}}", "{\"value\":{\"key\":{\"inner-key\":[1,2,3]}}}" ],
+        "negative" : [ "{\"value\":null}" ]
       },
       "receiveListExample" : {
         "positive" : [ "{\"value\":[]}", "{\"value\":[\"\",\"a\",\"b\",\"c\",\"a\"]}", "{}" ],
@@ -109,10 +109,7 @@
       "headerString" : [ "\"\"", "\"hello\"" ],
       "headerUuid" : [ "\"d6ddc1ac-3c1b-11e8-b467-0ed5f89f718b\"", "\"80e6dd13-5f42-4e33-ad18-f73875540c8b\"" ],
       "headerOptionalString" : [ "null", "\"foo\"" ],
-      "headerAliasString" : [ "\"\"", "\"hello\"" ],
-      "headerEnum" : [ "\"ONE\"", "\"one\"", "\"UNKNOWN\"" ],
-      "headerObject" : [ "{\"field\": 1, \"field2\": 2}" ],
-      "headerUnion" : [ "" ]
+      "headerAliasString" : [ "\"\"", "\"hello\"" ]
     },
     "singlePathParamService" : {
       "pathParamBoolean" : [ "true", "false" ],
@@ -123,10 +120,7 @@
       "pathParamSafelong" : [ "-9007199254740991", "0", "9007199254740991" ],
       "pathParamString" : [ "\"\"", "\"hello\"" ],
       "pathParamUuid" : [ "\"d6ddc1ac-3c1b-11e8-b467-0ed5f89f718b\"", "\"80e6dd13-5f42-4e33-ad18-f73875540c8b\"" ],
-      "pathParamAliasString" : [ "\"\"", "\"hello\"" ],
-      "pathParamEnum" : [ "\"ONE\"", "\"one\"", "\"UNKNOWN\"" ],
-      "pathParamObject" : [ "{\"field\": 1, \"field2\": 2}" ],
-      "pathParamUnion" : [ "" ]
+      "pathParamAliasString" : [ "\"\"", "\"hello\"" ]
     },
     "singleQueryParamService" : {
       "queryParamBearertoken" : [ "\"bearertoken\"" ],
@@ -137,10 +131,7 @@
       "queryParamSafelong" : [ "-9007199254740991", "0", "9007199254740991" ],
       "queryParamString" : [ "\"\"", "\"hello\"" ],
       "queryParamUuid" : [ "\"d6ddc1ac-3c1b-11e8-b467-0ed5f89f718b\"", "\"80e6dd13-5f42-4e33-ad18-f73875540c8b\"" ],
-      "queryParamAliasString" : [ "\"\"", "\"hello\"" ],
-      "queryParamEnum" : [ "\"ONE\"", "\"one\"", "\"UNKNOWN\"" ],
-      "queryParamObject" : [ "{\"field\": 1, \"field2\": 2}" ],
-      "queryParamUnion" : [ "" ]
+      "queryParamAliasString" : [ "\"\"", "\"hello\"" ]
     }
   }
 }

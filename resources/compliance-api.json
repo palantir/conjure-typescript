@@ -1627,72 +1627,6 @@
         "markers" : [ ]
       } ],
       "markers" : [ ]
-    }, {
-      "endpointName" : "headerEnum",
-      "httpMethod" : "POST",
-      "httpPath" : "/headerEnum",
-      "args" : [ {
-        "argName" : "headerEnum",
-        "type" : {
-          "type" : "reference",
-          "reference" : {
-            "name" : "Enum",
-            "package" : "com.palantir.conjure.compliance"
-          }
-        },
-        "paramType" : {
-          "type" : "header",
-          "header" : {
-            "paramId" : "Some-Header"
-          }
-        },
-        "markers" : [ ]
-      } ],
-      "markers" : [ ]
-    }, {
-      "endpointName" : "headerObject",
-      "httpMethod" : "POST",
-      "httpPath" : "/headerObject",
-      "args" : [ {
-        "argName" : "headerObject",
-        "type" : {
-          "type" : "reference",
-          "reference" : {
-            "name" : "ObjectExample",
-            "package" : "com.palantir.conjure.compliance"
-          }
-        },
-        "paramType" : {
-          "type" : "header",
-          "header" : {
-            "paramId" : "Some-Header"
-          }
-        },
-        "markers" : [ ]
-      } ],
-      "markers" : [ ]
-    }, {
-      "endpointName" : "headerUnion",
-      "httpMethod" : "POST",
-      "httpPath" : "/headerUnion",
-      "args" : [ {
-        "argName" : "headerUnion",
-        "type" : {
-          "type" : "reference",
-          "reference" : {
-            "name" : "Union",
-            "package" : "com.palantir.conjure.compliance"
-          }
-        },
-        "paramType" : {
-          "type" : "header",
-          "header" : {
-            "paramId" : "Some-Header"
-          }
-        },
-        "markers" : [ ]
-      } ],
-      "markers" : [ ]
     } ]
   }, {
     "serviceName" : {
@@ -1702,8 +1636,19 @@
     "endpoints" : [ {
       "endpointName" : "pathParamBoolean",
       "httpMethod" : "POST",
-      "httpPath" : "/pathParamBoolean/{booleanParam}",
+      "httpPath" : "/pathParamBoolean/{index}/{booleanParam}",
       "args" : [ {
+        "argName" : "index",
+        "type" : {
+          "type" : "primitive",
+          "primitive" : "INTEGER"
+        },
+        "paramType" : {
+          "type" : "path",
+          "path" : { }
+        },
+        "markers" : [ ]
+      }, {
         "argName" : "booleanParam",
         "type" : {
           "type" : "primitive",
@@ -1719,8 +1664,19 @@
     }, {
       "endpointName" : "pathParamDatetime",
       "httpMethod" : "POST",
-      "httpPath" : "/pathParamDatetime/{datetimeParam}",
+      "httpPath" : "/pathParamDatetime/{index}/{datetimeParam}",
       "args" : [ {
+        "argName" : "index",
+        "type" : {
+          "type" : "primitive",
+          "primitive" : "INTEGER"
+        },
+        "paramType" : {
+          "type" : "path",
+          "path" : { }
+        },
+        "markers" : [ ]
+      }, {
         "argName" : "datetimeParam",
         "type" : {
           "type" : "primitive",
@@ -1736,8 +1692,19 @@
     }, {
       "endpointName" : "pathParamDouble",
       "httpMethod" : "POST",
-      "httpPath" : "/pathParamDouble/{doubleParam}",
+      "httpPath" : "/pathParamDouble/{index}/{doubleParam}",
       "args" : [ {
+        "argName" : "index",
+        "type" : {
+          "type" : "primitive",
+          "primitive" : "INTEGER"
+        },
+        "paramType" : {
+          "type" : "path",
+          "path" : { }
+        },
+        "markers" : [ ]
+      }, {
         "argName" : "doubleParam",
         "type" : {
           "type" : "primitive",
@@ -1753,8 +1720,19 @@
     }, {
       "endpointName" : "pathParamInteger",
       "httpMethod" : "POST",
-      "httpPath" : "/pathParamInteger/{integerParam}",
+      "httpPath" : "/pathParamInteger/{index}/{integerParam}",
       "args" : [ {
+        "argName" : "index",
+        "type" : {
+          "type" : "primitive",
+          "primitive" : "INTEGER"
+        },
+        "paramType" : {
+          "type" : "path",
+          "path" : { }
+        },
+        "markers" : [ ]
+      }, {
         "argName" : "integerParam",
         "type" : {
           "type" : "primitive",
@@ -1770,8 +1748,19 @@
     }, {
       "endpointName" : "pathParamRid",
       "httpMethod" : "POST",
-      "httpPath" : "/pathParamRid/{ridParam}",
+      "httpPath" : "/pathParamRid/{index}/{ridParam}",
       "args" : [ {
+        "argName" : "index",
+        "type" : {
+          "type" : "primitive",
+          "primitive" : "INTEGER"
+        },
+        "paramType" : {
+          "type" : "path",
+          "path" : { }
+        },
+        "markers" : [ ]
+      }, {
         "argName" : "ridParam",
         "type" : {
           "type" : "primitive",
@@ -1787,8 +1776,19 @@
     }, {
       "endpointName" : "pathParamSafelong",
       "httpMethod" : "POST",
-      "httpPath" : "/pathParamSafelong/{safelongParam}",
+      "httpPath" : "/pathParamSafelong/{index}/{safelongParam}",
       "args" : [ {
+        "argName" : "index",
+        "type" : {
+          "type" : "primitive",
+          "primitive" : "INTEGER"
+        },
+        "paramType" : {
+          "type" : "path",
+          "path" : { }
+        },
+        "markers" : [ ]
+      }, {
         "argName" : "safelongParam",
         "type" : {
           "type" : "primitive",
@@ -1804,8 +1804,19 @@
     }, {
       "endpointName" : "pathParamString",
       "httpMethod" : "POST",
-      "httpPath" : "/pathParamString/{stringParam}",
+      "httpPath" : "/pathParamString/{index}/{stringParam}",
       "args" : [ {
+        "argName" : "index",
+        "type" : {
+          "type" : "primitive",
+          "primitive" : "INTEGER"
+        },
+        "paramType" : {
+          "type" : "path",
+          "path" : { }
+        },
+        "markers" : [ ]
+      }, {
         "argName" : "stringParam",
         "type" : {
           "type" : "primitive",
@@ -1821,8 +1832,19 @@
     }, {
       "endpointName" : "pathParamUuid",
       "httpMethod" : "POST",
-      "httpPath" : "/pathParamUuid/{uuidParam}",
+      "httpPath" : "/pathParamUuid/{index}/{uuidParam}",
       "args" : [ {
+        "argName" : "index",
+        "type" : {
+          "type" : "primitive",
+          "primitive" : "INTEGER"
+        },
+        "paramType" : {
+          "type" : "path",
+          "path" : { }
+        },
+        "markers" : [ ]
+      }, {
         "argName" : "uuidParam",
         "type" : {
           "type" : "primitive",
@@ -1838,73 +1860,24 @@
     }, {
       "endpointName" : "pathParamAliasString",
       "httpMethod" : "POST",
-      "httpPath" : "/pathParamAliasString/{aliasStringParam}",
+      "httpPath" : "/pathParamAliasString/{index}/{aliasStringParam}",
       "args" : [ {
+        "argName" : "index",
+        "type" : {
+          "type" : "primitive",
+          "primitive" : "INTEGER"
+        },
+        "paramType" : {
+          "type" : "path",
+          "path" : { }
+        },
+        "markers" : [ ]
+      }, {
         "argName" : "aliasStringParam",
         "type" : {
           "type" : "reference",
           "reference" : {
             "name" : "AliasString",
-            "package" : "com.palantir.conjure.compliance"
-          }
-        },
-        "paramType" : {
-          "type" : "path",
-          "path" : { }
-        },
-        "markers" : [ ]
-      } ],
-      "markers" : [ ]
-    }, {
-      "endpointName" : "pathParamEnum",
-      "httpMethod" : "POST",
-      "httpPath" : "/pathParamEnum/{enumParam}",
-      "args" : [ {
-        "argName" : "enumParam",
-        "type" : {
-          "type" : "reference",
-          "reference" : {
-            "name" : "Enum",
-            "package" : "com.palantir.conjure.compliance"
-          }
-        },
-        "paramType" : {
-          "type" : "path",
-          "path" : { }
-        },
-        "markers" : [ ]
-      } ],
-      "markers" : [ ]
-    }, {
-      "endpointName" : "pathParamObject",
-      "httpMethod" : "POST",
-      "httpPath" : "/pathParamObject/{objectParam}",
-      "args" : [ {
-        "argName" : "objectParam",
-        "type" : {
-          "type" : "reference",
-          "reference" : {
-            "name" : "ObjectExample",
-            "package" : "com.palantir.conjure.compliance"
-          }
-        },
-        "paramType" : {
-          "type" : "path",
-          "path" : { }
-        },
-        "markers" : [ ]
-      } ],
-      "markers" : [ ]
-    }, {
-      "endpointName" : "pathParamUnion",
-      "httpMethod" : "POST",
-      "httpPath" : "/pathParamUnion/{unionParam}",
-      "args" : [ {
-        "argName" : "unionParam",
-        "type" : {
-          "type" : "reference",
-          "reference" : {
-            "name" : "Union",
             "package" : "com.palantir.conjure.compliance"
           }
         },
@@ -2083,72 +2056,6 @@
           "type" : "reference",
           "reference" : {
             "name" : "AliasString",
-            "package" : "com.palantir.conjure.compliance"
-          }
-        },
-        "paramType" : {
-          "type" : "query",
-          "query" : {
-            "paramId" : "foo"
-          }
-        },
-        "markers" : [ ]
-      } ],
-      "markers" : [ ]
-    }, {
-      "endpointName" : "queryParamEnum",
-      "httpMethod" : "POST",
-      "httpPath" : "/queryParamEnum",
-      "args" : [ {
-        "argName" : "someQuery",
-        "type" : {
-          "type" : "reference",
-          "reference" : {
-            "name" : "Enum",
-            "package" : "com.palantir.conjure.compliance"
-          }
-        },
-        "paramType" : {
-          "type" : "query",
-          "query" : {
-            "paramId" : "foo"
-          }
-        },
-        "markers" : [ ]
-      } ],
-      "markers" : [ ]
-    }, {
-      "endpointName" : "queryParamObject",
-      "httpMethod" : "POST",
-      "httpPath" : "/queryParamObject",
-      "args" : [ {
-        "argName" : "someQuery",
-        "type" : {
-          "type" : "reference",
-          "reference" : {
-            "name" : "ObjectExample",
-            "package" : "com.palantir.conjure.compliance"
-          }
-        },
-        "paramType" : {
-          "type" : "query",
-          "query" : {
-            "paramId" : "foo"
-          }
-        },
-        "markers" : [ ]
-      } ],
-      "markers" : [ ]
-    }, {
-      "endpointName" : "queryParamUnion",
-      "httpMethod" : "POST",
-      "httpPath" : "/queryParamUnion",
-      "args" : [ {
-        "argName" : "someQuery",
-        "type" : {
-          "type" : "reference",
-          "reference" : {
-            "name" : "Union",
             "package" : "com.palantir.conjure.compliance"
           }
         },
