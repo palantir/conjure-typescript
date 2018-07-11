@@ -17,7 +17,12 @@
 
 import { assert } from "chai";
 import { DefaultHttpApiBridge, isConjureError } from "conjure-client";
-import { AutoDeserializeConfirmService, AutoDeserializeService, ITestCases } from "./__generated__";
+import {
+    AutoDeserializeConfirmService,
+    AutoDeserializeService,
+    ITestCases,
+    SinglePathParamService,
+} from "./__generated__";
 // HACKHACK to load test-cases
 // tslint:disable:no-var-requires
 const testCasesFile: ITestCases = require("../../build/resources/test-cases.json");
@@ -31,20 +36,21 @@ const blacklist: { [endpointName: string]: number[] } = {
     receiveSafeLongAliasExample: [1],
 };
 
+const bridge = new DefaultHttpApiBridge({
+    baseUrl: "http://localhost:8000",
+    userAgent: {
+        productName: "conjure-typescript",
+        productVersion: "0.0.0",
+    },
+    fetch: (url: string | Request, init?: RequestInit) => {
+        if (init && init.headers) {
+            delete (init.headers as { [x: string]: string })["Fetch-User-Agent"];
+        }
+        return window.fetch(url, init);
+    },
+});
+
 describe("Auto deserialize", () => {
-    const bridge = new DefaultHttpApiBridge({
-        baseUrl: "http://localhost:8000",
-        userAgent: {
-            productName: "conjure-typescript",
-            productVersion: "0.0.0",
-        },
-        fetch: (url: string | Request, init?: RequestInit) => {
-            if (init && init.headers) {
-                delete (init.headers as { [x: string]: string })["Fetch-User-Agent"];
-            }
-            return window.fetch(url, init);
-        },
-    });
     const testService = new AutoDeserializeService(bridge);
     const confirmService = new AutoDeserializeConfirmService(bridge);
 
