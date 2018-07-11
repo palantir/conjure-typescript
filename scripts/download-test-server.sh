@@ -34,7 +34,7 @@ cp -f "$out" "$DOWNLOAD_OUTPUT"
 
 
 case $(uname -s) in
-    Linux*) TARGET=linux-x86_64-unknown-linux-gnu ;;
+    Linux*) TARGET=x86_64-unknown-linux-gnu ;;
     Darwin*) TARGET=x86_64-apple-darwin ;;
     *) echo "Unsupported OS" >&2; exit 1;;
 esac
