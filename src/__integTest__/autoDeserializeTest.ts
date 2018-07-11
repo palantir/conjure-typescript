@@ -20,7 +20,7 @@ import { DefaultHttpApiBridge, isConjureError } from "conjure-client";
 import { AutoDeserializeConfirmService, AutoDeserializeService, ITestCases } from "./__generated__";
 // HACKHACK to load test-cases
 // tslint:disable:no-var-requires
-const testCasesFile: ITestCases = require("../../resources/test-cases.json");
+const testCasesFile: ITestCases = require("../../build/resources/test-cases.json");
 
 describe("Auto deserialize", () => {
     const bridge = new DefaultHttpApiBridge({
