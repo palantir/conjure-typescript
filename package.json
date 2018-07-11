@@ -15,10 +15,11 @@
     "compile": "npm-run-all -p compile-ts compile-dist",
     "compile-dist": "webpack --config webpack.config.js",
     "compile-ts": "tsc -p ./src",
+    "downloadTestServer": "./scripts/download-test-server.sh",
     "generateSpecBindings": "./scripts/generate-test-bindings.sh",
     "lint": "tslint 'src/**/*.ts*' --project ./src/tsconfig.json",
     "lint-fix": "yarn lint -- --fix --project ./src/tsconfig.json",
-    "test": "yarn generateSpecBindings && npm-run-all test:unit test:integration",
+    "test": "yarn downloadTestServer && yarn generateSpecBindings && npm-run-all test:unit test:integration",
     "test:integration": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
     "test:unit": "jest --config ./jest.config.js --rootDir ./",
     "verify": "npm-run-all lint test"
