@@ -7,7 +7,7 @@ TEST_DIR=src/__integTest__/__generated__
 
 # Clear directory before regenerating
 if [ -e "$TEST_DIR/index.ts" ]; then
-    rm -rf "$TEST_DIR/conjure-compliance" "$TEST_DIR/index.ts"
+    rm -rf "$TEST_DIR/conjure-verification" "$TEST_DIR/index.ts"
 fi
 
 "$CONJURE_TYPESCRIPT" generate build/resources/verification-api.conjure.json "$TEST_DIR" --packageName generated --packageVersion 0.0.0
