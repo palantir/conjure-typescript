@@ -88,3 +88,25 @@ describe("Auto deserialize", () => {
         };
     }
 });
+
+describe("single path param", () => {
+    const service = new SinglePathParamService(bridge);
+
+    Object.keys(testCasesFile.client.singlePathParamService).map(endpointName => {
+        const testCases = testCasesFile.client.singlePathParamService[endpointName];
+        testCases.map((value, i) => {
+            // TODO deserialize value (as json) into type expected by method
+            it(`${endpointName}_${i}_pass`, test(endpointName, i, value));
+        });
+    });
+
+    function test(endpointName: string, index: number, value: any) {
+        return async () => {
+            try {
+                await (service as any)[endpointName](index, value);
+            } catch (e) {
+                assert.fail("error", e);
+            }
+        };
+    }
+});
