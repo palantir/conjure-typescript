@@ -32,3 +32,6 @@ test-report.xml
 *.iws
 *.iml
 out/
+
+build
+__generated__

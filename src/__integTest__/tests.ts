@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-import {assert} from "chai";
-import {DefaultHttpApiBridge, isConjureError} from "conjure-client";
+import { assert } from "chai";
+import { DefaultHttpApiBridge, isConjureError } from "conjure-client";
 import {
     AutoDeserializeConfirmService,
     AutoDeserializeService,
-    ITestCases,
+    IClientTestCases,
     SingleHeaderService,
     SinglePathParamService,
     SingleQueryParamService,
 } from "./__generated__";
 // HACKHACK to load test-cases
 // tslint:disable:no-var-requires
-const testCasesFile: ITestCases = require("../../build/resources/test-cases.json");
+const testCases: IClientTestCases = require("../../build/resources/test-cases.json").client;
 
 const blacklist: { [endpointName: string]: number[] } = {
     receiveStringAliasExample: [1],
@@ -52,68 +52,57 @@ const bridge = new DefaultHttpApiBridge({
     },
 });
 
-describe("Auto deserialize", () => {
+describe("Body serde", () => {
     const testService = new AutoDeserializeService(bridge);
     const confirmService = new AutoDeserializeConfirmService(bridge);
 
-    Object.keys(testCasesFile.client.autoDeserialize).map(endpointName => {
-        const testCases = testCasesFile.client.autoDeserialize[endpointName];
-        testCases.positive.map((_, i) => {
+    Object.keys(testCases.autoDeserialize).map(endpointName => {
+        const bodyTestCases = testCases.autoDeserialize[endpointName];
+        bodyTestCases.positive.forEach((_, i) => {
             it(`${endpointName}_${i}_pass`, automaticTest(endpointName, i, true));
         });
-        testCases.negative.map((_, i) => {
-            const index = i + testCases.positive.length;
+        bodyTestCases.negative.forEach((_, i) => {
+            const index = i + bodyTestCases.positive.length;
             it(`${endpointName}_${index}_fail`, automaticTest(endpointName, index, false));
         });
     });
 
     function automaticTest(endpointName: string, index: number, shouldPass: boolean) {
         return async () => {
-            if (endpointName in blacklist && blacklist[endpointName].indexOf(index) >= 0) {
+            if (!shouldPass || (endpointName in blacklist && blacklist[endpointName].indexOf(index) >= 0)) {
                 return;
             }
-            let response: any = null;
-            try {
-                response = await (testService as any)[endpointName](index);
-            } catch (e) {
-                if (!isConjureError(e) || shouldPass) {
-                    assert.fail();
-                }
-                assert.fail("error");
+            if (shouldPass) {
+                return confirmService.confirm(endpointName, index, await (testService as any)[endpointName](index));
             }
-            if (!shouldPass) {
-                // TODO(forozco): perform any type of validation on client side
-                // assert.fail(response, value);
-                return;
-            }
-            await confirmService.confirm(endpointName, index, response);
+            assert.throws(async () => (testService as any)[endpointName](index), Error, "Should fail");
         };
     }
 });
 
-describe("single params", () => {
-    const servicesAndTests: Array<{ service: any; tests: { [endpoint: string]: string[] } }> = [
-        { service: new SinglePathParamService(bridge) as any, tests: testCasesFile.client.singlePathParamService },
-        { service: new SingleQueryParamService(bridge) as any, tests: testCasesFile.client.singleQueryParamService },
-        { service: new SingleHeaderService(bridge) as any, tests: testCasesFile.client.singleHeaderService },
-    ];
+describe("header", () => {
+    const headerService = new SingleHeaderService(bridge);
+    Object.keys(testCases.singleHeaderService).forEach(endpointName =>
+        testCases.singleHeaderService[endpointName].map((value, i) =>
+            it(`${endpointName}_${i}_pass`, async () => (headerService as any)[endpointName](i, JSON.parse(value))),
+        ),
+    );
+});
 
-    servicesAndTests.forEach(({ service, tests }) => {
-        Object.keys(tests).map(endpointName => {
-            const testCases = tests[endpointName];
-            testCases.map((value, i) => {
-                it(`${endpointName}_${i}_pass`, test(service, endpointName, i, JSON.parse(value)));
-            });
-        });
-    });
+describe("path serde", () => {
+    const pathService = new SinglePathParamService(bridge);
+    Object.keys(testCases.singlePathParamService).forEach(endpointName =>
+        testCases.singlePathParamService[endpointName].map((value, i) =>
+            it(`${endpointName}_${i}_pass`, async () => (pathService as any)[endpointName](i, JSON.parse(value))),
+        ),
+    );
+});
 
-    function test(service: any, endpointName: string, index: number, value: any) {
-        return async () => {
-            try {
-                await service[endpointName](index, value);
-            } catch (e) {
-                assert.fail("error", e);
-            }
-        };
-    }
+describe("header", () => {
+    const queryService = new SingleQueryParamService(bridge);
+    Object.keys(testCases.singleQueryParamService).forEach(endpointName =>
+        testCases.singleQueryParamService[endpointName].map((value, i) =>
+            it(`${endpointName}_${i}_pass`, async () => (queryService as any)[endpointName](i, JSON.parse(value))),
+        ),
+    );
 });
