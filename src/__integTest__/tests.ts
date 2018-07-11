@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-import { assert } from "chai";
-import { DefaultHttpApiBridge, isConjureError } from "conjure-client";
+import {assert} from "chai";
+import {DefaultHttpApiBridge, isConjureError} from "conjure-client";
 import {
     AutoDeserializeConfirmService,
     AutoDeserializeService,
     ITestCases,
+    SingleHeaderService,
     SinglePathParamService,
+    SingleQueryParamService,
 } from "./__generated__";
 // HACKHACK to load test-cases
 // tslint:disable:no-var-requires
@@ -89,21 +91,26 @@ describe("Auto deserialize", () => {
     }
 });
 
-describe("single path param", () => {
-    const service = new SinglePathParamService(bridge);
+describe("single params", () => {
+    const servicesAndTests: Array<{ service: any; tests: { [endpoint: string]: string[] } }> = [
+        { service: new SinglePathParamService(bridge) as any, tests: testCasesFile.client.singlePathParamService },
+        { service: new SingleQueryParamService(bridge) as any, tests: testCasesFile.client.singleQueryParamService },
+        { service: new SingleHeaderService(bridge) as any, tests: testCasesFile.client.singleHeaderService },
+    ];
 
-    Object.keys(testCasesFile.client.singlePathParamService).map(endpointName => {
-        const testCases = testCasesFile.client.singlePathParamService[endpointName];
-        testCases.map((value, i) => {
-            // TODO deserialize value (as json) into type expected by method
-            it(`${endpointName}_${i}_pass`, test(endpointName, i, value));
+    servicesAndTests.forEach(({ service, tests }) => {
+        Object.keys(tests).map(endpointName => {
+            const testCases = tests[endpointName];
+            testCases.map((value, i) => {
+                it(`${endpointName}_${i}_pass`, test(service, endpointName, i, JSON.parse(value)));
+            });
         });
     });
 
-    function test(endpointName: string, index: number, value: any) {
+    function test(service: any, endpointName: string, index: number, value: any) {
         return async () => {
             try {
-                await (service as any)[endpointName](index, value);
+                await service[endpointName](index, value);
             } catch (e) {
                 assert.fail("error", e);
             }
