@@ -29,13 +29,13 @@ import {
 // tslint:disable:no-var-requires
 const testCases: IClientTestCases = require("../../build/resources/test-cases.json").client;
 
-const blacklist: { [endpointName: string]: number[] } = {
-    receiveStringAliasExample: [1],
-    receiveDoubleExample: [1, 3],
-    receiveDoubleAliasExample: [1],
-    receiveIntegerAliasExample: [0],
-    receiveBooleanAliasExample: [1],
-    receiveSafeLongAliasExample: [1],
+const blacklist: { [endpointName: string]: string[] } = {
+    receiveStringAliasExample: ['""'],
+    receiveDoubleExample: ['{"value":0.0}', '{"value":123e5}'],
+    receiveDoubleAliasExample: ["10.0"],
+    receiveIntegerAliasExample: ["0"],
+    receiveBooleanAliasExample: ["false"],
+    receiveSafeLongAliasExample: ["0"],
 };
 
 const bridge = new DefaultHttpApiBridge({
@@ -58,18 +58,18 @@ describe("Body serde", () => {
 
     Object.keys(testCases.autoDeserialize).map(endpointName => {
         const bodyTestCases = testCases.autoDeserialize[endpointName];
-        bodyTestCases.positive.forEach((_, i) => {
-            it(`${endpointName}_${i}_pass`, automaticTest(endpointName, i, true));
+        bodyTestCases.positive.forEach((value, i) => {
+            it(`${endpointName}_${i}_pass`, automaticTest(endpointName, i, value, true));
         });
-        bodyTestCases.negative.forEach((_, i) => {
+        bodyTestCases.negative.forEach((value, i) => {
             const index = i + bodyTestCases.positive.length;
-            it(`${endpointName}_${index}_fail`, automaticTest(endpointName, index, false));
+            it(`${endpointName}_${index}_fail`, automaticTest(endpointName, index, value, false));
         });
     });
 
-    function automaticTest(endpointName: string, index: number, shouldPass: boolean) {
+    function automaticTest(endpointName: string, index: number, value: string, shouldPass: boolean) {
         return async () => {
-            if (!shouldPass || (endpointName in blacklist && blacklist[endpointName].indexOf(index) >= 0)) {
+            if (!shouldPass || (endpointName in blacklist && blacklist[endpointName].indexOf(value) >= 0)) {
                 return;
             }
             if (shouldPass) {
