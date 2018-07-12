@@ -50,12 +50,6 @@ const bridge = new DefaultHttpApiBridge({
         productName: "conjure-typescript",
         productVersion: "0.0.0",
     },
-    fetch: (url: string | Request, init?: RequestInit) => {
-        if (init && init.headers) {
-            delete (init.headers as { [x: string]: string })["Fetch-User-Agent"];
-        }
-        return window.fetch(url, init);
-    },
 });
 
 describe("Body serde", () => {
