@@ -2029,11 +2029,9 @@ conjure-api@^0.4.3:
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/conjure-api/-/conjure-api-0.4.3.tgz#1c541ec939db1852745a79c9bf9d9a8cbae93ca5"
 
-conjure-client@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/conjure-client/-/conjure-client-1.0.0.tgz#b6181f29167e520ec9992efb2a8fc1b6496d811a"
-  dependencies:
-    uuidjs "^4.0.3"
+conjure-client@^1.2.0:
+  version "1.2.0"
+  resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/conjure-client/-/conjure-client-1.2.0.tgz#ef03fc810d2cbc6ef0480cf33125428bc4240e19"
 
 connect@^3.6.0:
   version "3.6.6"
@@ -8162,10 +8160,6 @@ uuid@^2.0.1:
 uuid@^3.0.1, uuid@^3.1.0:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.2.1.tgz#12c528bb9d58d0b9265d9a2f6f0fe8be17ff1f14"
-
-uuidjs@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/uuidjs/-/uuidjs-4.0.3.tgz#4b4113a98e70507643a9a55a0493ff95b1d2538d"
 
 uws@~9.14.0:
   version "9.14.0"

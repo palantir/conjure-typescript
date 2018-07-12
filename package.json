@@ -27,7 +27,7 @@
   "dependencies": {
     "commander": "^2.15.1",
     "conjure-api": "^0.4.3",
-    "conjure-client": "^1.0.0",
+    "conjure-client": "^1.2.0",
     "fs-extra": "^5.0.0",
     "lodash": "^4.17.10",
     "mkdirp": "^0.5.1",
