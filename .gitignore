@@ -22,7 +22,7 @@ yerna.log
 .awcache
 
 # Testing
-packages/*/coverage
+coverage
 test-report.xml
 .jest-cache
 
@@ -32,3 +32,6 @@ test-report.xml
 *.iws
 *.iml
 out/
+
+build
+__generated__
