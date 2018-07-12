@@ -16,7 +16,7 @@
  */
 
 import { assert } from "chai";
-import { DefaultHttpApiBridge, isConjureError } from "conjure-client";
+import { DefaultHttpApiBridge } from "conjure-client";
 import {
     AutoDeserializeConfirmService,
     AutoDeserializeService,
@@ -62,7 +62,7 @@ describe("Body serde", () => {
             const defineTest = isBlacklisted(endpointName, value) ? it.skip : it;
             defineTest(`${endpointName}_${i}_pass`, automaticTest(endpointName, i, true));
         });
-        bodyTestCases.negative.forEach((value, i) => {
+        bodyTestCases.negative.forEach((_value, i) => {
             // const defineTest = isBlacklisted(endpointName, value) ? it.skip : it;
             // temporarily switched off all the should_fail tests:
             const defineTest = it.skip;
