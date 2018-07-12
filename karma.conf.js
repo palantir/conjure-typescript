@@ -2,7 +2,7 @@ module.exports = function (config) {
     config.set({
         frameworks: ["mocha", "chai", "karma-typescript"],
         files: [
-            "src/**/*.ts",
+            "src/__integTest__/**/*.ts",
         ],
         exclude: [
             "**/__tests__/*.ts"
