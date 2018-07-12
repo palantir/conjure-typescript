@@ -33,7 +33,7 @@ describe("generate command", () => {
 
     it("generates correct packageJson", () => {
         const inputPackage: IPackageJson = {
-            dependencies: { "conjure-client": "1.0.0" },
+            dependencies: { "conjure-client": "1.2.0" },
             devDependencies: { typescript: "2.7.2" },
         };
         expect(createPackageJson(inputPackage, "foo", "1.0.0")).toEqual({
@@ -45,9 +45,9 @@ describe("generate command", () => {
             scripts: {
                 build: "tsc",
             },
-            peerDependencies: { "conjure-client": "1.0.0" },
+            peerDependencies: { "conjure-client": "1.2.0" },
             devDependencies: {
-                "conjure-client": "1.0.0",
+                "conjure-client": "1.2.0",
                 typescript: "2.7.2",
             },
             author: "Conjure",
