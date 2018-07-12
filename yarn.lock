@@ -2031,7 +2031,7 @@ conjure-api@^0.4.3:
 
 conjure-client@^1.2.0:
   version "1.2.0"
-  resolved "https://artifactory.palantir.build:443/artifactory/api/npm/all-npm/conjure-client/-/conjure-client-1.2.0.tgz#ef03fc810d2cbc6ef0480cf33125428bc4240e19"
+  resolved "https://registry.yarnpkg.com/conjure-client/-/conjure-client-1.2.0.tgz#ef03fc810d2cbc6ef0480cf33125428bc4240e19"
 
 connect@^3.6.0:
   version "3.6.6"
