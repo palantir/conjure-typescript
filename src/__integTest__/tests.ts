@@ -36,7 +36,13 @@ const blacklist: { [endpointName: string]: string[] } = {
     receiveIntegerAliasExample: ["0"],
     receiveBooleanAliasExample: ["false"],
     receiveSafeLongAliasExample: ["0"],
+    pathParamString: ['""'],
+    pathParamAliasString: ['""'],
 };
+
+function isBlacklisted(endpointName: string, jsonString: string) {
+    return endpointName in blacklist && blacklist[endpointName].indexOf(jsonString) >= 0;
+}
 
 const bridge = new DefaultHttpApiBridge({
     baseUrl: "http://localhost:8000",
@@ -59,17 +65,19 @@ describe("Body serde", () => {
     Object.keys(testCases.autoDeserialize).map(endpointName => {
         const bodyTestCases = testCases.autoDeserialize[endpointName];
         bodyTestCases.positive.forEach((value, i) => {
-            it(`${endpointName}_${i}_pass`, automaticTest(endpointName, i, value, true));
+            const defineTest = isBlacklisted(endpointName, value) ? it.skip : it;
+            defineTest(`${endpointName}_${i}_pass`, automaticTest(endpointName, i, value, true));
         });
         bodyTestCases.negative.forEach((value, i) => {
+            const defineTest = isBlacklisted(endpointName, value) ? it.skip : it;
             const index = i + bodyTestCases.positive.length;
-            it(`${endpointName}_${index}_fail`, automaticTest(endpointName, index, value, false));
+            defineTest(`${endpointName}_${index}_fail`, automaticTest(endpointName, index, value, false));
         });
     });
 
     function automaticTest(endpointName: string, index: number, value: string, shouldPass: boolean) {
         return async () => {
-            if (!shouldPass || (endpointName in blacklist && blacklist[endpointName].indexOf(value) >= 0)) {
+            if (!shouldPass || isBlacklisted(endpointName, value)) {
                 return;
             }
             if (shouldPass) {
@@ -83,29 +91,35 @@ describe("Body serde", () => {
 describe("SingleHeaderService", () => {
     const headerService = new SingleHeaderService(bridge);
     Object.keys(testCases.singleHeaderService).forEach(endpointName =>
-        testCases.singleHeaderService[endpointName].map((value, i) =>
-            it(`${endpointName}(${value}) [${i}]`, async () =>
-                (headerService as any)[endpointName](i, JSON.parse(value))),
-        ),
+        testCases.singleHeaderService[endpointName].map((value, i) => {
+            const defineTest = isBlacklisted(endpointName, value) ? it.skip : it;
+            defineTest(`${endpointName}(${value}) [${i}]`, async () =>
+                (headerService as any)[endpointName](i, JSON.parse(value)),
+            );
+        }),
     );
 });
 
 describe("SinglePathParamService", () => {
     const pathService = new SinglePathParamService(bridge);
     Object.keys(testCases.singlePathParamService).forEach(endpointName =>
-        testCases.singlePathParamService[endpointName].map((value, i) =>
-            it(`${endpointName}(${value}) [${i}]`, async () =>
-                (pathService as any)[endpointName](i, JSON.parse(value))),
-        ),
+        testCases.singlePathParamService[endpointName].map((value, i) => {
+            const defineTest = isBlacklisted(endpointName, value) ? it.skip : it;
+            defineTest(`${endpointName}(${value}) [${i}]`, async () =>
+                (pathService as any)[endpointName](i, JSON.parse(value)),
+            );
+        }),
     );
 });
 
 describe("SingleQueryParamService", () => {
     const queryService = new SingleQueryParamService(bridge);
     Object.keys(testCases.singleQueryParamService).forEach(endpointName =>
-        testCases.singleQueryParamService[endpointName].map((value, i) =>
-            it(`${endpointName}(${value}) [${i}]`, async () =>
-                (queryService as any)[endpointName](i, JSON.parse(value))),
-        ),
+        testCases.singleQueryParamService[endpointName].map((value, i) => {
+            const defineTest = isBlacklisted(endpointName, value) ? it.skip : it;
+            defineTest(`${endpointName}(${value}) [${i}]`, async () =>
+                (queryService as any)[endpointName](i, JSON.parse(value)),
+            );
+        }),
     );
 });
