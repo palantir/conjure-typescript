@@ -80,29 +80,32 @@ describe("Body serde", () => {
     }
 });
 
-describe("header", () => {
+describe("SingleHeaderService", () => {
     const headerService = new SingleHeaderService(bridge);
     Object.keys(testCases.singleHeaderService).forEach(endpointName =>
         testCases.singleHeaderService[endpointName].map((value, i) =>
-            it(`${endpointName}_${i}_pass`, async () => (headerService as any)[endpointName](i, JSON.parse(value))),
+            it(`${endpointName}(${value}) [${i}]`, async () =>
+                (headerService as any)[endpointName](i, JSON.parse(value))),
         ),
     );
 });
 
-describe("path serde", () => {
+describe("SinglePathParamService", () => {
     const pathService = new SinglePathParamService(bridge);
     Object.keys(testCases.singlePathParamService).forEach(endpointName =>
         testCases.singlePathParamService[endpointName].map((value, i) =>
-            it(`${endpointName}_${i}_pass`, async () => (pathService as any)[endpointName](i, JSON.parse(value))),
+            it(`${endpointName}(${value}) [${i}]`, async () =>
+                (pathService as any)[endpointName](i, JSON.parse(value))),
         ),
     );
 });
 
-describe("header", () => {
+describe("SingleQueryParamService", () => {
     const queryService = new SingleQueryParamService(bridge);
     Object.keys(testCases.singleQueryParamService).forEach(endpointName =>
         testCases.singleQueryParamService[endpointName].map((value, i) =>
-            it(`${endpointName}_${i}_pass`, async () => (queryService as any)[endpointName](i, JSON.parse(value))),
+            it(`${endpointName}(${value}) [${i}]`, async () =>
+                (queryService as any)[endpointName](i, JSON.parse(value))),
         ),
     );
 });
