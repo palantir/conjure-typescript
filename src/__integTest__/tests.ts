@@ -75,8 +75,9 @@ describe("Body serde", () => {
         return async () => {
             if (shouldPass) {
                 return confirmService.confirm(endpointName, index, await (testService as any)[endpointName](index));
+            } else {
+                assert.throws(async () => (testService as any)[endpointName](index), Error, "Should fail");
             }
-            assert.throws(async () => (testService as any)[endpointName](index), Error, "Should fail");
         };
     }
 });
