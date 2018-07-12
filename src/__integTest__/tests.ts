@@ -16,7 +16,7 @@
  */
 
 import { assert } from "chai";
-import { DefaultHttpApiBridge } from "conjure-client";
+import { FetchBridge } from "conjure-client";
 import {
     AutoDeserializeConfirmService,
     AutoDeserializeService,
@@ -44,10 +44,10 @@ function isBlacklisted(endpointName: string, jsonString: string) {
     return endpointName in blacklist && blacklist[endpointName].indexOf(jsonString) >= 0;
 }
 
-const bridge = new DefaultHttpApiBridge({
+const bridge = new FetchBridge({
     baseUrl: "http://localhost:8000",
     userAgent: {
-        productName: "conjure-typescript",
+        productName: "conjure-typescript-client",
         productVersion: "0.0.0",
     },
 });

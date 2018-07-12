@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 CONJURE_TYPESCRIPT=bin/conjure-typescript
 TEST_DIR=src/__integTest__/__generated__

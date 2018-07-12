@@ -20,7 +20,7 @@
     "lint": "tslint 'src/**/*.ts*' --project ./src/tsconfig.json",
     "lint-fix": "yarn lint -- --fix --project ./src/tsconfig.json",
     "test": "yarn downloadTestServer && yarn generateSpecBindings && npm-run-all test:unit test:integration",
-    "test:integration": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
+    "test:integration": "./scripts/run-integration-tests.sh",
     "test:unit": "jest --config ./jest.config.js --rootDir ./",
     "verify": "npm-run-all lint test"
   },
