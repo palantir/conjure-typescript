@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/node:8.11.1-browsers
-      - image: docker.io/palantirtechnologies/conjure-verification-server:0.1.1-3-g5b3778f
+      - image: docker.io/palantirtechnologies/conjure-verification-server:0.1.1-4-g2e40ef9
     steps:
       - checkout
       - restore_cache:
