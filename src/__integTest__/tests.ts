@@ -60,18 +60,18 @@ describe("Body serde", () => {
         const bodyTestCases = testCases.autoDeserialize[endpointName];
         bodyTestCases.positive.forEach((value, i) => {
             const defineTest = isBlacklisted(endpointName, value) ? it.skip : it;
-            defineTest(`${endpointName}_${i}_pass`, automaticTest(endpointName, i, value, true));
+            defineTest(`${endpointName}_${i}_pass`, automaticTest(endpointName, i, true));
         });
         bodyTestCases.negative.forEach((value, i) => {
             // const defineTest = isBlacklisted(endpointName, value) ? it.skip : it;
             // temporarily switched off all the should_fail tests:
             const defineTest = it.skip;
             const index = i + bodyTestCases.positive.length;
-            defineTest(`${endpointName}_${index}_fail`, automaticTest(endpointName, index, value, false));
+            defineTest(`${endpointName}_${index}_fail`, automaticTest(endpointName, index, false));
         });
     });
 
-    function automaticTest(endpointName: string, index: number, _value: string, shouldPass: boolean) {
+    function automaticTest(endpointName: string, index: number, shouldPass: boolean) {
         return async () => {
             if (shouldPass) {
                 return confirmService.confirm(endpointName, index, await (testService as any)[endpointName](index));
