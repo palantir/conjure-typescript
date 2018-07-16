@@ -40,7 +40,6 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
             case PrimitiveType.BEARERTOKEN:
                 return "string";
             case PrimitiveType.DOUBLE:
-                return "number";
             case PrimitiveType.INTEGER:
             case PrimitiveType.SAFELONG:
                 return "number";
