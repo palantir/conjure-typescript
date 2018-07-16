@@ -1,5 +1,5 @@
 export interface ILittle_Double {
-    'double': number | "NaN";
+    'double': number;
     'type': "double";
 }
 
@@ -7,7 +7,7 @@ function isDouble(obj: ILittle): obj is ILittle_Double {
     return (obj.type === "double");
 }
 
-function double(obj: number | "NaN"): ILittle_Double {
+function double(obj: number): ILittle_Double {
     return {
         double: obj,
         type: "double",
@@ -17,7 +17,7 @@ function double(obj: number | "NaN"): ILittle_Double {
 export type ILittle = ILittle_Double;
 
 export interface ILittleVisitor<T> {
-    'double': (obj: number | "NaN") => T;
+    'double': (obj: number) => T;
     'unknown': (obj: ILittle) => T;
 }
 
