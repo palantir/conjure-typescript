@@ -56,7 +56,7 @@ describe("TsTypeVisitor", () => {
         expect(visitor.primitive(PrimitiveType.STRING)).toEqual("string");
         expect(visitor.primitive(PrimitiveType.DATETIME)).toEqual("string");
         expect(visitor.primitive(PrimitiveType.INTEGER)).toEqual("number");
-        expect(visitor.primitive(PrimitiveType.DOUBLE)).toEqual("number");
+        expect(visitor.primitive(PrimitiveType.DOUBLE)).toEqual('number | "NaN"');
         expect(visitor.primitive(PrimitiveType.SAFELONG)).toEqual("number");
         expect(visitor.primitive(PrimitiveType.BINARY)).toEqual("any");
         expect(visitor.primitive(PrimitiveType.ANY)).toEqual("any");
