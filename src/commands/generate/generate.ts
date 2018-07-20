@@ -98,7 +98,10 @@ export class GenerateCommand implements CommandModule {
         } else if (!fs.existsSync(output)) {
             throw new Error(`Directory "${output}" does not exist`);
         } else if (!rawSource && !isValid(packageVersion!)) {
-            throw new Error(`Expected version to be valid SLS version but found "${packageVersion}"`);
+            throw new Error(
+                `Expected version to be valid SLS version but found "${packageVersion}. ` +
+                    "Please see https://github.com/palantir/sls-version-js for more details on SLS version.",
+            );
         }
 
         const contents = fs.readFileSync(input, "utf8");
