@@ -61,7 +61,7 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
         if (IType.isReference(obj.keyType)) {
             const keyTypeDefinition = this.knownTypes.get(createHashableTypeName(obj.keyType.reference));
             if (keyTypeDefinition != null && ITypeDefinition.isEnum(keyTypeDefinition)) {
-                return `{ [key in ${obj.keyType.reference.name}]: ${valueTsType} }`;
+                return `{ [key in ${obj.keyType.reference.name}]?: ${valueTsType} }`;
             }
         }
         return `{ [key: ${keyTsType}]: ${valueTsType} }`;
