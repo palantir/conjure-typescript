@@ -2025,9 +2025,9 @@ concat-stream@^1.4.10, concat-stream@^1.5.0:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
-conjure-api@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/conjure-api/-/conjure-api-4.0.3.tgz#aa1a17e2a7d65bb9c115c03eea1d3b749e164ba6"
+conjure-api@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/conjure-api/-/conjure-api-4.0.4.tgz#93cb90c4427f90672d557c29c59479ef12db566e"
 
 conjure-client@^1.2.0:
   version "1.2.0"
