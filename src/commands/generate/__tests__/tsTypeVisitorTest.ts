@@ -105,7 +105,7 @@ describe("TsTypeVisitor", () => {
 
     it("returns map type with enum keys", () => {
         const tsType = visitor.map({ keyType: enumReference, valueType: objectReference });
-        expect(tsType).toEqual(`{ [key in ${enumName.name}]: IObject }`);
+        expect(tsType).toEqual(`{ [key in ${enumName.name}]?: IObject }`);
     });
 
     it("follows primitive external fallback", () => {
