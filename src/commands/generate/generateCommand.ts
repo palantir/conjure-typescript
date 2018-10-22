@@ -201,7 +201,7 @@ export async function resolveProductDependencies(
         if (
             SlsVersionMatcher.safeValueOf(productDependency["maximum-version"]) == null ||
             !isValid(productDependency["minimum-version"]) ||
-            isValid(productDependency["recommended-version"])
+            !isValid(productDependency["recommended-version"])
         ) {
             throw new Error("Encountered invalid product dependency");
         }
