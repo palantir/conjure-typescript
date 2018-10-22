@@ -18,8 +18,28 @@
 import * as fs from "fs-extra";
 
 export interface IPackageJson {
-    dependencies: { [dependency: string]: string };
-    devDependencies: { [dependency: string]: string };
+    author?: string;
+    dependencies: { [name: string]: string };
+    description?: string;
+    devDependencies: { [name: string]: string };
+    license?: string;
+    main?: string;
+    name: string;
+    peerDependencies?: { [name: string]: string };
+    private?: boolean;
+    scripts: { [name: string]: string };
+    sls?: {
+        dependencies?: {
+            [key: string]: {
+                maxVersion?: string;
+                minVersion?: string;
+            };
+        };
+    };
+    sideEffects?: boolean;
+    types?: string;
+    typings?: string;
+    version: string;
 }
 
 export async function writeJson(location: string, blob: object) {
