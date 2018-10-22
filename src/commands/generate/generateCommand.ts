@@ -18,10 +18,9 @@
 import { IConjureDefinition } from "conjure-api";
 import * as fs from "fs-extra";
 import * as path from "path";
-import { isValid } from "sls-version";
+import { isValid, SlsVersionMatcher } from "sls-version";
 import { Argv, CommandModule } from "yargs";
-import { IPackageJson, IProductDependency, writeJson } from "../../utils";
-import { ISlsManifestDependency } from "../../utils/slslDependencies";
+import { IPackageJson, IProductDependency, ISlsManifestDependency, writeJson } from "../../utils";
 import { generate } from "./generator";
 
 export interface IGenerateCommandArgs {
@@ -199,6 +198,13 @@ export async function resolveProductDependencies(
     const dependencies: { [coordinate: string]: IProductDependency } = {};
     resolvedProductDependencies.forEach(productDependency => {
         const coordinate = `${productDependency["product-group"]}:${productDependency["product-name"]}`;
+        if (
+            SlsVersionMatcher.safeValueOf(productDependency["maximum-version"]) == null ||
+            !isValid(productDependency["minimum-version"]) ||
+            isValid(productDependency["recommended-version"])
+        ) {
+            throw new Error("Encountered invalid product dependency");
+        }
         dependencies[coordinate] = {
             minVersion: productDependency["minimum-version"],
             recommendedVersion: productDependency["recommended-version"],

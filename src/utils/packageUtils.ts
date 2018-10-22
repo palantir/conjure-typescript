@@ -16,6 +16,7 @@
  */
 
 import * as fs from "fs-extra";
+import { IProductDependency } from "./slslDependencies";
 
 export interface IPackageJson {
     author?: string;
@@ -30,10 +31,7 @@ export interface IPackageJson {
     scripts: { [name: string]: string };
     sls?: {
         dependencies?: {
-            [key: string]: {
-                maxVersion?: string;
-                minVersion?: string;
-            };
+            [key: string]: IProductDependency;
         };
     };
     sideEffects?: boolean;

@@ -76,9 +76,9 @@ describe("generate command", () => {
                 sls: {
                     dependencies: {
                         "com.palantir.conjure:conjure": {
-                            maxVersion: "2.x.x",
                             minVersion: "1.0.0",
                             recommendedVersion: "1.2.0",
+                            maxVersion: "2.x.x",
                         },
                     },
                 },
