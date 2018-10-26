@@ -36,6 +36,7 @@ const blacklist: { [endpointName: string]: string[] } = {
     receiveIntegerAliasExample: ["0"],
     receiveBooleanAliasExample: ["false"],
     receiveSafeLongAliasExample: ["0"],
+    receiveRawOptional: ["null"],
     pathParamString: ['""'],
     pathParamAliasString: ['""'],
 };
@@ -52,7 +53,7 @@ const bridge = new FetchBridge({
     },
 });
 
-describe("AutodeserializeServie", () => {
+describe("AutoDeserializeService", () => {
     const testService = new AutoDeserializeService(bridge);
     const confirmService = new AutoDeserializeConfirmService(bridge);
 
