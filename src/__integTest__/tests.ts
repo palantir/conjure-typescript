@@ -36,7 +36,7 @@ const blacklist: { [endpointName: string]: string[] } = {
     receiveIntegerAliasExample: ["0"],
     receiveBooleanAliasExample: ["false"],
     receiveSafeLongAliasExample: ["0"],
-    receiveRawOptional: ["null"],
+    receiveRawOptionalExample: ["null"],
     pathParamString: ['""'],
     pathParamAliasString: ['""'],
 };
