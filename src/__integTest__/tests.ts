@@ -27,7 +27,7 @@ import {
 } from "./__generated__";
 // HACKHACK to load test-cases
 // tslint:disable:no-var-requires
-const testCases: IClientTestCases = require("../../build/resources/test-cases.json").client;
+const testCases: IClientTestCases = require("../../build/resources/verification-server-test-cases.json").client;
 
 const blacklist: { [endpointName: string]: string[] } = {
     receiveStringAliasExample: ['""'],
@@ -52,7 +52,7 @@ const bridge = new FetchBridge({
     },
 });
 
-describe("Body serde", () => {
+describe("AutodeserializeServie", () => {
     const testService = new AutoDeserializeService(bridge);
     const confirmService = new AutoDeserializeConfirmService(bridge);
 

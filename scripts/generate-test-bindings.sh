@@ -10,7 +10,4 @@ if [ -e "$TEST_DIR/index.ts" ]; then
     rm -rf "$TEST_DIR/conjure-verification" "$TEST_DIR/index.ts"
 fi
 
-"$CONJURE_TYPESCRIPT" generate build/resources/verification-api.conjure.json "$TEST_DIR" --packageName generated --packageVersion 0.0.0
-
-# Clean up package cruft
-rm ${TEST_DIR}/*.json "$TEST_DIR/.npmignore"
+"$CONJURE_TYPESCRIPT" generate build/resources/verification-server-api.conjure.json "$TEST_DIR" --rawSource
