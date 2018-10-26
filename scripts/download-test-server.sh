@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-VERSION=0.12.1
+VERSION="$(grep "^com.palantir.conjure.verification:*" < versions.props | tail -1 | sed 's/^com.palantir.conjure.verification:\* = \(.*\)$/\1/')"
 TEST_CASES="verification-server-test-cases"
 API="verification-server-api"
 SERVER="verification-server"
