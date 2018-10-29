@@ -93,20 +93,22 @@ We also consider the command line interface and feature flags to be public API.
 
 ## Example Client interfaces
 
-Example service interface: [EteService](./conjure-typescript-core/src/integrationInput/typescript/com/palantir/product/EteService.typescript)
+Example service interface: [PrimitiveService](./src/commands/generate/__tests__/resources/services/primitiveService.ts)
 
 ```typescript
-export interface IEteService {
-    string(): Promise<string>;
+export interface IPrimitiveService {
+    getPrimitive(): Promise<number>;
 }
 
-export class EteService implements IEteService {
-    public string(): Promise<string> {
-        this.bridge.callEndpoint<string>({
-            TODO(forozco): populate when generated
-            //...
-        })
-        // ..
+export class PrimitiveService {
+    public getPrimitive(): Promise<number> {
+        return this.bridge.callEndpoint<number>({
+            endpointName: "getPrimitive",
+            endpointPath: "/getPrimitive",
+            method: "GET",
+            requestMediaType: MediaType.APPLICATION_JSON,
+            responseMediaType: MediaType.APPLICATION_JSON,
+        });
     }
 }
 ```
