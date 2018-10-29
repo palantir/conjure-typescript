@@ -43,7 +43,7 @@ We also consider the command line interface and feature flags to be public API.
 
 ## Example generated objects
 
-- **Conjure object: [ManyFieldExample](src/commands/generate/__tests__/resources/types/manyFieldExample.ts)**
+- **Conjure object: [ManyFieldExample](./src/commands/generate/__tests__/resources/types/manyFieldExample.ts)**
 
   Objects can easily be instantiated:
 
@@ -56,22 +56,22 @@ We also consider the command line interface and feature flags to be public API.
   }
     ```
 
-- **Conjure union: [UnionTypeExample](./conjure-typescript-core/src/integrationInput/typescript/com/palantir/product/UnionTypeExample.typescript)**
+- **Conjure union: [UnionTypeExample](./src/commands/generate/__tests__/resources/types/unionTypeExample.ts)**
 
     Union types can be one of a few variants. To interact with a union value, users should use the `.accept` method and define a Visitor that handles each of the possible variants, including the possibility of an unknown variant.
 
     ```typescript
-    const output = UnioneTypeExampleVisistor.visit(obj, {
+    const output = IUnionTypeExample.visit(obj, {
 
-        visitStringExample: (value: string) => {
+        string: (value: string) => {
             // your logic here!
         },
 
-        visitSet: (value: string[]) => {},
+        set: (value: string[]) => {},
 
         // ...
 
-        visitUnknown(unknownType: string) {}
+        unknown: (unknownType: IUnionTypeExample) => {}
 
     });
     ```

@@ -288,6 +288,21 @@ describe("typeGenerator", () => {
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/primitiveUnion.ts");
     });
 
+    it("emits complex union", async () => {
+        await generateUnion(
+            {
+                typeName: { name: "UnionTypeExample", package: "com.palantir.types" },
+                union: [
+                    { fieldName: "string", type: IType.primitive(PrimitiveType.STRING) },
+                    { fieldName: "set", type: IType.set({ itemType: IType.primitive(PrimitiveType.STRING) }) },
+                ],
+            },
+            new Map(),
+            simpleAst,
+        );
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/unionTypeExample.ts");
+    });
+
     it("emits unions with docs", async () => {
         await generateUnion(
             {
