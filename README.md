@@ -43,7 +43,7 @@ We also consider the command line interface and feature flags to be public API.
 
 ## Example generated objects
 
-- **Conjure object: [ManyFieldExample](./conjure-typescript-core/src/integrationInput/typescript/com/palantir/product/ManyFieldExample.typescript)**
+- **Conjure object: [ManyFieldExample](src/commands/generate/__tests__/resources/types/manyFieldExample.ts)**
 
   Objects can easily be instantiated:
 
