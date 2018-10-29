@@ -73,15 +73,15 @@ export class GenerateCommand implements CommandModule {
 
     public command = "generate";
 
-    public describe = "Generate TypeScript bindings for a conjure api";
+    public describe = "Generate TypeScript bindings for a Conjure API";
 
     public builder(args: Argv) {
         return args
             .positional("input", {
-                describe: "The location of the apis IR",
+                describe: "The location of the API IR",
             })
             .positional("output", {
-                describe: "The output location of the generated code",
+                describe: "The output directory for the generated code",
             })
             .option("packageVersion", {
                 default: undefined,

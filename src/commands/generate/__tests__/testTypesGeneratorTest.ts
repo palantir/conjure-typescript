@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { IType, ITypeDefinition, ITypeName } from "conjure-api";
+import { IType, ITypeDefinition, ITypeName, PrimitiveType } from "conjure-api";
 import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";
@@ -60,6 +60,26 @@ describe("testTypesGenerator", () => {
     beforeEach(() => {
         outDir = directory();
         simpleAst = new SimpleAst(outDir);
+    });
+
+    it("generate type with many fields", async () => {
+        await generateType(
+            ITypeDefinition.object({
+                typeName: { package: "com.palantir.types", name: "ManyFieldExample" },
+                fields: [
+                    { fieldName: "string", type: IType.primitive(PrimitiveType.STRING) },
+                    { fieldName: "integer", type: IType.primitive(PrimitiveType.INTEGER) },
+                    {
+                        fieldName: "optionalItem",
+                        type: IType.optional({ itemType: IType.primitive(PrimitiveType.STRING) }),
+                    },
+                    { fieldName: "items", type: IType.list({ itemType: IType.primitive(PrimitiveType.STRING) }) },
+                ],
+            }),
+            new Map(),
+            simpleAst,
+        );
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/manyFieldExample.ts");
     });
 
     it("generates types local object", async () => {

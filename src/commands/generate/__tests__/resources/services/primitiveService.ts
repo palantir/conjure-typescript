@@ -1,18 +1,18 @@
 import { IHttpApiBridge, MediaType } from "conjure-client";
 
 export interface IPrimitiveService {
-    foo(): Promise<number>;
+    getPrimitive(): Promise<number>;
 }
 
 export class PrimitiveService {
     constructor(private bridge: IHttpApiBridge) {
     }
 
-    public foo(): Promise<number> {
+    public getPrimitive(): Promise<number> {
         return this.bridge.callEndpoint<number>({
             data: undefined,
-            endpointName: "foo",
-            endpointPath: "/foo",
+            endpointName: "getPrimitive",
+            endpointPath: "/getPrimitive",
             headers: {
             },
             method: "GET",
