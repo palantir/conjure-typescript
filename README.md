@@ -45,7 +45,7 @@ We also consider the command line interface and feature flags to be public API.
 
 - **Conjure object: [ManyFieldExample](./conjure-typescript-core/src/integrationInput/typescript/com/palantir/product/ManyFieldExample.typescript)**
 
-  Objects can only be instantiated using the builder pattern:
+  Objects can easily be instantiated:
 
     ```typescript
     const example: ManyFieldExample = {
@@ -112,7 +112,8 @@ export class EteService implements IEteService {
 
 ### Constructing clients
 
-Use [conjure-typescript-client](https://github.com/palantir/conjure-typescript-client) which configures the browser's [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) with sensible defaults:
+Use [conjure-typescript-client](https://github.com/palantir/conjure-typescript-client) which configures the browser's
+[Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) with sensible defaults:
 
 ```typescript
 import { DefaultHttpApiBridge } from "conjure-client";
