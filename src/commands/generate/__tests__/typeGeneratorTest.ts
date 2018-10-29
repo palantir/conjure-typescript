@@ -60,13 +60,13 @@ describe("typeGenerator", () => {
     it("emits enums", async () => {
         await generateEnum(
             {
-                typeName: { name: "Enum", package: "com.palantir.types" },
-                values: [{ value: "FOO" }, { value: "BAR" }],
+                typeName: { name: "EnumExample", package: "com.palantir.types" },
+                values: [{ value: "ONE" }, { value: "TWO" }],
             },
             simpleAst,
         );
 
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/enum.ts");
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/enumExample.ts");
     });
 
     it("emits enums with docs", async () => {

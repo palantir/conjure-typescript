@@ -78,7 +78,7 @@ We also consider the command line interface and feature flags to be public API.
 
     Visitors may seem clunky in TypeScript, but they have the upside of compile-time assurance that you've handled all the possible variants.  If you upgrade an API dependency and the API author added a new variant, the TypeScript compiler will force you to explicitly deal with this new variant.  We intentionally avoid `switch` statements.
 
-- **Conjure enum: [EnumExample](./conjure-typescript-core/src/integrationInput/typescript/com/palantir/product/EnumExample.typescript)**
+- **Conjure enum: [EnumExample](./src/commands/generate/__tests__/resources/types/enumExample.ts)**
     conjure-typescript leverages TypeScript great out of the box support for [string Enums](https://www.typescriptlang.org/docs/handbook/enums.html#string-enums).
 
   ```typescript
@@ -86,7 +86,7 @@ We also consider the command line interface and feature flags to be public API.
   console.log(one); // "ONE"
   ```
 
-- **Conjure alias: [StringAliasExample](./conjure-typescript-core/src/integrationInput/typescript/com/palantir/product/StringAliasExample.typescript)**
+- **Conjure alias**
 
   TypeScript uses structural (duck-typing) so aliases are currently elided.
 
