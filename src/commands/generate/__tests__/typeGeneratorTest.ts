@@ -60,13 +60,13 @@ describe("typeGenerator", () => {
     it("emits enums", async () => {
         await generateEnum(
             {
-                typeName: { name: "Enum", package: "com.palantir.types" },
-                values: [{ value: "FOO" }, { value: "BAR" }],
+                typeName: { name: "EnumExample", package: "com.palantir.types" },
+                values: [{ value: "ONE" }, { value: "TWO" }],
             },
             simpleAst,
         );
 
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/enum.ts");
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/enumExample.ts");
     });
 
     it("emits enums with docs", async () => {
@@ -286,6 +286,21 @@ describe("typeGenerator", () => {
             simpleAst,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/primitiveUnion.ts");
+    });
+
+    it("emits complex union", async () => {
+        await generateUnion(
+            {
+                typeName: { name: "UnionTypeExample", package: "com.palantir.types" },
+                union: [
+                    { fieldName: "string", type: IType.primitive(PrimitiveType.STRING) },
+                    { fieldName: "set", type: IType.set({ itemType: IType.primitive(PrimitiveType.STRING) }) },
+                ],
+            },
+            new Map(),
+            simpleAst,
+        );
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/unionTypeExample.ts");
     });
 
     it("emits unions with docs", async () => {

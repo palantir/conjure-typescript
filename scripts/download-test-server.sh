@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-VERSION=0.3.1
-TEST_CASES="test-cases"
-API="verification-api"
+VERSION="$(grep "^com.palantir.conjure.verification:*" < versions.props | tail -1 | sed 's/^com.palantir.conjure.verification:\* = \(.*\)$/\1/')"
+TEST_CASES="verification-server-test-cases"
+API="verification-server-api"
 SERVER="verification-server"
 
 DOWNLOADS_DIR=build/downloads
@@ -17,7 +17,7 @@ function download() {
   basename=$(basename "$1")
   target="$DOWNLOADS_DIR"/"$basename"
   if [[ ! -f "$target" ]]; then
-    curl -L "$1" -o "$target"
+    curl -L --fail "$1" -o "$target"
   fi
   echo "$target"
 }

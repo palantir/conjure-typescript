@@ -46,9 +46,9 @@ describe("serviceGenerator", () => {
                 endpoints: [
                     {
                         args: [],
-                        endpointName: "foo",
+                        endpointName: "getPrimitive",
                         httpMethod: HttpMethod.GET,
-                        httpPath: "/foo",
+                        httpPath: "/getPrimitive",
                         markers: [],
                         returns: { primitive: PrimitiveType.INTEGER, type: "primitive" },
                     },

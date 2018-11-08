@@ -16,3 +16,4 @@
  */
 
 export * from "./packageUtils";
+export * from "./slslDependencies";
