@@ -56,7 +56,6 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
         }
     };
     public map = (obj: IMapType): string => {
-        const keyTsType = IType.visit(obj.keyType, this);
         const valueTsType = IType.visit(obj.valueType, this);
         if (IType.isReference(obj.keyType)) {
             const keyTypeDefinition = this.knownTypes.get(createHashableTypeName(obj.keyType.reference));
@@ -64,7 +63,7 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
                 return `{ [key in ${obj.keyType.reference.name}]?: ${valueTsType} }`;
             }
         }
-        return `{ [key: ${keyTsType}]: ${valueTsType} }`;
+        return `{ [key: string]: ${valueTsType} }`;
     };
     public list = (obj: IListType): string => {
         const itemType = IType.visit(obj.itemType, this);
