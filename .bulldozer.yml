@@ -11,4 +11,4 @@ merge:
   delete_after_merge: true
 update:
   whitelist:
-    labels: ["Update Me"]
+    labels: ["update me"]
