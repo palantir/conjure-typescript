@@ -1,44 +1,14 @@
 version: 1
-
-# "merge" defines how to merge PRs into the target
 merge:
-
-  # "whitelist" defines how to select PRs to evaluate and merge
   whitelist:
-
-    # "labels" is a list of labels that must be matched to whitelist a PR for merging
     labels: ["merge when ready"]
-
-    # "comment_substrings" matches on substrings in comments
-    comment_substrings: ["==MERGE_WHEN_READY=="]
-
-  # "blacklist" defines how to exclude PRs from evaluation and merging
   blacklist:
-
-    # similar as above, "labels" defines a list of labels. In this case, matched labels cause exclusion.
     labels: ["do not merge"]
-
-    # "comment_substrings" matches substrings in comments. In this case, matched substrings cause exclusion.
-    comment_substrings: ["==DO_NOT_MERGE=="]
-
-  # "method" defines how to merge in changes. Available options are "merge", "rebase" and "squash"
   method: squash
-
-  # "options" is used in conjunction with "method", and defines additional merging options for each type.
   options:
-
-    # "squash" is used when the "method" above is set to "squash"
     squash:
-
-      # "body" is a an option for handling the merge body. available options are "summarize_commits", "pull_request_body", and "empty_body"
-      body: summarize_commits
-
-  # "delete_after_merge" is a bool that will cause merged PRs to be deleted once they are successfully merged
+      body: pull_request_body
   delete_after_merge: true
-
-# "update" defines how to keep open PRs up to date
 update:
-
-  # The "whitelist" and "blacklist" options here operate the same as described for the `merge` block.
   whitelist:
-    labels: ["WIP", "Update Me"]
+    labels: ["Update Me"]
