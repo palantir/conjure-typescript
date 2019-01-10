@@ -24,7 +24,7 @@ import {
     SingleHeaderService,
     SinglePathParamService,
     SingleQueryParamService,
-} from "./__generated__";
+} from "./__generated__/conjure-verification-server";
 // HACKHACK to load test-cases
 // tslint:disable:no-var-requires
 const testCases: IClientTestCases = require("../../build/resources/verification-server-test-cases.json").client;
