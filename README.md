@@ -1,5 +1,5 @@
 
-# conjure-typescript ![Bintray](https://img.shields.io/bintray/v/palantir/releases/conjure-typescript.svg) [![License](https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg)](https://opensource.org/licenses/Apache-2.0)
+# conjure-typescript ![NPM](https://img.shields.io/npm/v/conjure-typescript.svg?label=conjure-typescript)](https://www.npmjs.com/package/@blueprintjs/core) [![License](https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
 _CLI to generate TypeScript Interfaces and clients from [Conjure API definitions](https://github.com/palantir/conjure)._
