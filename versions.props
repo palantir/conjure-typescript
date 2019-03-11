@@ -1,2 +1,2 @@
 # User versions.props so that excavator can automatically keep our version up to date
-com.palantir.conjure.verification:* = 0.16.6
+com.palantir.conjure.verification:* = 0.16.7
