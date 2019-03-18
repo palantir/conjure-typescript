@@ -29,6 +29,7 @@ import { SimpleAst } from "./simpleAst";
 import { TsTypeVisitor } from "./tsTypeVisitor";
 import { doubleQuote, isValidFunctionName, singleQuote } from "./utils";
 
+
 export function generateType(
     definition: ITypeDefinition,
     knownTypes: Map<string, ITypeDefinition>,
@@ -58,15 +59,31 @@ export function generateType(
 export async function generateEnum(definition: IEnumDefinition, simpleAst: SimpleAst): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
 
-    sourceFile.addEnum({
-        docs: definition.docs != null ? [{ description: definition.docs }] : undefined,
+    const enumType = sourceFile.addTypeAlias({
         isExported: true,
-        members: definition.values.map(({ docs, value }) => ({
-            docs: docs != null ? [{ description: docs }] : undefined,
-            name: value,
-            value,
-        })),
         name: definition.typeName.name,
+        type: definition.values.map(({ value }) => doubleQuote(value)).join(" | "),
+    });
+    if (definition.docs != null) {
+        enumType.addJsDoc(definition.docs);
+    }
+
+    const variableStatement = sourceFile.addVariableStatement({
+        declarationKind: VariableDeclarationKind.Const,
+        declarations: [
+            {
+                initializer: "{}",
+                name: definition.typeName.name,
+            },
+        ],
+        isExported: true,
+    });
+    const objectLiteralExpr = variableStatement.getDeclarations()[0].getInitializer() as ObjectLiteralExpression;
+    definition.values.forEach(value => {
+        objectLiteralExpr.addPropertyAssignment({
+            initializer: `${doubleQuote(value.value)} as ${doubleQuote(value.value)}`,
+            name: value.value,
+        });
     });
 
     sourceFile.formatText();
