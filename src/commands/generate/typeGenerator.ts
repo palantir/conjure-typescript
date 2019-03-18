@@ -29,7 +29,6 @@ import { SimpleAst } from "./simpleAst";
 import { TsTypeVisitor } from "./tsTypeVisitor";
 import { doubleQuote, isValidFunctionName, singleQuote } from "./utils";
 
-
 export function generateType(
     definition: ITypeDefinition,
     knownTypes: Map<string, ITypeDefinition>,
