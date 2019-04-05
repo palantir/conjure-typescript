@@ -129,7 +129,7 @@ export class PrimitiveService {
 
 ### Constructing clients
 
-Use [conjure-typescript-client](https://github.com/palantir/conjure-typescript-client) which configures the browser's
+Use clients from [conjure-typescript-runtime](https://github.com/palantir/conjure-typescript-runtime) which configures the browser's
 [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) with sensible defaults:
 
 ```typescript
