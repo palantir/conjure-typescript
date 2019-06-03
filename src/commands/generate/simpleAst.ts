@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-import * as path from "path";
-
 import { ITypeName } from "conjure-api";
+import * as path from "path";
 import Ast, { Options, SourceFile } from "ts-simple-ast";
 import { dir, module } from "./imports";
 
@@ -41,7 +40,7 @@ export class SimpleAst {
     }
 
     public createSourceFile(currType: ITypeName): SourceFile {
-        return this.ast.createSourceFile(path.join(this.outDir, dir(currType), module(currType) + TS_EXTENSION));
+        return this.ast.createSourceFile(path.join(this.outDir, typeNameToFilePath(currType)));
     }
 
     public async generateIndexFiles(): Promise<void[]> {
@@ -76,4 +75,8 @@ export class SimpleAst {
 
         return Promise.all(indexPromises);
     }
+}
+
+export function typeNameToFilePath(type: ITypeName): string {
+    return path.join(dir(type), module(type) + TS_EXTENSION);
 }
