@@ -54,19 +54,38 @@ export function generateType(
  * export type EnumExample = "ONE" | "TWO";
  * export const EnumExample = { ONE: "ONE" as "ONE", TWO: "TWO" as "TWO" };
  * ```
+ *
+ * We do not use TypeScript Enums because they can not be assigned to an equivalent enum, making interop across
+ * libraries more difficult
  */
 export async function generateEnum(definition: IEnumDefinition, simpleAst: SimpleAst): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
 
-    sourceFile.addEnum({
-        docs: definition.docs != null ? [{ description: definition.docs }] : undefined,
+    const enumType = sourceFile.addTypeAlias({
         isExported: true,
-        members: definition.values.map(({ docs, value }) => ({
-            docs: docs != null ? [{ description: docs }] : undefined,
-            name: value,
-            value,
-        })),
         name: definition.typeName.name,
+        type: definition.values.map(({ value }) => doubleQuote(value)).join(" | "),
+    });
+    if (definition.docs != null) {
+        enumType.addJsDoc(definition.docs);
+    }
+
+    const variableStatement = sourceFile.addVariableStatement({
+        declarationKind: VariableDeclarationKind.Const,
+        declarations: [
+            {
+                initializer: "{}",
+                name: definition.typeName.name,
+            },
+        ],
+        isExported: true,
+    });
+    const objectLiteralExpr = variableStatement.getDeclarations()[0].getInitializer() as ObjectLiteralExpression;
+    definition.values.forEach(value => {
+        objectLiteralExpr.addPropertyAssignment({
+            initializer: `${doubleQuote(value.value)} as ${doubleQuote(value.value)}`,
+            name: value.value,
+        });
     });
 
     sourceFile.formatText();
