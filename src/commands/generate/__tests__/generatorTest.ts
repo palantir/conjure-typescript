@@ -15,11 +15,23 @@
  * limitations under the License.
  */
 
-import { ITypeDefinition } from "conjure-api";
-import * as fs from "fs";
+import {
+    IAliasDefinition,
+    IConjureDefinition,
+    IEnumDefinition,
+    IObjectDefinition,
+    ITypeDefinition,
+    ITypeDefinitionVisitor,
+    ITypeName,
+    IUnionDefinition,
+} from "conjure-api";
+import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
+import { loadConjureDefinition } from "../generateCommand";
 import { generate } from "../generator";
+import { typeNameToFilePath } from "../simpleAst";
+import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
 describe("generator", () => {
     let outDir: string;
@@ -84,3 +96,56 @@ export { integrationSecond };
         );
     });
 });
+
+const irDir = path.join(__dirname, "../../../../build/ir-test-cases");
+const testCaseDir = path.join(__dirname, "resources/test-cases");
+
+describe("definitionTests", () => {
+    let tempDir: string;
+
+    beforeEach(() => {
+        tempDir = directory();
+    });
+
+    for (const fileName of fs.readdirSync(irDir)) {
+        it(`${fileName} produces equivalent TypeScript`, async () => {
+            const definitionFilePath = path.join(irDir, fileName);
+            const paths = fileName.substring(0, fileName.lastIndexOf("."));
+            const actualDir = path.join(testCaseDir, paths);
+            const outputDir = path.join(tempDir, paths);
+
+            await fs.mkdirp(outputDir);
+            const conjureDefinition = await loadConjureDefinition(definitionFilePath);
+
+            await generate(conjureDefinition, outputDir);
+
+            expectAllFilesAreTheSame(conjureDefinition, outputDir, actualDir);
+        });
+    }
+});
+
+function expectAllFilesAreTheSame(definition: IConjureDefinition, actualDir: string, expectedDir: string) {
+    for (const type of definition.types) {
+        // We do not currently generate anything for aliases
+        if (type.type === "alias") {
+            continue;
+        }
+        const relativeFilePath = typeNameToFilePath(ITypeDefinition.visit(type, typeNameVisitor));
+        assertOutputAndExpectedAreEqual(actualDir, expectedDir, relativeFilePath);
+    }
+
+    for (const service of definition.services) {
+        const relativeFilePath = typeNameToFilePath(service.serviceName);
+        assertOutputAndExpectedAreEqual(actualDir, expectedDir, relativeFilePath);
+    }
+}
+
+const typeNameVisitor: ITypeDefinitionVisitor<ITypeName> = {
+    alias: (p1: IAliasDefinition) => p1.typeName,
+    enum: (p1: IEnumDefinition) => p1.typeName,
+    object: (p1: IObjectDefinition) => p1.typeName,
+    union: (p1: IUnionDefinition) => p1.typeName,
+    unknown: (p1: ITypeDefinition) => {
+        throw new Error(`unknown type ${p1}`);
+    },
+};

@@ -16,7 +16,7 @@
  */
 
 import { IType, ITypeDefinition, ITypeName, PrimitiveType } from "conjure-api";
-import * as fs from "fs";
+import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
 import { SimpleAst } from "../simpleAst";
@@ -24,10 +24,12 @@ import { generateType } from "../typeGenerator";
 
 export function assertOutputAndExpectedAreEqual(outDir: string, expectedDir: string, fname: string) {
     const actual = fs.readFileSync(path.join(outDir, fname), "utf8");
+    const actualFilePath = path.join(expectedDir, fname);
     if (process.env.RECREATE === "true") {
-        fs.writeFileSync(path.join(expectedDir, fname), actual);
+        fs.mkdirpSync(path.dirname(actualFilePath));
+        fs.writeFileSync(actualFilePath, actual);
     } else {
-        const expected = fs.readFileSync(path.join(expectedDir, fname), "utf8");
+        const expected = fs.readFileSync(actualFilePath, "utf8");
         expect(actual).toEqual(expected);
     }
 }

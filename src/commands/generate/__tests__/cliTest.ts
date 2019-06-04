@@ -24,7 +24,7 @@ import { createPackageJson, createTsconfigJson, GenerateCommand } from "../index
 
 describe("generate command", () => {
     let outDir: string;
-    const input = path.join(__dirname, "./resources/ir/service.json");
+    const input = path.join(__dirname, "../../../../build/ir-test-cases/example-types.json");
     const generateCommand = new GenerateCommand();
 
     beforeEach(() => {
