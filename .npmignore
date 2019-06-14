@@ -1,7 +1,7 @@
+*
 !LICENSE
 !README.md
 !bin/*
-!lib/*
-!lib/generate/**/*
-!lib/__generated__/**/*
-*
+!lib/**/*
+**/__tests__/*
+**/__mocks__/*
