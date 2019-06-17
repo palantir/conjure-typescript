@@ -6,8 +6,6 @@
     "conjure-typescript": "./bin/conjure-typescript"
   },
   "sideEffects": false,
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "scripts": {
     "build": "npm-run-all clean compile verify",
     "circle-publish": "./scripts/circle-publish-npm && ./scripts/circle-publish-dist",
