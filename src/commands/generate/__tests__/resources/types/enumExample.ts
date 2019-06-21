@@ -1,6 +1,4 @@
-export type EnumExample = "ONE" | "TWO";
-
-export const EnumExample = {
-    ONE: "ONE" as "ONE",
-    TWO: "TWO" as "TWO"
-};
+export enum EnumExample {
+    ONE = "ONE",
+    TWO = "TWO"
+}
