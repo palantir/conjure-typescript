@@ -1,2 +1,2 @@
 @echo OFF
-echo node conjure-typescript.bat %*
+node conjure-typescript.bat %*
