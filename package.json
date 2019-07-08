@@ -11,7 +11,7 @@
     "circle-publish": "./scripts/circle-publish-npm && ./scripts/circle-publish-dist",
     "clean": "rm -rf dist lib",
     "compile": "npm-run-all -p compile-ts compile-dist",
-    "compile-dist": "webpack --config webpack.config.js",
+    "compile-dist": "webpack --config webpack.config.js && cp bin/conjure-typescript.bat dist/bin",
     "compile-ts": "tsc -p ./src",
     "generateTestCases": "./scripts/download-conjure-core.sh && ./scripts/generate-test-cases.sh",
     "downloadTestServer": "./scripts/download-test-server.sh",
