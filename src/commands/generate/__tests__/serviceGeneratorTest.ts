@@ -261,6 +261,45 @@ describe("serviceGenerator", () => {
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/paramTypeService.ts");
     });
 
+    it("handles out of order path params", async () => {
+        await generateService(
+            {
+                endpoints: [
+                    {
+                        args: [
+                            {
+                                argName: "param1",
+                                markers: [],
+                                paramType: {
+                                    path: {},
+                                    type: "path",
+                                },
+                                type: stringType,
+                            },
+                            {
+                                argName: "param2",
+                                markers: [],
+                                paramType: {
+                                    path: {},
+                                    type: "path",
+                                },
+                                type: stringType,
+                            },
+                        ],
+                        endpointName: "foo",
+                        httpMethod: HttpMethod.GET,
+                        httpPath: "/{param2}/{param1}",
+                        markers: [],
+                    },
+                ],
+                serviceName: { name: "OutOfOrderPathService", package: "com.palantir.services" },
+            },
+            new Map(),
+            simpleAst,
+        );
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/outOfOrderPathService.ts");
+    });
+
     it("handles header auth-type", async () => {
         await generateService(
             {
