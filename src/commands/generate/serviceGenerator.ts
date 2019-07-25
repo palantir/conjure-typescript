@@ -166,11 +166,6 @@ function generateEndpointBody(
     });
 
     const pathParamsFromPath = parsePathParamsFromPath(endpointDefinition.httpPath);
-    pathParamsFromPath.forEach(pathParam => {
-        if (pathArgNames.indexOf(pathParam) === -1) {
-            throw new Error("path parameter present in path template but not provided as endpoint param: " + pathParam);
-        }
-    });
 
     if (bodyArgs.length > 1) {
         throw Error("endpoint cannot have more than one body arg, found: " + bodyArgs.length);
