@@ -165,6 +165,8 @@ function generateEndpointBody(
         }
     });
 
+    const pathParamsFromPath = parsePathParamsFromPath(endpointDefinition.httpPath);
+
     if (bodyArgs.length > 1) {
         throw Error("endpoint cannot have more than one body arg, found: " + bodyArgs.length);
     }
@@ -201,7 +203,7 @@ function generateEndpointBody(
             writer.writeLine(`method: "${endpointDefinition.httpMethod}",`);
 
             writer.write("pathArguments: [");
-            pathArgNames.forEach(pathArgName => writer.indent().writeLine(pathArgName + ","));
+            pathParamsFromPath.forEach(pathArgName => writer.indent().writeLine(pathArgName + ","));
             writer.writeLine("],");
 
             writer.write("queryArguments: {");
@@ -221,4 +223,14 @@ function mediaType(conjureType?: IType) {
         return "MediaType.APPLICATION_OCTET_STREAM";
     }
     return "MediaType.APPLICATION_JSON";
+}
+
+function parsePathParamsFromPath(httpPath: string): string[] {
+    // first fix up the path to remove any ':.+' stuff in path params
+    const fixedPath = httpPath.replace(/{(.*):[^}]*}/, "{$1}");
+    // follow-up by just pulling out any path segment with a starting '{' and trailing '}'
+    return fixedPath
+        .split("/")
+        .filter(segment => segment.startsWith("{") && segment.endsWith("}"))
+        .map(segment => segment.slice(1, -1));
 }
