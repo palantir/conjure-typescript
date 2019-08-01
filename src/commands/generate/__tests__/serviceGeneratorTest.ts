@@ -164,7 +164,7 @@ describe("serviceGenerator", () => {
         );
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
-        expect(contents).toContain("foo(body: any): Promise<Blob>;");
+        expect(contents).toContain("foo(body: Blob): Promise<Blob>;");
         expect(contents).toContain(`requestMediaType: MediaType.APPLICATION_OCTET_STREAM`);
         expect(contents).toContain(`responseMediaType: MediaType.APPLICATION_OCTET_STREAM`);
     });

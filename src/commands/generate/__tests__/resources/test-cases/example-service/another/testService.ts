@@ -96,7 +96,7 @@ export class TestService {
     }
 
     public getRawData(datasetRid: string): Promise<Blob> {
-        return this.bridge.callEndpoint<any>({
+        return this.bridge.callEndpoint<Blob>({
             data: undefined,
             endpointName: "getRawData",
             endpointPath: "/catalog/datasets/{datasetRid}/raw",
@@ -114,7 +114,7 @@ export class TestService {
     }
 
     public getAliasedRawData(datasetRid: string): Promise<Blob> {
-        return this.bridge.callEndpoint<any>({
+        return this.bridge.callEndpoint<Blob>({
             data: undefined,
             endpointName: "getAliasedRawData",
             endpointPath: "/catalog/datasets/{datasetRid}/raw-aliased",
@@ -132,7 +132,7 @@ export class TestService {
     }
 
     public maybeGetRawData(datasetRid: string): Promise<Blob | null> {
-        return this.bridge.callEndpoint<any | null>({
+        return this.bridge.callEndpoint<Blob | null>({
             data: undefined,
             endpointName: "maybeGetRawData",
             endpointPath: "/catalog/datasets/{datasetRid}/raw-maybe",
@@ -167,7 +167,7 @@ export class TestService {
         });
     }
 
-    public uploadRawData(input: any): Promise<void> {
+    public uploadRawData(input: Blob): Promise<void> {
         return this.bridge.callEndpoint<void>({
             data: input,
             endpointName: "uploadRawData",
@@ -184,7 +184,7 @@ export class TestService {
         });
     }
 
-    public uploadAliasedRawData(input: any): Promise<void> {
+    public uploadAliasedRawData(input: Blob): Promise<void> {
         return this.bridge.callEndpoint<void>({
             data: input,
             endpointName: "uploadAliasedRawData",
