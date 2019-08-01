@@ -15,12 +15,12 @@ export interface ITestService {
     getFileSystems(): Promise<{ [key: string]: IBackingFileSystem }>;
     createDataset(request: ICreateDatasetRequest, testHeaderArg: string): Promise<IDataset>;
     getDataset(datasetRid: string): Promise<IDataset | null>;
-    getRawData(datasetRid: string): Promise<any>;
-    getAliasedRawData(datasetRid: string): Promise<any>;
-    maybeGetRawData(datasetRid: string): Promise<any | null>;
+    getRawData(datasetRid: string): Promise<Blob>;
+    getAliasedRawData(datasetRid: string): Promise<Blob>;
+    maybeGetRawData(datasetRid: string): Promise<Blob | null>;
     getAliasedString(datasetRid: string): Promise<string>;
-    uploadRawData(input: any): Promise<void>;
-    uploadAliasedRawData(input: any): Promise<void>;
+    uploadRawData(input: Blob): Promise<void>;
+    uploadAliasedRawData(input: Blob): Promise<void>;
     getBranches(datasetRid: string): Promise<Array<string>>;
     /**
      * Gets all branches of this dataset.
@@ -95,7 +95,7 @@ export class TestService {
         });
     }
 
-    public getRawData(datasetRid: string): Promise<any> {
+    public getRawData(datasetRid: string): Promise<Blob> {
         return this.bridge.callEndpoint<any>({
             data: undefined,
             endpointName: "getRawData",
@@ -113,7 +113,7 @@ export class TestService {
         });
     }
 
-    public getAliasedRawData(datasetRid: string): Promise<any> {
+    public getAliasedRawData(datasetRid: string): Promise<Blob> {
         return this.bridge.callEndpoint<any>({
             data: undefined,
             endpointName: "getAliasedRawData",
@@ -131,7 +131,7 @@ export class TestService {
         });
     }
 
-    public maybeGetRawData(datasetRid: string): Promise<any | null> {
+    public maybeGetRawData(datasetRid: string): Promise<Blob | null> {
         return this.bridge.callEndpoint<any | null>({
             data: undefined,
             endpointName: "maybeGetRawData",

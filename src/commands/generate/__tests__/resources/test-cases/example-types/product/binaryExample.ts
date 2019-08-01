@@ -1,3 +1,3 @@
 export interface IBinaryExample {
-    'binary': any;
+    'binary': Blob;
 }
