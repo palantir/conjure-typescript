@@ -45,6 +45,7 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
             case PrimitiveType.SAFELONG:
                 return "number";
             case PrimitiveType.BINARY:
+                return "Blob";
             case PrimitiveType.ANY:
                 return "any";
             case PrimitiveType.BOOLEAN:
