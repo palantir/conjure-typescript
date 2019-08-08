@@ -202,7 +202,7 @@ export class EteService {
         });
     }
 
-    public binary(): Promise<any> {
+    public binary(): Promise<Blob> {
         return this.bridge.callEndpoint<any>({
             data: undefined,
             endpointName: "binary",

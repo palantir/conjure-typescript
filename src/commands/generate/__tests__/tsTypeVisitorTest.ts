@@ -34,6 +34,13 @@ describe("TsTypeVisitor", () => {
         typeName: aliasName,
     });
 
+    const binaryAliasName = { name: "BinaryAlias", package: "" };
+    const binaryAliasReference = IType.reference(binaryAliasName);
+    const binaryAlias = ITypeDefinition.alias({
+        alias: { primitive: PrimitiveType.BINARY, type: "primitive" },
+        typeName: binaryAliasName,
+    });
+
     const enumName = { name: "Enum", package: "" };
     const enumReference = IType.reference(enumName);
     const enumType = ITypeDefinition.enum_({
@@ -47,9 +54,22 @@ describe("TsTypeVisitor", () => {
         new Map<string, ITypeDefinition>([
             [createHashableTypeName(objectName), object],
             [createHashableTypeName(aliasName), alias],
+            [createHashableTypeName(binaryAliasName), binaryAlias],
             [createHashableTypeName(enumName), enumType],
         ]),
         fakeTypeName,
+        false,
+    );
+
+    const topLevelVisitor = new TsTypeVisitor(
+        new Map<string, ITypeDefinition>([
+            [createHashableTypeName(objectName), object],
+            [createHashableTypeName(aliasName), alias],
+            [createHashableTypeName(binaryAliasName), binaryAlias],
+            [createHashableTypeName(enumName), enumType],
+        ]),
+        fakeTypeName,
+        true,
     );
 
     it("returns primitive types", () => {
@@ -58,7 +78,7 @@ describe("TsTypeVisitor", () => {
         expect(visitor.primitive(PrimitiveType.INTEGER)).toEqual("number");
         expect(visitor.primitive(PrimitiveType.DOUBLE)).toEqual('number | "NaN"');
         expect(visitor.primitive(PrimitiveType.SAFELONG)).toEqual("number");
-        expect(visitor.primitive(PrimitiveType.BINARY)).toEqual("any");
+        expect(visitor.primitive(PrimitiveType.BINARY)).toEqual("string");
         expect(visitor.primitive(PrimitiveType.ANY)).toEqual("any");
         expect(visitor.primitive(PrimitiveType.BOOLEAN)).toEqual("boolean");
         expect(visitor.primitive(PrimitiveType.RID)).toEqual("string");
@@ -66,8 +86,22 @@ describe("TsTypeVisitor", () => {
         expect(visitor.primitive(PrimitiveType.UUID)).toEqual("string");
     });
 
+    it("has correct top level types", () => {
+        expect(topLevelVisitor.primitive(PrimitiveType.STRING)).toEqual("string");
+        expect(topLevelVisitor.primitive(PrimitiveType.DATETIME)).toEqual("string");
+        expect(topLevelVisitor.primitive(PrimitiveType.INTEGER)).toEqual("number");
+        expect(topLevelVisitor.primitive(PrimitiveType.DOUBLE)).toEqual('number | "NaN"');
+        expect(topLevelVisitor.primitive(PrimitiveType.SAFELONG)).toEqual("number");
+        expect(topLevelVisitor.primitive(PrimitiveType.BINARY)).toEqual("Blob");
+        expect(topLevelVisitor.primitive(PrimitiveType.ANY)).toEqual("any");
+        expect(topLevelVisitor.primitive(PrimitiveType.BOOLEAN)).toEqual("boolean");
+        expect(topLevelVisitor.primitive(PrimitiveType.RID)).toEqual("string");
+        expect(topLevelVisitor.primitive(PrimitiveType.BEARERTOKEN)).toEqual("string");
+        expect(topLevelVisitor.primitive(PrimitiveType.UUID)).toEqual("string");
+    });
+
     it("produces error for unknown reference", () => {
-        const tsType = () => new TsTypeVisitor(new Map(), fakeTypeName).reference(objectName);
+        const tsType = () => new TsTypeVisitor(new Map(), fakeTypeName, false).reference(objectName);
         expect(tsType).toThrowError(/unknown reference type/);
     });
 
@@ -77,6 +111,9 @@ describe("TsTypeVisitor", () => {
 
     it("follows alias reference", () => {
         expect(visitor.reference(aliasName)).toEqual("string");
+        expect(visitor.reference(binaryAliasName)).toEqual("string");
+        expect(topLevelVisitor.reference(aliasName)).toEqual("string");
+        expect(topLevelVisitor.reference(binaryAliasName)).toEqual("Blob");
     });
 
     it("returns enum reference without I prefix", () => {
@@ -84,23 +121,33 @@ describe("TsTypeVisitor", () => {
     });
 
     it("returns optional type", () => {
-        const tsType = visitor.optional({ itemType: objectReference });
-        expect(tsType).toEqual("IObject | null");
+        expect(visitor.optional({ itemType: objectReference })).toEqual("IObject | null");
+        expect(visitor.optional({ itemType: binaryAliasReference })).toEqual("string | null");
+        expect(topLevelVisitor.optional({ itemType: binaryAliasReference })).toEqual("Blob | null");
     });
 
     it("returns list type", () => {
-        const tsType = visitor.list({ itemType: objectReference });
-        expect(tsType).toEqual("Array<IObject>");
+        expect(visitor.list({ itemType: objectReference })).toEqual("Array<IObject>");
+        expect(visitor.list({ itemType: binaryAliasReference })).toEqual("Array<string>");
+        expect(topLevelVisitor.list({ itemType: binaryAliasReference })).toEqual("Array<string>");
     });
 
     it("returns set type", () => {
-        const tsType = visitor.set({ itemType: objectReference });
-        expect(tsType).toEqual("Array<IObject>");
+        expect(visitor.set({ itemType: objectReference })).toEqual("Array<IObject>");
+        expect(visitor.set({ itemType: binaryAliasReference })).toEqual("Array<string>");
+        expect(topLevelVisitor.set({ itemType: binaryAliasReference })).toEqual("Array<string>");
     });
 
     it("returns map type", () => {
-        const tsType = visitor.map({ keyType: aliasReference, valueType: objectReference });
-        expect(tsType).toEqual("{ [key: string]: IObject }");
+        expect(visitor.map({ keyType: aliasReference, valueType: objectReference })).toEqual(
+            "{ [key: string]: IObject }",
+        );
+        expect(visitor.map({ keyType: aliasReference, valueType: binaryAliasReference })).toEqual(
+            "{ [key: string]: string }",
+        );
+        expect(topLevelVisitor.map({ keyType: aliasReference, valueType: binaryAliasReference })).toEqual(
+            "{ [key: string]: string }",
+        );
     });
 
     it("returns map type with enum keys", () => {

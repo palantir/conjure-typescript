@@ -88,7 +88,7 @@ export async function generateObject(
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
 ) {
-    const tsTypeVisitor = new TsTypeVisitor(knownTypes, definition.typeName);
+    const tsTypeVisitor = new TsTypeVisitor(knownTypes, definition.typeName, false);
     const importsVisitor = new ImportsVisitor(knownTypes, definition.typeName);
     const properties: PropertySignatureStructure[] = [];
     const imports: ImportDeclarationStructure[] = [];
@@ -203,7 +203,7 @@ function processUnionMembers(
     definition: IUnionDefinition,
     knownTypes: Map<string, ITypeDefinition>,
 ) {
-    const tsTypeVisitor = new TsTypeVisitor(knownTypes, definition.typeName);
+    const tsTypeVisitor = new TsTypeVisitor(knownTypes, definition.typeName, false);
     const importsVisitor = new ImportsVisitor(knownTypes, definition.typeName);
 
     const imports: ImportDeclarationStructure[] = [];

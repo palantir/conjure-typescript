@@ -10,4 +10,4 @@ mkdir -p build/downloads
 curl -L "https://palantir.bintray.com/releases/com/palantir/conjure/conjure/${VERSION}/${ARTIFACT_NAME}.tgz" -o "$DOWNLOAD_OUTPUT"
 
 tar xf "$DOWNLOAD_OUTPUT" -C build
-mv "build/$ARTIFACT_NAME" build/conjure
+[ ! -d "build/conjure/$ARTIFACT_NAME" ] && mv "build/$ARTIFACT_NAME" build/conjure || true

@@ -15,12 +15,12 @@ export interface ITestService {
     getFileSystems(): Promise<{ [key: string]: IBackingFileSystem }>;
     createDataset(request: ICreateDatasetRequest, testHeaderArg: string): Promise<IDataset>;
     getDataset(datasetRid: string): Promise<IDataset | null>;
-    getRawData(datasetRid: string): Promise<any>;
-    getAliasedRawData(datasetRid: string): Promise<any>;
-    maybeGetRawData(datasetRid: string): Promise<any | null>;
+    getRawData(datasetRid: string): Promise<Blob>;
+    getAliasedRawData(datasetRid: string): Promise<Blob>;
+    maybeGetRawData(datasetRid: string): Promise<Blob | null>;
     getAliasedString(datasetRid: string): Promise<string>;
-    uploadRawData(input: any): Promise<void>;
-    uploadAliasedRawData(input: any): Promise<void>;
+    uploadRawData(input: Blob): Promise<void>;
+    uploadAliasedRawData(input: Blob): Promise<void>;
     getBranches(datasetRid: string): Promise<Array<string>>;
     /**
      * Gets all branches of this dataset.
@@ -95,8 +95,8 @@ export class TestService {
         });
     }
 
-    public getRawData(datasetRid: string): Promise<any> {
-        return this.bridge.callEndpoint<any>({
+    public getRawData(datasetRid: string): Promise<Blob> {
+        return this.bridge.callEndpoint<Blob>({
             data: undefined,
             endpointName: "getRawData",
             endpointPath: "/catalog/datasets/{datasetRid}/raw",
@@ -113,8 +113,8 @@ export class TestService {
         });
     }
 
-    public getAliasedRawData(datasetRid: string): Promise<any> {
-        return this.bridge.callEndpoint<any>({
+    public getAliasedRawData(datasetRid: string): Promise<Blob> {
+        return this.bridge.callEndpoint<Blob>({
             data: undefined,
             endpointName: "getAliasedRawData",
             endpointPath: "/catalog/datasets/{datasetRid}/raw-aliased",
@@ -127,12 +127,12 @@ export class TestService {
             queryArguments: {
             },
             requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
+            responseMediaType: MediaType.APPLICATION_OCTET_STREAM,
         });
     }
 
-    public maybeGetRawData(datasetRid: string): Promise<any | null> {
-        return this.bridge.callEndpoint<any | null>({
+    public maybeGetRawData(datasetRid: string): Promise<Blob | null> {
+        return this.bridge.callEndpoint<Blob | null>({
             data: undefined,
             endpointName: "maybeGetRawData",
             endpointPath: "/catalog/datasets/{datasetRid}/raw-maybe",
@@ -145,7 +145,7 @@ export class TestService {
             queryArguments: {
             },
             requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
+            responseMediaType: MediaType.APPLICATION_OCTET_STREAM,
         });
     }
 
@@ -167,7 +167,7 @@ export class TestService {
         });
     }
 
-    public uploadRawData(input: any): Promise<void> {
+    public uploadRawData(input: Blob): Promise<void> {
         return this.bridge.callEndpoint<void>({
             data: input,
             endpointName: "uploadRawData",
@@ -184,7 +184,7 @@ export class TestService {
         });
     }
 
-    public uploadAliasedRawData(input: any): Promise<void> {
+    public uploadAliasedRawData(input: Blob): Promise<void> {
         return this.bridge.callEndpoint<void>({
             data: input,
             endpointName: "uploadAliasedRawData",
@@ -196,7 +196,7 @@ export class TestService {
             ],
             queryArguments: {
             },
-            requestMediaType: MediaType.APPLICATION_JSON,
+            requestMediaType: MediaType.APPLICATION_OCTET_STREAM,
             responseMediaType: MediaType.APPLICATION_JSON,
         });
     }
