@@ -58,7 +58,7 @@ describe("TsTypeVisitor", () => {
         expect(visitor.primitive(PrimitiveType.INTEGER)).toEqual("number");
         expect(visitor.primitive(PrimitiveType.DOUBLE)).toEqual('number | "NaN"');
         expect(visitor.primitive(PrimitiveType.SAFELONG)).toEqual("number");
-        expect(visitor.primitive(PrimitiveType.BINARY)).toEqual("Blob");
+        expect(visitor.primitive(PrimitiveType.BINARY)).toEqual("any");
         expect(visitor.primitive(PrimitiveType.ANY)).toEqual("any");
         expect(visitor.primitive(PrimitiveType.BOOLEAN)).toEqual("boolean");
         expect(visitor.primitive(PrimitiveType.RID)).toEqual("string");
