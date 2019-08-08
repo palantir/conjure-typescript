@@ -1,3 +1,3 @@
 export interface IOptionalExample {
-    'item'?: Blob | null;
+    'item'?: any | null;
 }

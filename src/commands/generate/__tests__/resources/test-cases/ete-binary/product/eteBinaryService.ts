@@ -1,9 +1,9 @@
 import { IHttpApiBridge, MediaType } from "conjure-client";
 
 export interface IEteBinaryService {
-    postBinary(body: Blob): Promise<Blob>;
-    getOptionalBinaryPresent(): Promise<Blob | null>;
-    getOptionalBinaryEmpty(): Promise<Blob | null>;
+    postBinary(body: any): Promise<any>;
+    getOptionalBinaryPresent(): Promise<any | null>;
+    getOptionalBinaryEmpty(): Promise<any | null>;
     /**
      * Throws an exception after partially writing a binary response.
      */
@@ -14,8 +14,8 @@ export class EteBinaryService {
     constructor(private bridge: IHttpApiBridge) {
     }
 
-    public postBinary(body: Blob): Promise<Blob> {
-        return this.bridge.callEndpoint<Blob>({
+    public postBinary(body: any): Promise<any> {
+        return this.bridge.callEndpoint<any>({
             data: body,
             endpointName: "postBinary",
             endpointPath: "/binary",
@@ -31,8 +31,8 @@ export class EteBinaryService {
         });
     }
 
-    public getOptionalBinaryPresent(): Promise<Blob | null> {
-        return this.bridge.callEndpoint<Blob | null>({
+    public getOptionalBinaryPresent(): Promise<any | null> {
+        return this.bridge.callEndpoint<any | null>({
             data: undefined,
             endpointName: "getOptionalBinaryPresent",
             endpointPath: "/binary/optional/present",
@@ -48,8 +48,8 @@ export class EteBinaryService {
         });
     }
 
-    public getOptionalBinaryEmpty(): Promise<Blob | null> {
-        return this.bridge.callEndpoint<Blob | null>({
+    public getOptionalBinaryEmpty(): Promise<any | null> {
+        return this.bridge.callEndpoint<any | null>({
             data: undefined,
             endpointName: "getOptionalBinaryEmpty",
             endpointPath: "/binary/optional/empty",
@@ -66,7 +66,7 @@ export class EteBinaryService {
     }
 
     public getBinaryFailure(numBytes: number): Promise<any> {
-        return this.bridge.callEndpoint<Blob>({
+        return this.bridge.callEndpoint<any>({
             data: undefined,
             endpointName: "getBinaryFailure",
             endpointPath: "/binary/failure",
