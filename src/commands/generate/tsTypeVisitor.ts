@@ -30,7 +30,11 @@ import {
 import { createHashableTypeName } from "./utils";
 
 export class TsTypeVisitor implements ITypeVisitor<string> {
-    constructor(private knownTypes: Map<string, ITypeDefinition>, private currType: ITypeName) {}
+    constructor(
+        private knownTypes: Map<string, ITypeDefinition>,
+        private currType: ITypeName,
+        private isTopLevelBinary: boolean,
+    ) {}
 
     public primitive = (obj: PrimitiveType) => {
         switch (obj) {
@@ -45,6 +49,7 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
             case PrimitiveType.SAFELONG:
                 return "number";
             case PrimitiveType.BINARY:
+                return this.isTopLevelBinary ? "Blob" : "string";
             case PrimitiveType.ANY:
                 return "any";
             case PrimitiveType.BOOLEAN:
@@ -56,7 +61,7 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
         }
     };
     public map = (obj: IMapType): string => {
-        const valueTsType = IType.visit(obj.valueType, this);
+        const valueTsType = IType.visit(obj.valueType, new TsTypeVisitor(this.knownTypes, this.currType, false));
         if (IType.isReference(obj.keyType)) {
             const keyTypeDefinition = this.knownTypes.get(createHashableTypeName(obj.keyType.reference));
             if (keyTypeDefinition != null && ITypeDefinition.isEnum(keyTypeDefinition)) {
@@ -66,11 +71,11 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
         return `{ [key: string]: ${valueTsType} }`;
     };
     public list = (obj: IListType): string => {
-        const itemType = IType.visit(obj.itemType, this);
+        const itemType = IType.visit(obj.itemType, new TsTypeVisitor(this.knownTypes, this.currType, false));
         return `Array<${itemType}>`;
     };
     public set = (obj: ISetType): string => {
-        const itemType = IType.visit(obj.itemType, this);
+        const itemType = IType.visit(obj.itemType, new TsTypeVisitor(this.knownTypes, this.currType, false));
         return `Array<${itemType}>`;
     };
     public optional = (obj: IOptionalType): string => {
@@ -95,7 +100,7 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
         return withIPrefix;
     };
     public external = (obj: IExternalReference): string => {
-        return IType.visit(obj.fallback, this);
+        return IType.visit(obj.fallback, new TsTypeVisitor(this.knownTypes, this.currType, false));
     };
     public unknown = (_: IType): string => {
         throw new Error("unknown");

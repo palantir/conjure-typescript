@@ -35,7 +35,7 @@ import { createHashableTypeName } from "./utils";
 export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]> {
     private tsTypeVisitor: TsTypeVisitor;
     constructor(private knownTypes: Map<string, ITypeDefinition>, private currType: ITypeName) {
-        this.tsTypeVisitor = new TsTypeVisitor(knownTypes, currType);
+        this.tsTypeVisitor = new TsTypeVisitor(knownTypes, currType, false);
     }
 
     public primitive = (_: PrimitiveType): ImportDeclarationStructure[] => [];

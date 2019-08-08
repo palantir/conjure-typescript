@@ -24,7 +24,7 @@ import {
     IServiceDefinition,
     IType,
     ITypeDefinition,
-    PrimitiveType,
+    ITypeVisitor,
 } from "conjure-api";
 import {
     CodeBlockWriter,
@@ -34,6 +34,7 @@ import {
     Scope,
 } from "ts-simple-ast";
 import { ImportsVisitor, sortImports } from "./imports";
+import { MediaTypeVisitor } from "./mediaTypeVisitor";
 import { SimpleAst } from "./simpleAst";
 import { StringConversionTypeVisitor } from "./stringConversionTypeVisitor";
 import { TsTypeVisitor } from "./tsTypeVisitor";
@@ -59,8 +60,9 @@ export function generateService(
     simpleAst: SimpleAst,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
-    const tsTypeVisitor = new TsTypeVisitor(knownTypes, definition.serviceName);
+    const tsTypeVisitor = new TsTypeVisitor(knownTypes, definition.serviceName, true);
     const importsVisitor = new ImportsVisitor(knownTypes, definition.serviceName);
+    const mediaTypeVisitor = new MediaTypeVisitor(knownTypes);
 
     const endpointSignatures: MethodDeclarationStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
@@ -100,7 +102,7 @@ export function generateService(
         endpointSignatures.push(signature);
 
         endpointImplementations.push({
-            bodyText: generateEndpointBody(endpointDefinition, returnTsType, endpointDefinition.returns || undefined),
+            bodyText: generateEndpointBody(endpointDefinition, returnTsType, mediaTypeVisitor),
             name: endpointDefinition.endpointName,
             parameters,
             returnType: `Promise<${returnTsType}>`,
@@ -146,18 +148,15 @@ export function generateService(
 function generateEndpointBody(
     endpointDefinition: IEndpointDefinition,
     returnTsType: string,
-    returnType?: IType,
+    mediaTypeVisitor: ITypeVisitor<string>,
 ): (writer: CodeBlockWriter) => void {
     const bodyArgs: IArgumentDefinition[] = [];
-    const pathArgNames: string[] = [];
     const headerArgs: IArgumentDefinition[] = [];
     const queryArgs: IArgumentDefinition[] = [];
 
     endpointDefinition.args.forEach(argDefinition => {
         if (IParameterType.isBody(argDefinition.paramType)) {
             bodyArgs.push(argDefinition);
-        } else if (IParameterType.isPath(argDefinition.paramType)) {
-            pathArgNames.push(argDefinition.argName);
         } else if (IParameterType.isHeader(argDefinition.paramType)) {
             headerArgs.push(argDefinition);
         } else if (IParameterType.isQuery(argDefinition.paramType)) {
@@ -171,7 +170,14 @@ function generateEndpointBody(
         throw Error("endpoint cannot have more than one body arg, found: " + bodyArgs.length);
     }
     const data = bodyArgs.length === 0 ? "undefined" : bodyArgs[0].argName;
-    const bodyType = bodyArgs.length === 0 ? undefined : bodyArgs[0].type;
+    // It's not quite correct to default to application/json for body less and return less requests.
+    // We do this to preserve existing behaviour.
+    const requestMediaType =
+        bodyArgs.length === 0 ? "MediaType.APPLICATION_JSON" : IType.visit(bodyArgs[0].type, mediaTypeVisitor);
+    const responseMediaType =
+        endpointDefinition.returns !== undefined && endpointDefinition.returns !== null
+            ? IType.visit(endpointDefinition.returns, mediaTypeVisitor)
+            : "MediaType.APPLICATION_JSON";
     const formattedHeaderArgs = headerArgs.map(argDefinition => {
         const paramId = (argDefinition.paramType as IParameterType_Header).header.paramId!;
         if (paramId == null) {
@@ -187,8 +193,6 @@ function generateEndpointBody(
         }
         return `"${paramId}": ${argDefinition.argName},`;
     });
-    const requestMediaType = mediaType(bodyType);
-    const responseMediaType = mediaType(returnType);
 
     return writer => {
         writer.write(`return this.${BRIDGE}.callEndpoint<${returnTsType}>(`).inlineBlock(() => {
@@ -216,13 +220,6 @@ function generateEndpointBody(
         });
         writer.write(");");
     };
-}
-
-function mediaType(conjureType?: IType) {
-    if (conjureType != null && IType.isPrimitive(conjureType) && conjureType.primitive === PrimitiveType.BINARY) {
-        return "MediaType.APPLICATION_OCTET_STREAM";
-    }
-    return "MediaType.APPLICATION_JSON";
 }
 
 function parsePathParamsFromPath(httpPath: string): string[] {

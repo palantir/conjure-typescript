@@ -1,9 +1,9 @@
 import { IHttpApiBridge, MediaType } from "conjure-client";
 
 export interface IEteBinaryService {
-    postBinary(body: any): Promise<any>;
-    getOptionalBinaryPresent(): Promise<any | null>;
-    getOptionalBinaryEmpty(): Promise<any | null>;
+    postBinary(body: Blob): Promise<Blob>;
+    getOptionalBinaryPresent(): Promise<Blob | null>;
+    getOptionalBinaryEmpty(): Promise<Blob | null>;
     /**
      * Throws an exception after partially writing a binary response.
      */
@@ -14,8 +14,8 @@ export class EteBinaryService {
     constructor(private bridge: IHttpApiBridge) {
     }
 
-    public postBinary(body: any): Promise<any> {
-        return this.bridge.callEndpoint<any>({
+    public postBinary(body: Blob): Promise<Blob> {
+        return this.bridge.callEndpoint<Blob>({
             data: body,
             endpointName: "postBinary",
             endpointPath: "/binary",
@@ -31,8 +31,8 @@ export class EteBinaryService {
         });
     }
 
-    public getOptionalBinaryPresent(): Promise<any | null> {
-        return this.bridge.callEndpoint<any | null>({
+    public getOptionalBinaryPresent(): Promise<Blob | null> {
+        return this.bridge.callEndpoint<Blob | null>({
             data: undefined,
             endpointName: "getOptionalBinaryPresent",
             endpointPath: "/binary/optional/present",
@@ -44,12 +44,12 @@ export class EteBinaryService {
             queryArguments: {
             },
             requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
+            responseMediaType: MediaType.APPLICATION_OCTET_STREAM,
         });
     }
 
-    public getOptionalBinaryEmpty(): Promise<any | null> {
-        return this.bridge.callEndpoint<any | null>({
+    public getOptionalBinaryEmpty(): Promise<Blob | null> {
+        return this.bridge.callEndpoint<Blob | null>({
             data: undefined,
             endpointName: "getOptionalBinaryEmpty",
             endpointPath: "/binary/optional/empty",
@@ -61,12 +61,12 @@ export class EteBinaryService {
             queryArguments: {
             },
             requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
+            responseMediaType: MediaType.APPLICATION_OCTET_STREAM,
         });
     }
 
-    public getBinaryFailure(numBytes: number): Promise<any> {
-        return this.bridge.callEndpoint<any>({
+    public getBinaryFailure(numBytes: number): Promise<Blob> {
+        return this.bridge.callEndpoint<Blob>({
             data: undefined,
             endpointName: "getBinaryFailure",
             endpointPath: "/binary/failure",
