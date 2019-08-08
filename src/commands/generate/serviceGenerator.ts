@@ -170,8 +170,14 @@ function generateEndpointBody(
         throw Error("endpoint cannot have more than one body arg, found: " + bodyArgs.length);
     }
     const data = bodyArgs.length === 0 ? "undefined" : bodyArgs[0].argName;
+    // It's not quite correct to default to application/json for body less and return less requests.
+    // We do this to preserve existing behaviour.
     const requestMediaType =
         bodyArgs.length === 0 ? "MediaType.APPLICATION_JSON" : IType.visit(bodyArgs[0].type, mediaTypeVisitor);
+    const responseMediaType =
+        endpointDefinition.returns !== undefined && endpointDefinition.returns !== null
+            ? IType.visit(endpointDefinition.returns, mediaTypeVisitor)
+            : "MediaType.APPLICATION_JSON";
     const formattedHeaderArgs = headerArgs.map(argDefinition => {
         const paramId = (argDefinition.paramType as IParameterType_Header).header.paramId!;
         if (paramId == null) {
@@ -187,10 +193,6 @@ function generateEndpointBody(
         }
         return `"${paramId}": ${argDefinition.argName},`;
     });
-    const responseMediaType =
-        endpointDefinition.returns !== undefined && endpointDefinition.returns !== null
-            ? IType.visit(endpointDefinition.returns, mediaTypeVisitor)
-            : "MediaType.APPLICATION_JSON";
 
     return writer => {
         writer.write(`return this.${BRIDGE}.callEndpoint<${returnTsType}>(`).inlineBlock(() => {

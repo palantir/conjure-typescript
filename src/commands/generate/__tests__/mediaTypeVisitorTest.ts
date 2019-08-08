@@ -56,7 +56,7 @@ describe("testMediaTypeGenerator", () => {
         ]),
     );
 
-    it("returns primitive types", () => {
+    it("returns correct media type for primitives", () => {
         expect(visitor.primitive(PrimitiveType.STRING)).toEqual("MediaType.APPLICATION_JSON");
         expect(visitor.primitive(PrimitiveType.DATETIME)).toEqual("MediaType.APPLICATION_JSON");
         expect(visitor.primitive(PrimitiveType.INTEGER)).toEqual("MediaType.APPLICATION_JSON");
@@ -75,35 +75,35 @@ describe("testMediaTypeGenerator", () => {
         expect(tsType).toThrowError(/unknown reference type/);
     });
 
-    it("returns reference type", () => {
+    it("returns application/json for reference type", () => {
         expect(visitor.reference(objectName)).toEqual("MediaType.APPLICATION_JSON");
     });
 
-    it("follows alias reference", () => {
+    it("follows alias reference for media type", () => {
         expect(visitor.reference(aliasName)).toEqual("MediaType.APPLICATION_JSON");
         expect(visitor.reference(binaryAliasName)).toEqual("MediaType.APPLICATION_OCTET_STREAM");
     });
 
-    it("returns enum reference without I prefix", () => {
+    it("returns application/json for enum", () => {
         expect(visitor.reference(enumName)).toEqual("MediaType.APPLICATION_JSON");
     });
 
-    it("returns optional type", () => {
+    it("follows optional element type for media type", () => {
         expect(visitor.optional({ itemType: objectReference })).toEqual("MediaType.APPLICATION_JSON");
         expect(visitor.optional({ itemType: binaryAliasReference })).toEqual("MediaType.APPLICATION_OCTET_STREAM");
     });
 
-    it("returns list type", () => {
+    it("returns application/json for list type", () => {
         expect(visitor.list({ itemType: objectReference })).toEqual("MediaType.APPLICATION_JSON");
         expect(visitor.list({ itemType: binaryAliasReference })).toEqual("MediaType.APPLICATION_JSON");
     });
 
-    it("returns set type", () => {
+    it("returns application/json for set type", () => {
         expect(visitor.set({ itemType: objectReference })).toEqual("MediaType.APPLICATION_JSON");
         expect(visitor.set({ itemType: binaryAliasReference })).toEqual("MediaType.APPLICATION_JSON");
     });
 
-    it("returns map type", () => {
+    it("returns application/json for map type", () => {
         expect(visitor.map({ keyType: aliasReference, valueType: objectReference })).toEqual(
             "MediaType.APPLICATION_JSON",
         );
@@ -111,20 +111,12 @@ describe("testMediaTypeGenerator", () => {
             "MediaType.APPLICATION_JSON",
         );
     });
-    it("follows primitive external fallback", () => {
+
+    it("returns application/json for external types", () => {
         const unusedTypeName = { name: "Unused", package: "" };
         const externalType = {
             externalReference: unusedTypeName,
             fallback: IType.primitive(PrimitiveType.ANY),
-        };
-        expect(visitor.external(externalType)).toEqual("MediaType.APPLICATION_JSON");
-    });
-
-    it("follows complex external fallback", () => {
-        const unusedTypeName = { name: "Unused", package: "" };
-        const externalType = {
-            externalReference: unusedTypeName,
-            fallback: IType.list({ itemType: objectReference }),
         };
         expect(visitor.external(externalType)).toEqual("MediaType.APPLICATION_JSON");
     });
