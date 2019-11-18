@@ -3,5 +3,6 @@
 !README.md
 !bin/*
 !lib/**/*
+!downloads/*
 **/__tests__/*
 **/__mocks__/*
