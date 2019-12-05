@@ -1526,10 +1526,12 @@ conjure-api@^4.3.0:
   resolved "https://registry.yarnpkg.com/conjure-api/-/conjure-api-4.3.0.tgz#c778736f369e7c749a86118e14dab83deb698ace"
   integrity sha512-AnZe6qkiCRSsfuQMgA556dFs+/DbXpCK2uuhq9bHn36dSbKi+6HUDntpc9jkVPzWOecLXGqy+JAD6IKV8c9Sqw==
 
-conjure-client@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/conjure-client/-/conjure-client-1.3.2.tgz#a27d8dddbcaa5c7e131023ce3fdfff34df58f5a7"
-  integrity sha512-j7pJGTHWEn4HZ2ORo8pjz/RZmmm8jo0fDhknhIIJn5I8fwpY3z72Bnd6LkxYNu31Aq1PI0edI0TBzQLWNfY5Lw==
+conjure-client@1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/conjure-client/-/conjure-client-1.8.0.tgz#4ec4707d1f079ebbd7d8d38d8bccfca5e8f1495e"
+  integrity sha512-4LGiNhAc4Uzu0t5SPAC82PeQw10Bc9J/tlP82XhSWfuPgpZyNp3gfyCsO0MOXS4eCLERYdhoVm6hCVbz/3a3zw==
+  dependencies:
+    web-streams-polyfill "^2.0.6"
 
 connect@^3.6.0:
   version "3.6.6"
@@ -6970,10 +6972,10 @@ typescript@2.8.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.8.3.tgz#5d817f9b6f31bb871835f4edf0089f21abe6c170"
   integrity sha1-XYF/m28xu4cYNfTt8AifIavmwXA=
 
-typescript@~2.9.2:
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
-  integrity sha512-Gr4p6nFNaoufRIY4NMdpQRNmgxVIGMs4Fcu/ujdYk3nAZqk7supzBE9idmvfZIlH/Cuj//dvi+019qEue9lV0w==
+typescript@~3.2.0:
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.2.4.tgz#c585cb952912263d915b462726ce244ba510ef3d"
+  integrity sha512-0RNDbSdEokBeEAkgNbxJ+BLwSManFy9TeXz8uW+48j/xhEXv1ePME60olyzw2XzUqUBNAYFeJadIqAgNqIACwg==
 
 uglify-es@^3.3.4:
   version "3.3.9"
@@ -7215,6 +7217,11 @@ wcwidth@^1.0.1:
   integrity sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g=
   dependencies:
     defaults "^1.0.3"
+
+web-streams-polyfill@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-2.0.6.tgz#76e0504b4f15a6310cfc9e78e27637b648f9741e"
+  integrity sha512-nXOi4fBykO4LzyQhZX3MAGib635KGZBoNTkNXrNIkz0zthEf2QokEWxRb0H632xNLDWtHFb1R6dFGzksjYMSDw==
 
 webidl-conversions@^4.0.2:
   version "4.0.2"
