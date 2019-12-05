@@ -1,0 +1,5 @@
+type: break
+break:
+  description: Upgrade TypeScript dependency to 3.2.0
+  links:
+  - https://github.com/palantir/conjure-typescript/pull/125
