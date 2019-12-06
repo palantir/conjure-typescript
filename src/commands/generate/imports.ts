@@ -29,13 +29,13 @@ import {
 } from "conjure-api";
 import * as path from "path";
 import { ImportDeclarationStructure, ImportSpecifierStructure } from "ts-simple-ast";
-import { TsTypeVisitor } from "./tsTypeVisitor";
+import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
 import { createHashableTypeName } from "./utils";
 
 export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]> {
-    private tsTypeVisitor: TsTypeVisitor;
+    private tsTypeVisitor: TsReturnTypeVisitor;
     constructor(private knownTypes: Map<string, ITypeDefinition>, private currType: ITypeName) {
-        this.tsTypeVisitor = new TsTypeVisitor(knownTypes, currType, false);
+        this.tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, currType, false);
     }
 
     public primitive = (_: PrimitiveType): ImportDeclarationStructure[] => [];
