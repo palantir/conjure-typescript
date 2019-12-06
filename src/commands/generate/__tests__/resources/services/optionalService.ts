@@ -10,6 +10,7 @@ export class OptionalService {
 
     public foo(header: string, name?: string | null): Promise<void> {
         return this.bridge.callEndpoint<void>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "foo",
             endpointPath: "/foo",

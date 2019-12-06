@@ -10,6 +10,7 @@ export class ServiceWithSafelongHeader {
 
     public foo(investigation: number): Promise<void> {
         return this.bridge.callEndpoint<void>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "foo",
             endpointPath: "/foo",

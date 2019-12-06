@@ -198,7 +198,7 @@ function generateEndpointBody(
 
     return writer => {
         writer.write(`return this.${BRIDGE}.callEndpoint<${returnTsType}>(`).inlineBlock(() => {
-            writer.writeLine(`binaryAsStream: true`);
+            writer.writeLine(`binaryAsStream: true,`);
             writer.writeLine(`data: ${data},`);
             writer.writeLine(`endpointName: "${endpointDefinition.endpointName}",`);
             writer.writeLine(`endpointPath: "${endpointDefinition.httpPath}",`);

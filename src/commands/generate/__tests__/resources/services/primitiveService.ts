@@ -10,6 +10,7 @@ export class PrimitiveService {
 
     public getPrimitive(): Promise<number> {
         return this.bridge.callEndpoint<number>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "getPrimitive",
             endpointPath: "/getPrimitive",
