@@ -16,7 +16,7 @@
  */
 
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
-import { TsTypeVisitor } from "../tsTypeVisitor";
+import { TsReturnTypeVisitor } from "../tsReturnTypeVisitor";
 import { createHashableTypeName } from "../utils";
 
 describe("TsTypeVisitor", () => {
@@ -50,7 +50,7 @@ describe("TsTypeVisitor", () => {
 
     const fakeTypeName = { name: "someObject", package: "com.palantir.example" };
 
-    const visitor = new TsTypeVisitor(
+    const visitor = new TsReturnTypeVisitor(
         new Map<string, ITypeDefinition>([
             [createHashableTypeName(objectName), object],
             [createHashableTypeName(aliasName), alias],
@@ -61,7 +61,7 @@ describe("TsTypeVisitor", () => {
         false,
     );
 
-    const topLevelVisitor = new TsTypeVisitor(
+    const topLevelVisitor = new TsReturnTypeVisitor(
         new Map<string, ITypeDefinition>([
             [createHashableTypeName(objectName), object],
             [createHashableTypeName(aliasName), alias],
@@ -92,7 +92,7 @@ describe("TsTypeVisitor", () => {
         expect(topLevelVisitor.primitive(PrimitiveType.INTEGER)).toEqual("number");
         expect(topLevelVisitor.primitive(PrimitiveType.DOUBLE)).toEqual('number | "NaN"');
         expect(topLevelVisitor.primitive(PrimitiveType.SAFELONG)).toEqual("number");
-        expect(topLevelVisitor.primitive(PrimitiveType.BINARY)).toEqual("Blob");
+        expect(topLevelVisitor.primitive(PrimitiveType.BINARY)).toEqual("ReadableStream<Uint8Array>");
         expect(topLevelVisitor.primitive(PrimitiveType.ANY)).toEqual("any");
         expect(topLevelVisitor.primitive(PrimitiveType.BOOLEAN)).toEqual("boolean");
         expect(topLevelVisitor.primitive(PrimitiveType.RID)).toEqual("string");
@@ -101,7 +101,7 @@ describe("TsTypeVisitor", () => {
     });
 
     it("produces error for unknown reference", () => {
-        const tsType = () => new TsTypeVisitor(new Map(), fakeTypeName, false).reference(objectName);
+        const tsType = () => new TsReturnTypeVisitor(new Map(), fakeTypeName, false).reference(objectName);
         expect(tsType).toThrowError(/unknown reference type/);
     });
 
@@ -113,7 +113,7 @@ describe("TsTypeVisitor", () => {
         expect(visitor.reference(aliasName)).toEqual("string");
         expect(visitor.reference(binaryAliasName)).toEqual("string");
         expect(topLevelVisitor.reference(aliasName)).toEqual("string");
-        expect(topLevelVisitor.reference(binaryAliasName)).toEqual("Blob");
+        expect(topLevelVisitor.reference(binaryAliasName)).toEqual("ReadableStream<Uint8Array>");
     });
 
     it("returns enum reference without I prefix", () => {
@@ -123,7 +123,9 @@ describe("TsTypeVisitor", () => {
     it("returns optional type", () => {
         expect(visitor.optional({ itemType: objectReference })).toEqual("IObject | null");
         expect(visitor.optional({ itemType: binaryAliasReference })).toEqual("string | null");
-        expect(topLevelVisitor.optional({ itemType: binaryAliasReference })).toEqual("Blob | null");
+        expect(topLevelVisitor.optional({ itemType: binaryAliasReference })).toEqual(
+            "ReadableStream<Uint8Array> | null",
+        );
     });
 
     it("returns list type", () => {

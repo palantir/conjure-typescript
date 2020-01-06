@@ -19,7 +19,7 @@ import { IErrorDefinition, IType, ITypeDefinition } from "conjure-api";
 import { ImportDeclarationStructure } from "ts-simple-ast";
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
-import { TsTypeVisitor } from "./tsTypeVisitor";
+import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
 import { doubleQuote, singleQuote } from "./utils";
 
 export function generateError(
@@ -30,7 +30,7 @@ export function generateError(
     const sourceFile = simpleAst.createSourceFile(definition.errorName);
     const interfaceName = "I" + definition.errorName.name;
     const errorName = `${definition.namespace}:${definition.errorName.name}`;
-    const tsTypeVisitor = new TsTypeVisitor(knownTypes, definition.errorName, false);
+    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.errorName, false);
     const importsVisitor = new ImportsVisitor(knownTypes, definition.errorName);
     const imports: ImportDeclarationStructure[] = [];
 

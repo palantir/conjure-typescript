@@ -29,14 +29,14 @@ import {
 } from "conjure-api";
 import { createHashableTypeName } from "./utils";
 
-export class TsTypeVisitor implements ITypeVisitor<string> {
+export class TsReturnTypeVisitor implements ITypeVisitor<string> {
     constructor(
-        private knownTypes: Map<string, ITypeDefinition>,
-        private currType: ITypeName,
-        private isTopLevelBinary: boolean,
+        protected knownTypes: Map<string, ITypeDefinition>,
+        protected currType: ITypeName,
+        protected isTopLevelBinary: boolean,
     ) {}
 
-    public primitive = (obj: PrimitiveType) => {
+    public primitive = (obj: PrimitiveType): string => {
         switch (obj) {
             case PrimitiveType.STRING:
             case PrimitiveType.DATETIME:
@@ -49,7 +49,7 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
             case PrimitiveType.SAFELONG:
                 return "number";
             case PrimitiveType.BINARY:
-                return this.isTopLevelBinary ? "Blob" : "string";
+                return this.isTopLevelBinary ? "ReadableStream<Uint8Array>" : "string";
             case PrimitiveType.ANY:
                 return "any";
             case PrimitiveType.BOOLEAN:
@@ -61,7 +61,7 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
         }
     };
     public map = (obj: IMapType): string => {
-        const valueTsType = IType.visit(obj.valueType, new TsTypeVisitor(this.knownTypes, this.currType, false));
+        const valueTsType = IType.visit(obj.valueType, this.nestedVisitor());
         if (IType.isReference(obj.keyType)) {
             const keyTypeDefinition = this.knownTypes.get(createHashableTypeName(obj.keyType.reference));
             if (keyTypeDefinition != null && ITypeDefinition.isEnum(keyTypeDefinition)) {
@@ -71,11 +71,11 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
         return `{ [key: string]: ${valueTsType} }`;
     };
     public list = (obj: IListType): string => {
-        const itemType = IType.visit(obj.itemType, new TsTypeVisitor(this.knownTypes, this.currType, false));
+        const itemType = IType.visit(obj.itemType, this.nestedVisitor());
         return `Array<${itemType}>`;
     };
     public set = (obj: ISetType): string => {
-        const itemType = IType.visit(obj.itemType, new TsTypeVisitor(this.knownTypes, this.currType, false));
+        const itemType = IType.visit(obj.itemType, this.nestedVisitor());
         return `Array<${itemType}>`;
     };
     public optional = (obj: IOptionalType): string => {
@@ -100,9 +100,13 @@ export class TsTypeVisitor implements ITypeVisitor<string> {
         return withIPrefix;
     };
     public external = (obj: IExternalReference): string => {
-        return IType.visit(obj.fallback, new TsTypeVisitor(this.knownTypes, this.currType, false));
+        return IType.visit(obj.fallback, this.nestedVisitor());
     };
     public unknown = (_: IType): string => {
         throw new Error("unknown");
+    };
+
+    protected nestedVisitor = (): ITypeVisitor<string> => {
+        return new TsReturnTypeVisitor(this.knownTypes, this.currType, false);
     };
 }

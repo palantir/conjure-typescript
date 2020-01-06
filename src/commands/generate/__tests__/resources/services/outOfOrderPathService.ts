@@ -10,6 +10,7 @@ export class OutOfOrderPathService {
 
     public foo(param1: string, param2: string): Promise<void> {
         return this.bridge.callEndpoint<void>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "foo",
             endpointPath: "/{param2}/{param1}",

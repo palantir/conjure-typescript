@@ -15,12 +15,12 @@ export interface ITestService {
     getFileSystems(): Promise<{ [key: string]: IBackingFileSystem }>;
     createDataset(request: ICreateDatasetRequest, testHeaderArg: string): Promise<IDataset>;
     getDataset(datasetRid: string): Promise<IDataset | null>;
-    getRawData(datasetRid: string): Promise<Blob>;
-    getAliasedRawData(datasetRid: string): Promise<Blob>;
-    maybeGetRawData(datasetRid: string): Promise<Blob | null>;
+    getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
+    getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
+    maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null>;
     getAliasedString(datasetRid: string): Promise<string>;
-    uploadRawData(input: Blob): Promise<void>;
-    uploadAliasedRawData(input: Blob): Promise<void>;
+    uploadRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<void>;
+    uploadAliasedRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<void>;
     getBranches(datasetRid: string): Promise<Array<string>>;
     /**
      * Gets all branches of this dataset.
@@ -44,6 +44,7 @@ export class TestService {
 
     public getFileSystems(): Promise<{ [key: string]: IBackingFileSystem }> {
         return this.bridge.callEndpoint<{ [key: string]: IBackingFileSystem }>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "getFileSystems",
             endpointPath: "/catalog/fileSystems",
@@ -61,6 +62,7 @@ export class TestService {
 
     public createDataset(request: ICreateDatasetRequest, testHeaderArg: string): Promise<IDataset> {
         return this.bridge.callEndpoint<IDataset>({
+            binaryAsStream: true,
             data: request,
             endpointName: "createDataset",
             endpointPath: "/catalog/datasets",
@@ -79,6 +81,7 @@ export class TestService {
 
     public getDataset(datasetRid: string): Promise<IDataset | null> {
         return this.bridge.callEndpoint<IDataset | null>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "getDataset",
             endpointPath: "/catalog/datasets/{datasetRid}",
@@ -95,8 +98,9 @@ export class TestService {
         });
     }
 
-    public getRawData(datasetRid: string): Promise<Blob> {
-        return this.bridge.callEndpoint<Blob>({
+    public getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>> {
+        return this.bridge.callEndpoint<ReadableStream<Uint8Array>>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "getRawData",
             endpointPath: "/catalog/datasets/{datasetRid}/raw",
@@ -113,8 +117,9 @@ export class TestService {
         });
     }
 
-    public getAliasedRawData(datasetRid: string): Promise<Blob> {
-        return this.bridge.callEndpoint<Blob>({
+    public getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>> {
+        return this.bridge.callEndpoint<ReadableStream<Uint8Array>>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "getAliasedRawData",
             endpointPath: "/catalog/datasets/{datasetRid}/raw-aliased",
@@ -131,8 +136,9 @@ export class TestService {
         });
     }
 
-    public maybeGetRawData(datasetRid: string): Promise<Blob | null> {
-        return this.bridge.callEndpoint<Blob | null>({
+    public maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null> {
+        return this.bridge.callEndpoint<ReadableStream<Uint8Array> | null>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "maybeGetRawData",
             endpointPath: "/catalog/datasets/{datasetRid}/raw-maybe",
@@ -151,6 +157,7 @@ export class TestService {
 
     public getAliasedString(datasetRid: string): Promise<string> {
         return this.bridge.callEndpoint<string>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "getAliasedString",
             endpointPath: "/catalog/datasets/{datasetRid}/string-aliased",
@@ -167,8 +174,9 @@ export class TestService {
         });
     }
 
-    public uploadRawData(input: Blob): Promise<void> {
+    public uploadRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<void> {
         return this.bridge.callEndpoint<void>({
+            binaryAsStream: true,
             data: input,
             endpointName: "uploadRawData",
             endpointPath: "/catalog/datasets/upload-raw",
@@ -184,8 +192,9 @@ export class TestService {
         });
     }
 
-    public uploadAliasedRawData(input: Blob): Promise<void> {
+    public uploadAliasedRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<void> {
         return this.bridge.callEndpoint<void>({
+            binaryAsStream: true,
             data: input,
             endpointName: "uploadAliasedRawData",
             endpointPath: "/catalog/datasets/upload-raw-aliased",
@@ -203,6 +212,7 @@ export class TestService {
 
     public getBranches(datasetRid: string): Promise<Array<string>> {
         return this.bridge.callEndpoint<Array<string>>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "getBranches",
             endpointPath: "/catalog/datasets/{datasetRid}/branches",
@@ -221,6 +231,7 @@ export class TestService {
 
     public getBranchesDeprecated(datasetRid: string): Promise<Array<string>> {
         return this.bridge.callEndpoint<Array<string>>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "getBranchesDeprecated",
             endpointPath: "/catalog/datasets/{datasetRid}/branchesDeprecated",
@@ -239,6 +250,7 @@ export class TestService {
 
     public resolveBranch(datasetRid: string, branch: string): Promise<string | null> {
         return this.bridge.callEndpoint<string | null>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "resolveBranch",
             endpointPath: "/catalog/datasets/{datasetRid}/branches/{branch:.+}/resolve",
@@ -259,6 +271,7 @@ export class TestService {
 
     public testParam(datasetRid: string): Promise<string | null> {
         return this.bridge.callEndpoint<string | null>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "testParam",
             endpointPath: "/catalog/datasets/{datasetRid}/testParam",
@@ -277,6 +290,7 @@ export class TestService {
 
     public testQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<number> {
         return this.bridge.callEndpoint<number>({
+            binaryAsStream: true,
             data: query,
             endpointName: "testQueryParams",
             endpointPath: "/catalog/test-query-params",
@@ -303,6 +317,7 @@ export class TestService {
 
     public testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<void> {
         return this.bridge.callEndpoint<void>({
+            binaryAsStream: true,
             data: query,
             endpointName: "testNoResponseQueryParams",
             endpointPath: "/catalog/test-no-response-query-params",
@@ -329,6 +344,7 @@ export class TestService {
 
     public testBoolean(): Promise<boolean> {
         return this.bridge.callEndpoint<boolean>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "testBoolean",
             endpointPath: "/catalog/boolean",
@@ -346,6 +362,7 @@ export class TestService {
 
     public testDouble(): Promise<number | "NaN"> {
         return this.bridge.callEndpoint<number | "NaN">({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "testDouble",
             endpointPath: "/catalog/double",
@@ -363,6 +380,7 @@ export class TestService {
 
     public testInteger(): Promise<number> {
         return this.bridge.callEndpoint<number>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "testInteger",
             endpointPath: "/catalog/integer",
@@ -380,6 +398,7 @@ export class TestService {
 
     public testPostOptional(maybeString?: string | null): Promise<string | null> {
         return this.bridge.callEndpoint<string | null>({
+            binaryAsStream: true,
             data: maybeString,
             endpointName: "testPostOptional",
             endpointPath: "/catalog/optional",
@@ -397,6 +416,7 @@ export class TestService {
 
     public testOptionalIntegerAndDouble(maybeInteger?: number | null, maybeDouble?: number | "NaN" | null): Promise<void> {
         return this.bridge.callEndpoint<void>({
+            binaryAsStream: true,
             data: undefined,
             endpointName: "testOptionalIntegerAndDouble",
             endpointPath: "/catalog/optional-integer-double",

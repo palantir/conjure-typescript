@@ -37,7 +37,8 @@ import { ImportsVisitor, sortImports } from "./imports";
 import { MediaTypeVisitor } from "./mediaTypeVisitor";
 import { SimpleAst } from "./simpleAst";
 import { StringConversionTypeVisitor } from "./stringConversionTypeVisitor";
-import { TsTypeVisitor } from "./tsTypeVisitor";
+import { TsArgumentTypeVisitor } from "./tsArgumentTypeVisitor";
+import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
 import { CONJURE_CLIENT } from "./utils";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
@@ -60,7 +61,8 @@ export function generateService(
     simpleAst: SimpleAst,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
-    const tsTypeVisitor = new TsTypeVisitor(knownTypes, definition.serviceName, true);
+    const tsReturnTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.serviceName, true);
+    const tsArgumentTypeVisitor = new TsArgumentTypeVisitor(knownTypes, definition.serviceName, true);
     const importsVisitor = new ImportsVisitor(knownTypes, definition.serviceName);
     const mediaTypeVisitor = new MediaTypeVisitor(knownTypes);
 
@@ -76,7 +78,7 @@ export function generateService(
                 return aIsOptional && !bIsOptional ? 1 : !aIsOptional && bIsOptional ? -1 : 0;
             })
             .map(argDefinition => {
-                const argType = IType.visit(argDefinition.type, tsTypeVisitor);
+                const argType = IType.visit(argDefinition.type, tsArgumentTypeVisitor);
                 imports.push(...IType.visit(argDefinition.type, importsVisitor));
                 return {
                     hasQuestionToken: IType.isOptional(argDefinition.type),
@@ -87,7 +89,7 @@ export function generateService(
 
         let returnTsType = "void";
         if (endpointDefinition.returns != null) {
-            returnTsType = IType.visit(endpointDefinition.returns, tsTypeVisitor);
+            returnTsType = IType.visit(endpointDefinition.returns, tsReturnTypeVisitor);
             imports.push(...IType.visit(endpointDefinition.returns, importsVisitor));
         }
 
@@ -196,6 +198,7 @@ function generateEndpointBody(
 
     return writer => {
         writer.write(`return this.${BRIDGE}.callEndpoint<${returnTsType}>(`).inlineBlock(() => {
+            writer.writeLine(`binaryAsStream: true,`);
             writer.writeLine(`data: ${data},`);
             writer.writeLine(`endpointName: "${endpointDefinition.endpointName}",`);
             writer.writeLine(`endpointPath: "${endpointDefinition.httpPath}",`);

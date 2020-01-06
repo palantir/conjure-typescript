@@ -10,6 +10,7 @@ export class ParamTypeService {
 
     public foo(body: string, header: string, path: string, query: string): Promise<void> {
         return this.bridge.callEndpoint<void>({
+            binaryAsStream: true,
             data: body,
             endpointName: "foo",
             endpointPath: "/foo/{path}",

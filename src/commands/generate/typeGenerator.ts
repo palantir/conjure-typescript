@@ -26,7 +26,7 @@ import {
 } from "ts-simple-ast";
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
-import { TsTypeVisitor } from "./tsTypeVisitor";
+import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
 import { doubleQuote, isValidFunctionName, singleQuote } from "./utils";
 
 export function generateType(
@@ -88,7 +88,7 @@ export async function generateObject(
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
 ) {
-    const tsTypeVisitor = new TsTypeVisitor(knownTypes, definition.typeName, false);
+    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false);
     const importsVisitor = new ImportsVisitor(knownTypes, definition.typeName);
     const properties: PropertySignatureStructure[] = [];
     const imports: ImportDeclarationStructure[] = [];
@@ -203,7 +203,7 @@ function processUnionMembers(
     definition: IUnionDefinition,
     knownTypes: Map<string, ITypeDefinition>,
 ) {
-    const tsTypeVisitor = new TsTypeVisitor(knownTypes, definition.typeName, false);
+    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false);
     const importsVisitor = new ImportsVisitor(knownTypes, definition.typeName);
 
     const imports: ImportDeclarationStructure[] = [];
