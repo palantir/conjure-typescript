@@ -198,17 +198,20 @@ export async function resolveProductDependencies(
     const dependencies: { [coordinate: string]: IProductDependency } = {};
     resolvedProductDependencies.forEach(productDependency => {
         const coordinate = `${productDependency["product-group"]}:${productDependency["product-name"]}`;
+        const minVersion = productDependency["minimum-version"];
+        const maxVersion = productDependency["maximum-version"];
+        const recommendedVersion = productDependency["recommended-version"];
         if (
-            SlsVersionMatcher.safeValueOf(productDependency["maximum-version"]) == null ||
-            !isValid(productDependency["minimum-version"]) ||
-            !isValid(productDependency["recommended-version"])
+            !isValid(minVersion) ||
+            SlsVersionMatcher.safeValueOf(maxVersion) == null ||
+            (recommendedVersion && !isValid(recommendedVersion))
         ) {
             throw new Error("Encountered invalid product dependency");
         }
         dependencies[coordinate] = {
-            minVersion: productDependency["minimum-version"],
-            recommendedVersion: productDependency["recommended-version"],
-            maxVersion: productDependency["maximum-version"],
+            minVersion,
+            maxVersion,
+            recommendedVersion,
         };
     });
     return dependencies;
