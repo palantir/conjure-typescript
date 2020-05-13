@@ -240,7 +240,7 @@ function generateEndpointBody(
         if (pathParamsFromPath.length === 0) {
             writer.writeLine(`${UNDEFINED_CONSTANT},`);
         } else {
-            writer.write("pathArguments: [");
+            writer.write("[");
             pathParamsFromPath.forEach(pathArgName => writer.indent().writeLine(pathArgName + ","));
             writer.writeLine("],");
         }

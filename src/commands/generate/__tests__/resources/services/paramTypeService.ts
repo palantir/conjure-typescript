@@ -26,7 +26,7 @@ export class ParamTypeService {
             {
                 "Query": query,
             },
-            pathArguments: [
+            [
                 path,
             ],
             __undefined,

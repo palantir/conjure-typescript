@@ -88,7 +88,7 @@ export class TestService {
             __undefined,
             __undefined,
             __undefined,
-            pathArguments: [
+            [
                 datasetRid,
             ],
             __undefined,
@@ -105,7 +105,7 @@ export class TestService {
             __undefined,
             __undefined,
             __undefined,
-            pathArguments: [
+            [
                 datasetRid,
             ],
             __undefined,
@@ -122,7 +122,7 @@ export class TestService {
             __undefined,
             __undefined,
             __undefined,
-            pathArguments: [
+            [
                 datasetRid,
             ],
             __undefined,
@@ -139,7 +139,7 @@ export class TestService {
             __undefined,
             __undefined,
             __undefined,
-            pathArguments: [
+            [
                 datasetRid,
             ],
             __undefined,
@@ -156,7 +156,7 @@ export class TestService {
             __undefined,
             __undefined,
             __undefined,
-            pathArguments: [
+            [
                 datasetRid,
             ],
             __undefined,
@@ -203,7 +203,7 @@ export class TestService {
             __undefined,
             __undefined,
             __undefined,
-            pathArguments: [
+            [
                 datasetRid,
             ],
             __undefined,
@@ -220,7 +220,7 @@ export class TestService {
             __undefined,
             __undefined,
             __undefined,
-            pathArguments: [
+            [
                 datasetRid,
             ],
             __undefined,
@@ -237,7 +237,7 @@ export class TestService {
             __undefined,
             __undefined,
             __undefined,
-            pathArguments: [
+            [
                 datasetRid,
 
                 branch,
@@ -256,7 +256,7 @@ export class TestService {
             __undefined,
             __undefined,
             __undefined,
-            pathArguments: [
+            [
                 datasetRid,
             ],
             __undefined,

@@ -22,7 +22,7 @@ export class OutOfOrderPathService {
             __undefined,
             __undefined,
             __undefined,
-            pathArguments: [
+            [
                 param2,
 
                 param1,
