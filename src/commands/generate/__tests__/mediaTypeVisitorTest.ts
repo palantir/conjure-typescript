@@ -16,6 +16,7 @@
  */
 
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
+import { MediaType } from "conjure-client";
 import { MediaTypeVisitor } from "../mediaTypeVisitor";
 import { createHashableTypeName } from "../utils";
 
@@ -57,17 +58,17 @@ describe("testMediaTypeGenerator", () => {
     );
 
     it("returns correct media type for primitives", () => {
-        expect(visitor.primitive(PrimitiveType.STRING)).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.primitive(PrimitiveType.DATETIME)).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.primitive(PrimitiveType.INTEGER)).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.primitive(PrimitiveType.DOUBLE)).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.primitive(PrimitiveType.SAFELONG)).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.primitive(PrimitiveType.BINARY)).toEqual("MediaType.APPLICATION_OCTET_STREAM");
-        expect(visitor.primitive(PrimitiveType.ANY)).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.primitive(PrimitiveType.BOOLEAN)).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.primitive(PrimitiveType.RID)).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.primitive(PrimitiveType.BEARERTOKEN)).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.primitive(PrimitiveType.UUID)).toEqual("MediaType.APPLICATION_JSON");
+        expect(visitor.primitive(PrimitiveType.STRING)).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.primitive(PrimitiveType.DATETIME)).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.primitive(PrimitiveType.INTEGER)).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.primitive(PrimitiveType.DOUBLE)).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.primitive(PrimitiveType.SAFELONG)).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.primitive(PrimitiveType.BINARY)).toEqual(MediaType.APPLICATION_OCTET_STREAM);
+        expect(visitor.primitive(PrimitiveType.ANY)).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.primitive(PrimitiveType.BOOLEAN)).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.primitive(PrimitiveType.RID)).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.primitive(PrimitiveType.BEARERTOKEN)).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.primitive(PrimitiveType.UUID)).toEqual(MediaType.APPLICATION_JSON);
     });
 
     it("produces error for unknown reference", () => {
@@ -76,39 +77,39 @@ describe("testMediaTypeGenerator", () => {
     });
 
     it("returns application/json for reference type", () => {
-        expect(visitor.reference(objectName)).toEqual("MediaType.APPLICATION_JSON");
+        expect(visitor.reference(objectName)).toEqual(MediaType.APPLICATION_JSON);
     });
 
     it("follows alias reference for media type", () => {
-        expect(visitor.reference(aliasName)).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.reference(binaryAliasName)).toEqual("MediaType.APPLICATION_OCTET_STREAM");
+        expect(visitor.reference(aliasName)).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.reference(binaryAliasName)).toEqual(MediaType.APPLICATION_OCTET_STREAM);
     });
 
     it("returns application/json for enum", () => {
-        expect(visitor.reference(enumName)).toEqual("MediaType.APPLICATION_JSON");
+        expect(visitor.reference(enumName)).toEqual(MediaType.APPLICATION_JSON);
     });
 
     it("follows optional element type for media type", () => {
-        expect(visitor.optional({ itemType: objectReference })).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.optional({ itemType: binaryAliasReference })).toEqual("MediaType.APPLICATION_OCTET_STREAM");
+        expect(visitor.optional({ itemType: objectReference })).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.optional({ itemType: binaryAliasReference })).toEqual(MediaType.APPLICATION_OCTET_STREAM);
     });
 
     it("returns application/json for list type", () => {
-        expect(visitor.list({ itemType: objectReference })).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.list({ itemType: binaryAliasReference })).toEqual("MediaType.APPLICATION_JSON");
+        expect(visitor.list({ itemType: objectReference })).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.list({ itemType: binaryAliasReference })).toEqual(MediaType.APPLICATION_JSON);
     });
 
     it("returns application/json for set type", () => {
-        expect(visitor.set({ itemType: objectReference })).toEqual("MediaType.APPLICATION_JSON");
-        expect(visitor.set({ itemType: binaryAliasReference })).toEqual("MediaType.APPLICATION_JSON");
+        expect(visitor.set({ itemType: objectReference })).toEqual(MediaType.APPLICATION_JSON);
+        expect(visitor.set({ itemType: binaryAliasReference })).toEqual(MediaType.APPLICATION_JSON);
     });
 
     it("returns application/json for map type", () => {
         expect(visitor.map({ keyType: aliasReference, valueType: objectReference })).toEqual(
-            "MediaType.APPLICATION_JSON",
+            MediaType.APPLICATION_JSON,
         );
         expect(visitor.map({ keyType: aliasReference, valueType: binaryAliasReference })).toEqual(
-            "MediaType.APPLICATION_JSON",
+            MediaType.APPLICATION_JSON,
         );
     });
 
@@ -118,6 +119,6 @@ describe("testMediaTypeGenerator", () => {
             externalReference: unusedTypeName,
             fallback: IType.primitive(PrimitiveType.ANY),
         };
-        expect(visitor.external(externalType)).toEqual("MediaType.APPLICATION_JSON");
+        expect(visitor.external(externalType)).toEqual(MediaType.APPLICATION_JSON);
     });
 });

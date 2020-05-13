@@ -1,5 +1,10 @@
 import { IHttpApiBridge, MediaType } from "conjure-client";
 
+/**
+ * Constant reference to `undefined` that we expect to get minified and therefore reduce total code size
+ */
+const __undefined = undefined;
+
 export interface IParamTypeService {
     foo(body: string, header: string, path: string, query: string): Promise<void>;
 }
@@ -9,23 +14,23 @@ export class ParamTypeService {
     }
 
     public foo(body: string, header: string, path: string, query: string): Promise<void> {
-        return this.bridge.callEndpoint<void>({
-            binaryAsStream: true,
-            data: body,
-            endpointName: "foo",
-            endpointPath: "/foo/{path}",
-            headers: {
+        return this.bridge.call<void>(
+            "ParamTypeService",
+            "foo",
+            "GET",
+            "/foo/{path}",
+            body,
+            {
                 "Header": header,
             },
-            method: "GET",
+            {
+                "Query": query,
+            },
             pathArguments: [
                 path,
             ],
-            queryArguments: {
-                "Query": query,
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined
+        );
     }
 }

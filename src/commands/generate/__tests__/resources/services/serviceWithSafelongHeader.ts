@@ -1,5 +1,10 @@
 import { IHttpApiBridge, MediaType } from "conjure-client";
 
+/**
+ * Constant reference to `undefined` that we expect to get minified and therefore reduce total code size
+ */
+const __undefined = undefined;
+
 export interface IServiceWithSafelongHeader {
     foo(investigation: number): Promise<void>;
 }
@@ -9,21 +14,19 @@ export class ServiceWithSafelongHeader {
     }
 
     public foo(investigation: number): Promise<void> {
-        return this.bridge.callEndpoint<void>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "foo",
-            endpointPath: "/foo",
-            headers: {
+        return this.bridge.call<void>(
+            "ServiceWithSafelongHeader",
+            "foo",
+            "GET",
+            "/foo",
+            __undefined,
+            {
                 "X-Investigation": investigation.toString(),
             },
-            method: "GET",
-            pathArguments: [
-            ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined
+        );
     }
 }
