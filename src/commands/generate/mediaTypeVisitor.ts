@@ -26,24 +26,25 @@ import {
     ITypeVisitor,
     PrimitiveType,
 } from "conjure-api";
+import { MediaType } from "conjure-client";
 import { createHashableTypeName } from "./utils";
 
-export class MediaTypeVisitor implements ITypeVisitor<string> {
+export class MediaTypeVisitor implements ITypeVisitor<MediaType> {
     constructor(private knownTypes: Map<string, ITypeDefinition>) {}
 
-    public external = (_: IExternalReference): string => {
-        return "MediaType.APPLICATION_JSON";
+    public external = (_: IExternalReference): MediaType => {
+        return MediaType.APPLICATION_JSON;
     };
-    public list = (_: IListType): string => {
-        return "MediaType.APPLICATION_JSON";
+    public list = (_: IListType): MediaType => {
+        return MediaType.APPLICATION_JSON;
     };
-    public map = (_: IMapType): string => {
-        return "MediaType.APPLICATION_JSON";
+    public map = (_: IMapType): MediaType => {
+        return MediaType.APPLICATION_JSON;
     };
-    public optional = (obj: IOptionalType): string => {
+    public optional = (obj: IOptionalType): MediaType => {
         return IType.visit(obj.itemType, this);
     };
-    public primitive = (obj: PrimitiveType): string => {
+    public primitive = (obj: PrimitiveType): MediaType => {
         switch (obj) {
             case PrimitiveType.STRING:
             case PrimitiveType.DATETIME:
@@ -55,26 +56,26 @@ export class MediaTypeVisitor implements ITypeVisitor<string> {
             case PrimitiveType.ANY:
             case PrimitiveType.BOOLEAN:
             case PrimitiveType.UUID:
-                return "MediaType.APPLICATION_JSON";
+                return MediaType.APPLICATION_JSON;
             case PrimitiveType.BINARY:
-                return "MediaType.APPLICATION_OCTET_STREAM";
+                return MediaType.APPLICATION_OCTET_STREAM;
             default:
                 throw new Error("unknown primitive type");
         }
     };
-    public reference = (obj: ITypeName): string => {
+    public reference = (obj: ITypeName): MediaType => {
         const typeDefinition = this.knownTypes.get(createHashableTypeName(obj));
         if (typeDefinition == null) {
             throw new Error(`unknown reference type. package: '${obj.package}', name: '${obj.name}'`);
         } else if (ITypeDefinition.isAlias(typeDefinition)) {
             return IType.visit(typeDefinition.alias.alias, this);
         }
-        return "MediaType.APPLICATION_JSON";
+        return MediaType.APPLICATION_JSON;
     };
-    public set = (_: ISetType): string => {
-        return "MediaType.APPLICATION_JSON";
+    public set = (_: ISetType): MediaType => {
+        return MediaType.APPLICATION_JSON;
     };
-    public unknown = (_: IType): string => {
-        return "MediaType.APPLICATION_JSON";
+    public unknown = (_: IType): MediaType => {
+        return MediaType.APPLICATION_JSON;
     };
 }
