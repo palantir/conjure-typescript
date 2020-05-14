@@ -72,7 +72,7 @@ export function generateService(
 
     const endpointSignatures: MethodDeclarationStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
-    const imports: ImportDeclarationStructure[] = [HTTP_API_BRIDGE_IMPORT, MEDIA_TYPE_IMPORT];
+    const imports: ImportDeclarationStructure[] = [HTTP_API_BRIDGE_IMPORT];
     sourceFile.addVariableStatement({
         declarationKind: VariableDeclarationKind.Const,
         docs: ["Constant reference to `undefined` that we expect to get minified and therefore reduce total code size"],

@@ -1,4 +1,4 @@
-import { IHttpApiBridge, MediaType } from "conjure-client";
+import { IHttpApiBridge } from "conjure-client";
 
 /**
  * Constant reference to `undefined` that we expect to get minified and therefore reduce total code size

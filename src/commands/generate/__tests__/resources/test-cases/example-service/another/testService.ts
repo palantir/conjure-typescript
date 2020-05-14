@@ -1,7 +1,7 @@
 import { IBackingFileSystem } from "../product-datasets/backingFileSystem";
 import { IDataset } from "../product-datasets/dataset";
 import { ICreateDatasetRequest } from "../product/createDatasetRequest";
-import { IHttpApiBridge, MediaType } from "conjure-client";
+import { IHttpApiBridge } from "conjure-client";
 
 /**
  * Constant reference to `undefined` that we expect to get minified and therefore reduce total code size
