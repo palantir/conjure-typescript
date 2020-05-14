@@ -45,16 +45,11 @@ import { CONJURE_CLIENT } from "./utils";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
-const MEDIA_TYPE = "MediaType";
 /** Variable name used in the generation of the service class. */
 const BRIDGE = "bridge";
 const HTTP_API_BRIDGE_IMPORT = {
     moduleSpecifier: CONJURE_CLIENT,
     namedImports: [{ name: HTTP_API_BRIDGE_TYPE }],
-};
-const MEDIA_TYPE_IMPORT = {
-    moduleSpecifier: CONJURE_CLIENT,
-    namedImports: [{ name: MEDIA_TYPE }],
 };
 
 const UNDEFINED_CONSTANT = "__undefined";
