@@ -1,7 +1,12 @@
 import { IBackingFileSystem } from "../product-datasets/backingFileSystem";
 import { IDataset } from "../product-datasets/dataset";
 import { ICreateDatasetRequest } from "../product/createDatasetRequest";
-import { IHttpApiBridge, MediaType } from "conjure-client";
+import { IHttpApiBridge } from "conjure-client";
+
+/**
+ * Constant reference to `undefined` that we expect to get minified and therefore reduce total code size
+ */
+const __undefined = undefined;
 
 /**
  * A Markdown description of the service.
@@ -43,263 +48,231 @@ export class TestService {
     }
 
     public getFileSystems(): Promise<{ [key: string]: IBackingFileSystem }> {
-        return this.bridge.callEndpoint<{ [key: string]: IBackingFileSystem }>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "getFileSystems",
-            endpointPath: "/catalog/fileSystems",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
-            ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+        return this.bridge.call<{ [key: string]: IBackingFileSystem }>(
+            "TestService",
+            "getFileSystems",
+            "GET",
+            "/catalog/fileSystems",
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined
+        );
     }
 
     public createDataset(request: ICreateDatasetRequest, testHeaderArg: string): Promise<IDataset> {
-        return this.bridge.callEndpoint<IDataset>({
-            binaryAsStream: true,
-            data: request,
-            endpointName: "createDataset",
-            endpointPath: "/catalog/datasets",
-            headers: {
+        return this.bridge.call<IDataset>(
+            "TestService",
+            "createDataset",
+            "POST",
+            "/catalog/datasets",
+            request,
+            {
                 "Test-Header": testHeaderArg,
             },
-            method: "POST",
-            pathArguments: [
-            ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined
+        );
     }
 
     public getDataset(datasetRid: string): Promise<IDataset | null> {
-        return this.bridge.callEndpoint<IDataset | null>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "getDataset",
-            endpointPath: "/catalog/datasets/{datasetRid}",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
+        return this.bridge.call<IDataset | null>(
+            "TestService",
+            "getDataset",
+            "GET",
+            "/catalog/datasets/{datasetRid}",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
                 datasetRid,
             ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined
+        );
     }
 
     public getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>> {
-        return this.bridge.callEndpoint<ReadableStream<Uint8Array>>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "getRawData",
-            endpointPath: "/catalog/datasets/{datasetRid}/raw",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
+        return this.bridge.call<ReadableStream<Uint8Array>>(
+            "TestService",
+            "getRawData",
+            "GET",
+            "/catalog/datasets/{datasetRid}/raw",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
                 datasetRid,
             ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_OCTET_STREAM,
-        });
+            __undefined,
+            "application/octet-stream"
+        );
     }
 
     public getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>> {
-        return this.bridge.callEndpoint<ReadableStream<Uint8Array>>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "getAliasedRawData",
-            endpointPath: "/catalog/datasets/{datasetRid}/raw-aliased",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
+        return this.bridge.call<ReadableStream<Uint8Array>>(
+            "TestService",
+            "getAliasedRawData",
+            "GET",
+            "/catalog/datasets/{datasetRid}/raw-aliased",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
                 datasetRid,
             ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_OCTET_STREAM,
-        });
+            __undefined,
+            "application/octet-stream"
+        );
     }
 
     public maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null> {
-        return this.bridge.callEndpoint<ReadableStream<Uint8Array> | null>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "maybeGetRawData",
-            endpointPath: "/catalog/datasets/{datasetRid}/raw-maybe",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
+        return this.bridge.call<ReadableStream<Uint8Array> | null>(
+            "TestService",
+            "maybeGetRawData",
+            "GET",
+            "/catalog/datasets/{datasetRid}/raw-maybe",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
                 datasetRid,
             ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_OCTET_STREAM,
-        });
+            __undefined,
+            "application/octet-stream"
+        );
     }
 
     public getAliasedString(datasetRid: string): Promise<string> {
-        return this.bridge.callEndpoint<string>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "getAliasedString",
-            endpointPath: "/catalog/datasets/{datasetRid}/string-aliased",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
+        return this.bridge.call<string>(
+            "TestService",
+            "getAliasedString",
+            "GET",
+            "/catalog/datasets/{datasetRid}/string-aliased",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
                 datasetRid,
             ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined
+        );
     }
 
     public uploadRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<void> {
-        return this.bridge.callEndpoint<void>({
-            binaryAsStream: true,
-            data: input,
-            endpointName: "uploadRawData",
-            endpointPath: "/catalog/datasets/upload-raw",
-            headers: {
-            },
-            method: "POST",
-            pathArguments: [
-            ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_OCTET_STREAM,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+        return this.bridge.call<void>(
+            "TestService",
+            "uploadRawData",
+            "POST",
+            "/catalog/datasets/upload-raw",
+            input,
+            __undefined,
+            __undefined,
+            __undefined,
+            "application/octet-stream",
+            __undefined
+        );
     }
 
     public uploadAliasedRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<void> {
-        return this.bridge.callEndpoint<void>({
-            binaryAsStream: true,
-            data: input,
-            endpointName: "uploadAliasedRawData",
-            endpointPath: "/catalog/datasets/upload-raw-aliased",
-            headers: {
-            },
-            method: "POST",
-            pathArguments: [
-            ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_OCTET_STREAM,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+        return this.bridge.call<void>(
+            "TestService",
+            "uploadAliasedRawData",
+            "POST",
+            "/catalog/datasets/upload-raw-aliased",
+            input,
+            __undefined,
+            __undefined,
+            __undefined,
+            "application/octet-stream",
+            __undefined
+        );
     }
 
     public getBranches(datasetRid: string): Promise<Array<string>> {
-        return this.bridge.callEndpoint<Array<string>>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "getBranches",
-            endpointPath: "/catalog/datasets/{datasetRid}/branches",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
+        return this.bridge.call<Array<string>>(
+            "TestService",
+            "getBranches",
+            "GET",
+            "/catalog/datasets/{datasetRid}/branches",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
                 datasetRid,
             ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined
+        );
     }
 
     public getBranchesDeprecated(datasetRid: string): Promise<Array<string>> {
-        return this.bridge.callEndpoint<Array<string>>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "getBranchesDeprecated",
-            endpointPath: "/catalog/datasets/{datasetRid}/branchesDeprecated",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
+        return this.bridge.call<Array<string>>(
+            "TestService",
+            "getBranchesDeprecated",
+            "GET",
+            "/catalog/datasets/{datasetRid}/branchesDeprecated",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
                 datasetRid,
             ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined
+        );
     }
 
     public resolveBranch(datasetRid: string, branch: string): Promise<string | null> {
-        return this.bridge.callEndpoint<string | null>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "resolveBranch",
-            endpointPath: "/catalog/datasets/{datasetRid}/branches/{branch:.+}/resolve",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
+        return this.bridge.call<string | null>(
+            "TestService",
+            "resolveBranch",
+            "GET",
+            "/catalog/datasets/{datasetRid}/branches/{branch:.+}/resolve",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
                 datasetRid,
 
                 branch,
             ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined
+        );
     }
 
     public testParam(datasetRid: string): Promise<string | null> {
-        return this.bridge.callEndpoint<string | null>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "testParam",
-            endpointPath: "/catalog/datasets/{datasetRid}/testParam",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
+        return this.bridge.call<string | null>(
+            "TestService",
+            "testParam",
+            "GET",
+            "/catalog/datasets/{datasetRid}/testParam",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
                 datasetRid,
             ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined
+        );
     }
 
     public testQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<number> {
-        return this.bridge.callEndpoint<number>({
-            binaryAsStream: true,
-            data: query,
-            endpointName: "testQueryParams",
-            endpointPath: "/catalog/test-query-params",
-            headers: {
-            },
-            method: "POST",
-            pathArguments: [
-            ],
-            queryArguments: {
+        return this.bridge.call<number>(
+            "TestService",
+            "testQueryParams",
+            "POST",
+            "/catalog/test-query-params",
+            query,
+            __undefined,
+            {
                 "different": something,
 
                 "implicit": implicit,
@@ -310,23 +283,21 @@ export class TestService {
 
                 "optionalEnd": optionalEnd,
             },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined,
+            __undefined
+        );
     }
 
     public testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<void> {
-        return this.bridge.callEndpoint<void>({
-            binaryAsStream: true,
-            data: query,
-            endpointName: "testNoResponseQueryParams",
-            endpointPath: "/catalog/test-no-response-query-params",
-            headers: {
-            },
-            method: "POST",
-            pathArguments: [
-            ],
-            queryArguments: {
+        return this.bridge.call<void>(
+            "TestService",
+            "testNoResponseQueryParams",
+            "POST",
+            "/catalog/test-no-response-query-params",
+            query,
+            __undefined,
+            {
                 "different": something,
 
                 "implicit": implicit,
@@ -337,101 +308,88 @@ export class TestService {
 
                 "optionalEnd": optionalEnd,
             },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined,
+            __undefined
+        );
     }
 
     public testBoolean(): Promise<boolean> {
-        return this.bridge.callEndpoint<boolean>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "testBoolean",
-            endpointPath: "/catalog/boolean",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
-            ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+        return this.bridge.call<boolean>(
+            "TestService",
+            "testBoolean",
+            "GET",
+            "/catalog/boolean",
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined
+        );
     }
 
     public testDouble(): Promise<number | "NaN"> {
-        return this.bridge.callEndpoint<number | "NaN">({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "testDouble",
-            endpointPath: "/catalog/double",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
-            ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+        return this.bridge.call<number | "NaN">(
+            "TestService",
+            "testDouble",
+            "GET",
+            "/catalog/double",
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined
+        );
     }
 
     public testInteger(): Promise<number> {
-        return this.bridge.callEndpoint<number>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "testInteger",
-            endpointPath: "/catalog/integer",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
-            ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+        return this.bridge.call<number>(
+            "TestService",
+            "testInteger",
+            "GET",
+            "/catalog/integer",
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined
+        );
     }
 
     public testPostOptional(maybeString?: string | null): Promise<string | null> {
-        return this.bridge.callEndpoint<string | null>({
-            binaryAsStream: true,
-            data: maybeString,
-            endpointName: "testPostOptional",
-            endpointPath: "/catalog/optional",
-            headers: {
-            },
-            method: "POST",
-            pathArguments: [
-            ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+        return this.bridge.call<string | null>(
+            "TestService",
+            "testPostOptional",
+            "POST",
+            "/catalog/optional",
+            maybeString,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined
+        );
     }
 
     public testOptionalIntegerAndDouble(maybeInteger?: number | null, maybeDouble?: number | "NaN" | null): Promise<void> {
-        return this.bridge.callEndpoint<void>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "testOptionalIntegerAndDouble",
-            endpointPath: "/catalog/optional-integer-double",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
-            ],
-            queryArguments: {
+        return this.bridge.call<void>(
+            "TestService",
+            "testOptionalIntegerAndDouble",
+            "GET",
+            "/catalog/optional-integer-double",
+            __undefined,
+            __undefined,
+            {
                 "maybeInteger": maybeInteger,
 
                 "maybeDouble": maybeDouble,
             },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined,
+            __undefined
+        );
     }
 }

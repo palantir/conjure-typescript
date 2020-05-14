@@ -1,4 +1,9 @@
-import { IHttpApiBridge, MediaType } from "conjure-client";
+import { IHttpApiBridge } from "conjure-client";
+
+/**
+ * Constant reference to `undefined` that we expect to get minified and therefore reduce total code size
+ */
+const __undefined = undefined;
 
 export interface IOutOfOrderPathService {
     foo(param1: string, param2: string): Promise<void>;
@@ -9,23 +14,21 @@ export class OutOfOrderPathService {
     }
 
     public foo(param1: string, param2: string): Promise<void> {
-        return this.bridge.callEndpoint<void>({
-            binaryAsStream: true,
-            data: undefined,
-            endpointName: "foo",
-            endpointPath: "/{param2}/{param1}",
-            headers: {
-            },
-            method: "GET",
-            pathArguments: [
+        return this.bridge.call<void>(
+            "OutOfOrderPathService",
+            "foo",
+            "GET",
+            "/{param2}/{param1}",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
                 param2,
 
                 param1,
             ],
-            queryArguments: {
-            },
-            requestMediaType: MediaType.APPLICATION_JSON,
-            responseMediaType: MediaType.APPLICATION_JSON,
-        });
+            __undefined,
+            __undefined
+        );
     }
 }

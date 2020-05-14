@@ -109,7 +109,7 @@ describe("serviceGenerator", () => {
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain("returnsVoid(): Promise<void>;");
         expect(contents).toContain("returnsVoid(): Promise<void> {");
-        expect(contents).toContain("return this.bridge.callEndpoint<void>({");
+        expect(contents).toContain("return this.bridge.call<void>(");
     });
 
     it("handles binary body and return types", async () => {
@@ -133,8 +133,7 @@ describe("serviceGenerator", () => {
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain("foo(): Promise<ReadableStream<Uint8Array>>;");
-        expect(contents).toContain(`requestMediaType: MediaType.APPLICATION_JSON`);
-        expect(contents).toContain(`responseMediaType: MediaType.APPLICATION_OCTET_STREAM`);
+        expect(contents).toContain(`"application\/octet-stream"\n`);
     });
 
     it("handle binary return and json request types", async () => {
@@ -167,8 +166,8 @@ describe("serviceGenerator", () => {
         expect(contents).toContain(
             "foo(body: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<ReadableStream<Uint8Array>>;",
         );
-        expect(contents).toContain(`requestMediaType: MediaType.APPLICATION_OCTET_STREAM`);
-        expect(contents).toContain(`responseMediaType: MediaType.APPLICATION_OCTET_STREAM`);
+        expect(contents).toContain(`"application\/octet-stream",\n`);
+        expect(contents).toContain(`"application\/octet-stream"\n`);
     });
 
     it("emits imports and correct signature for service with references", async () => {
@@ -334,7 +333,7 @@ describe("serviceGenerator", () => {
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain("foo(header: string): Promise<void>;");
         expect(contents).toContain("foo(header: string): Promise<void> {");
-        expect(contents).toMatch(/headers: {\s*"Header": header,\s*}/);
+        expect(contents).toMatch(/{\s*"Header": header,\s*}/);
     });
 
     it("throws on multiple body args", async () => {

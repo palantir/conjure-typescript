@@ -1526,10 +1526,10 @@ conjure-api@^4.3.0:
   resolved "https://registry.yarnpkg.com/conjure-api/-/conjure-api-4.3.0.tgz#c778736f369e7c749a86118e14dab83deb698ace"
   integrity sha512-AnZe6qkiCRSsfuQMgA556dFs+/DbXpCK2uuhq9bHn36dSbKi+6HUDntpc9jkVPzWOecLXGqy+JAD6IKV8c9Sqw==
 
-conjure-client@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/conjure-client/-/conjure-client-2.0.0.tgz#4c03b4de0b91a9907a141087265b545c3e4ec801"
-  integrity sha512-cFC3GUx0ErzkWu/FndfF43s/S46qoPwW+v5u/Qo4wzX7pZ2H0aWCC1UGa7Xb+ArEfydHkFpyFyBFQOSN3dYiSQ==
+conjure-client@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/conjure-client/-/conjure-client-2.4.1.tgz#f230d13d9cc6b8699d3f26955b806d431b652fe9"
+  integrity sha512-D+m/j8G54CQVE/2i0RmgCZQXNqNy7TGOl4KrqVZV4LsTYhjrWXmBHvfHM+mhyPs69QWfDEgW48Yy/zUwEbuMYA==
   dependencies:
     web-streams-polyfill "^2.0.6"
 

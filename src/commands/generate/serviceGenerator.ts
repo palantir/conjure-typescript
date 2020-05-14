@@ -26,12 +26,14 @@ import {
     ITypeDefinition,
     ITypeVisitor,
 } from "conjure-api";
+import { MediaType } from "conjure-client";
 import {
     CodeBlockWriter,
     ImportDeclarationStructure,
     MethodDeclarationStructure,
     ParameterDeclarationStructure,
     Scope,
+    VariableDeclarationKind,
 } from "ts-simple-ast";
 import { ImportsVisitor, sortImports } from "./imports";
 import { MediaTypeVisitor } from "./mediaTypeVisitor";
@@ -43,17 +45,14 @@ import { CONJURE_CLIENT } from "./utils";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
-const MEDIA_TYPE = "MediaType";
 /** Variable name used in the generation of the service class. */
 const BRIDGE = "bridge";
 const HTTP_API_BRIDGE_IMPORT = {
     moduleSpecifier: CONJURE_CLIENT,
     namedImports: [{ name: HTTP_API_BRIDGE_TYPE }],
 };
-const MEDIA_TYPE_IMPORT = {
-    moduleSpecifier: CONJURE_CLIENT,
-    namedImports: [{ name: MEDIA_TYPE }],
-};
+
+const UNDEFINED_CONSTANT = "__undefined";
 
 export function generateService(
     definition: IServiceDefinition,
@@ -68,7 +67,12 @@ export function generateService(
 
     const endpointSignatures: MethodDeclarationStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
-    const imports: ImportDeclarationStructure[] = [HTTP_API_BRIDGE_IMPORT, MEDIA_TYPE_IMPORT];
+    const imports: ImportDeclarationStructure[] = [HTTP_API_BRIDGE_IMPORT];
+    sourceFile.addVariableStatement({
+        declarationKind: VariableDeclarationKind.Const,
+        docs: ["Constant reference to `undefined` that we expect to get minified and therefore reduce total code size"],
+        declarations: [{ name: UNDEFINED_CONSTANT, initializer: "undefined" }],
+    });
     definition.endpoints.forEach(endpointDefinition => {
         const parameters: ParameterDeclarationStructure[] = endpointDefinition.args
             .sort((a, b) => {
@@ -104,7 +108,12 @@ export function generateService(
         endpointSignatures.push(signature);
 
         endpointImplementations.push({
-            bodyText: generateEndpointBody(endpointDefinition, returnTsType, mediaTypeVisitor),
+            bodyText: generateEndpointBody(
+                definition.serviceName.name,
+                endpointDefinition,
+                returnTsType,
+                mediaTypeVisitor,
+            ),
             name: endpointDefinition.endpointName,
             parameters,
             returnType: `Promise<${returnTsType}>`,
@@ -148,6 +157,7 @@ export function generateService(
 }
 
 function generateEndpointBody(
+    serviceName: string,
     endpointDefinition: IEndpointDefinition,
     returnTsType: string,
     mediaTypeVisitor: ITypeVisitor<string>,
@@ -171,15 +181,16 @@ function generateEndpointBody(
     if (bodyArgs.length > 1) {
         throw Error("endpoint cannot have more than one body arg, found: " + bodyArgs.length);
     }
-    const data = bodyArgs.length === 0 ? "undefined" : bodyArgs[0].argName;
+
+    const data = bodyArgs.length === 0 ? UNDEFINED_CONSTANT : bodyArgs[0].argName;
     // It's not quite correct to default to application/json for body less and return less requests.
     // We do this to preserve existing behaviour.
     const requestMediaType =
-        bodyArgs.length === 0 ? "MediaType.APPLICATION_JSON" : IType.visit(bodyArgs[0].type, mediaTypeVisitor);
+        bodyArgs.length === 0 ? MediaType.APPLICATION_JSON : IType.visit(bodyArgs[0].type, mediaTypeVisitor);
     const responseMediaType =
         endpointDefinition.returns !== undefined && endpointDefinition.returns !== null
             ? IType.visit(endpointDefinition.returns, mediaTypeVisitor)
-            : "MediaType.APPLICATION_JSON";
+            : MediaType.APPLICATION_JSON;
     const formattedHeaderArgs = headerArgs.map(argDefinition => {
         const paramId = (argDefinition.paramType as IParameterType_Header).header.paramId!;
         if (paramId == null) {
@@ -197,30 +208,43 @@ function generateEndpointBody(
     });
 
     return writer => {
-        writer.write(`return this.${BRIDGE}.callEndpoint<${returnTsType}>(`).inlineBlock(() => {
-            writer.writeLine(`binaryAsStream: true,`);
-            writer.writeLine(`data: ${data},`);
-            writer.writeLine(`endpointName: "${endpointDefinition.endpointName}",`);
-            writer.writeLine(`endpointPath: "${endpointDefinition.httpPath}",`);
+        writer
+            .write(`return this.${BRIDGE}.call<${returnTsType}>(`)
+            .writeLine(`"${serviceName}",`)
+            .writeLine(`"${endpointDefinition.endpointName}",`)
+            .writeLine(`"${endpointDefinition.httpMethod}",`)
+            .writeLine(`"${endpointDefinition.httpPath}",`)
+            .writeLine(`${data},`);
 
-            writer.write("headers: {");
+        if (formattedHeaderArgs.length === 0) {
+            writer.writeLine(`${UNDEFINED_CONSTANT},`);
+        } else {
+            writer.write("{");
             formattedHeaderArgs.forEach(formattedHeader => writer.indent().writeLine(formattedHeader));
             writer.writeLine("},");
+        }
 
-            writer.writeLine(`method: "${endpointDefinition.httpMethod}",`);
-
-            writer.write("pathArguments: [");
-            pathParamsFromPath.forEach(pathArgName => writer.indent().writeLine(pathArgName + ","));
-            writer.writeLine("],");
-
-            writer.write("queryArguments: {");
+        if (formattedQueryArgs.length === 0) {
+            writer.writeLine(`${UNDEFINED_CONSTANT},`);
+        } else {
+            writer.write("{");
             formattedQueryArgs.forEach(formattedQuery => writer.indent().writeLine(formattedQuery));
             writer.writeLine("},");
+        }
 
-            writer.writeLine(`requestMediaType: ${requestMediaType},`);
-
-            writer.writeLine(`responseMediaType: ${responseMediaType},`);
-        });
+        if (pathParamsFromPath.length === 0) {
+            writer.writeLine(`${UNDEFINED_CONSTANT},`);
+        } else {
+            writer.write("[");
+            pathParamsFromPath.forEach(pathArgName => writer.indent().writeLine(pathArgName + ","));
+            writer.writeLine("],");
+        }
+        writer.writeLine(
+            `${requestMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${requestMediaType}"`},`,
+        );
+        writer.writeLine(
+            `${responseMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${responseMediaType}"`}`,
+        );
         writer.write(");");
     };
 }
