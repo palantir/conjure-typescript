@@ -71,7 +71,7 @@ export function generateService(
     sourceFile.addVariableStatement({
         declarationKind: VariableDeclarationKind.Const,
         docs: ["Constant reference to `undefined` that we expect to get minified and therefore reduce total code size"],
-        declarations: [{ name: UNDEFINED_CONSTANT, initializer: "undefined" }],
+        declarations: [{ name: UNDEFINED_CONSTANT, type: "undefined", initializer: "undefined" }],
     });
     definition.endpoints.forEach(endpointDefinition => {
         const parameters: ParameterDeclarationStructure[] = endpointDefinition.args
