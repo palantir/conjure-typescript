@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Include type annotation on undefined constant.
+  links:
+  - https://github.com/palantir/conjure-typescript/pull/140
