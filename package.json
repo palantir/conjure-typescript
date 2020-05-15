@@ -18,9 +18,10 @@
     "generateSpecBindings": "./scripts/generate-test-bindings.sh",
     "lint": "tslint 'src/**/*.ts*' --project ./src/tsconfig.json",
     "lint-fix": "yarn lint -- --fix --project ./src/tsconfig.json",
-    "test": "yarn downloadTestServer && yarn generateSpecBindings && yarn generateTestCases && npm-run-all test:unit test:integration",
+    "test": "yarn downloadTestServer && yarn generateSpecBindings && yarn generateTestCases && npm-run-all test:unit test:integration test:ete",
     "test:integration": "./scripts/run-integration-tests.sh",
     "test:unit": "jest --config ./jest.config.js --rootDir ./",
+    "test:ete": "./scripts/ete-test.sh",
     "verify": "npm-run-all lint test"
   },
   "dependencies": {
