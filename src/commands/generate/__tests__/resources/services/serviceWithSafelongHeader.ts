@@ -3,7 +3,7 @@ import { IHttpApiBridge } from "conjure-client";
 /**
  * Constant reference to `undefined` that we expect to get minified and therefore reduce total code size
  */
-const __undefined = undefined;
+const __undefined: any = undefined;
 
 export interface IServiceWithSafelongHeader {
     foo(investigation: number): Promise<void>;
