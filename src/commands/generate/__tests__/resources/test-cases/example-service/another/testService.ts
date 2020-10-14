@@ -30,6 +30,7 @@ export interface ITestService {
     /**
      * Gets all branches of this dataset.
      * 
+     * @deprecated use getBranches instead
      */
     getBranchesDeprecated(datasetRid: string): Promise<Array<string>>;
     resolveBranch(datasetRid: string, branch: string): Promise<string | null>;
@@ -387,6 +388,51 @@ export class TestService {
 
                 "maybeDouble": maybeDouble,
             },
+            __undefined,
+            __undefined,
+            __undefined
+        );
+    }
+
+    public testBoolean(): Promise<boolean> {
+        return this.bridge.call<boolean>(
+            "TestService",
+            "testBoolean",
+            "GET",
+            "/catalog/boolean",
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined
+        );
+    }
+
+    public testBoolean(): Promise<boolean> {
+        return this.bridge.call<boolean>(
+            "TestService",
+            "testBoolean",
+            "GET",
+            "/catalog/boolean",
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined
+        );
+    }
+
+    public testBoolean(): Promise<boolean> {
+        return this.bridge.call<boolean>(
+            "TestService",
+            "testBoolean",
+            "GET",
+            "/catalog/boolean",
+            __undefined,
+            __undefined,
+            __undefined,
             __undefined,
             __undefined,
             __undefined

@@ -210,3 +210,37 @@ types:
         alias: ExternalLong
       ExternalLongAliasTwo:
         alias: ExternalLongAliasOne
+      DeprecatedEnumExample:
+        values:
+          - ONE
+          - value: OLD_ONE
+            deprecated: use ONE
+          - value: OLD_DEPRECATED_ONE
+            doc: |
+              You should no longer use this
+            deprecated: use ONE
+          - value: OLD_DOCUMENTED_ONE
+            doc: |
+              You should no longer use this
+
+              @deprecated should use ONE
+            deprecated: use ONE
+      DeprecatedFieldExample:
+        fields:
+          one:
+            type: string
+          deprecatedOne:
+            type: string
+            deprecated: use ONE
+          documentedDeprecatedOne:
+            type: string
+            doc: |
+              You should no longer use this
+            deprecated: use ONE
+          deprecatedWithinDocumentOne:
+            type: string
+            doc: |
+              You should no longer use this
+
+              @deprecated should use ONE
+            deprecated: use ONE

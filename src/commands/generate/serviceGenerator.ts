@@ -41,7 +41,7 @@ import { SimpleAst } from "./simpleAst";
 import { StringConversionTypeVisitor } from "./stringConversionTypeVisitor";
 import { TsArgumentTypeVisitor } from "./tsArgumentTypeVisitor";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
-import { CONJURE_CLIENT } from "./utils";
+import { addDeprecatedToDocs, CONJURE_CLIENT } from "./utils";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
@@ -102,6 +102,7 @@ export function generateService(
             parameters,
             returnType: `Promise<${returnTsType}>`,
         };
+        addDeprecatedToDocs(endpointDefinition);
         if (endpointDefinition.docs != null) {
             signature.docs = [{ description: endpointDefinition.docs }];
         }

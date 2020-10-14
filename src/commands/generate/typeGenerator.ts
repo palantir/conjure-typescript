@@ -15,7 +15,15 @@
  * limitations under the License.
  */
 
-import { IEnumDefinition, IObjectDefinition, IType, ITypeDefinition, IUnionDefinition } from "conjure-api";
+import {
+    IEnumDefinition,
+    IEnumValueDefinition,
+    IFieldDefinition,
+    IObjectDefinition,
+    IType,
+    ITypeDefinition,
+    IUnionDefinition,
+} from "conjure-api";
 import {
     FunctionDeclarationStructure,
     ImportDeclarationStructure,
@@ -27,7 +35,7 @@ import {
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
-import { doubleQuote, isValidFunctionName, singleQuote } from "./utils";
+import { addDeprecatedToDocs, doubleQuote, isValidFunctionName, singleQuote } from "./utils";
 
 export function generateType(
     definition: ITypeDefinition,
@@ -61,7 +69,7 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
     sourceFile.addEnum({
         docs: definition.docs != null ? [{ description: definition.docs }] : undefined,
         isExported: true,
-        members: definition.values.map(({ docs, value }) => ({
+        members: definition.values.map(addDeprecatedToDocs).map(({ docs, value }) => ({
             docs: docs != null ? [{ description: docs }] : undefined,
             name: value,
             value,
@@ -100,6 +108,7 @@ export async function generateObject(
             name: singleQuote(fieldDefinition.fieldName),
             type: fieldType,
         };
+        addDeprecatedToDocs(fieldDefinition);
         if (fieldDefinition.docs !== undefined && fieldDefinition.docs !== null) {
             property.docs = [{ description: fieldDefinition.docs }];
         }
@@ -218,6 +227,8 @@ function processUnionMembers(
         imports.push(...IType.visit(fieldDefinition.type, importsVisitor));
 
         const interfaceName = `${unionTsType}_${uppercase(memberName)}`;
+
+        addDeprecatedToDocs(fieldDefinition);
         memberInterfaces.push({
             docs: fieldDefinition.docs != null ? [{ description: fieldDefinition.docs }] : undefined,
             isExported: true,
@@ -263,6 +274,11 @@ function processUnionMembers(
                 },
             ],
             returnType: interfaceName,
+            // deprecate creation of deprecated types
+            docs:
+                fieldDefinition.deprecated !== null && fieldDefinition.deprecated !== undefined
+                    ? [`@deprecated ${fieldDefinition.deprecated}`]
+                    : undefined,
         });
 
         visitorProperties.push({
