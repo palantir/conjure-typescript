@@ -60,13 +60,11 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
     sourceFile.addEnum({
         docs: definition.docs != null ? [{ description: definition.docs }] : undefined,
         isExported: true,
-        members: definition.values.map(enumValue => {
-            return {
-                docs: addDeprecatedToDocs(enumValue),
-                name: enumValue.value,
-                value: enumValue.value,
-            };
-        }),
+        members: definition.values.map(enumValue => ({
+            docs: addDeprecatedToDocs(enumValue),
+            name: enumValue.value,
+            value: enumValue.value,
+        })),
         name: definition.typeName.name,
     });
 
@@ -102,6 +100,7 @@ export async function generateObject(
             type: fieldType,
             docs: addDeprecatedToDocs(fieldDefinition),
         };
+
         properties.push(property);
 
         imports.push(...IType.visit(fieldDefinition.type, importsVisitor));
