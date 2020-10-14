@@ -393,49 +393,4 @@ export class TestService {
             __undefined
         );
     }
-
-    public testBoolean(): Promise<boolean> {
-        return this.bridge.call<boolean>(
-            "TestService",
-            "testBoolean",
-            "GET",
-            "/catalog/boolean",
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined
-        );
-    }
-
-    public testBoolean(): Promise<boolean> {
-        return this.bridge.call<boolean>(
-            "TestService",
-            "testBoolean",
-            "GET",
-            "/catalog/boolean",
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined
-        );
-    }
-
-    public testBoolean(): Promise<boolean> {
-        return this.bridge.call<boolean>(
-            "TestService",
-            "testBoolean",
-            "GET",
-            "/catalog/boolean",
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined
-        );
-    }
 }

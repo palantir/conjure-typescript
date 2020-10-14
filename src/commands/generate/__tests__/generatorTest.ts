@@ -55,6 +55,7 @@ describe("generator", () => {
                 services: [],
                 types: [enumDefinition1, enumDefinition2],
                 version: 1,
+                extensions: {},
             },
             outDir,
         );
@@ -79,6 +80,7 @@ describe("generator", () => {
                 services: [],
                 types: [enumDefinition1, enumDefinition2],
                 version: 1,
+                extensions: {},
             },
             outDir,
         );

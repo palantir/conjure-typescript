@@ -216,11 +216,11 @@ types:
           - value: OLD_ONE
             deprecated: use ONE
           - value: OLD_DEPRECATED_ONE
-            doc: |
+            docs: |
               You should no longer use this
             deprecated: use ONE
           - value: OLD_DOCUMENTED_ONE
-            doc: |
+            docs: |
               You should no longer use this
 
               @deprecated should use ONE
@@ -234,13 +234,23 @@ types:
             deprecated: use ONE
           documentedDeprecatedOne:
             type: string
-            doc: |
+            docs: |
               You should no longer use this
             deprecated: use ONE
           deprecatedWithinDocumentOne:
             type: string
-            doc: |
+            docs: |
               You should no longer use this
 
               @deprecated should use ONE
             deprecated: use ONE
+      DeprecatedUnion:
+        union:
+          good: string
+          noGood:
+            type: string
+            deprecated: use good
+          noGoodDoc:
+            type: string
+            deprecated: use good
+            docs: this is no good

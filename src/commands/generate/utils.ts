@@ -97,7 +97,7 @@ export function addDeprecatedToDocs<T extends DeprecatableDefinitions>(typeDefin
         if (typeDefintion.docs !== undefined && typeDefintion.docs !== null) {
             // Do not add deprecated JSDoc if already exists
             if (typeDefintion.docs.indexOf("@deprecated") === -1) {
-                typeDefintion.docs += `\n\n@deprecated ${typeDefintion.deprecated}`;
+                typeDefintion.docs += `\n@deprecated ${typeDefintion.deprecated}`;
             }
         } else {
             typeDefintion.docs = `@deprecated ${typeDefintion.deprecated}`;

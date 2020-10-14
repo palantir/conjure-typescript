@@ -14,6 +14,7 @@ export interface IDeprecatedFieldExample {
      * You should no longer use this
      * 
      * @deprecated should use ONE
+     * 
      */
     'deprecatedWithinDocumentOne': string;
 }
