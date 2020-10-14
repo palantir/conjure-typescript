@@ -60,11 +60,13 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
     sourceFile.addEnum({
         docs: definition.docs != null ? [{ description: definition.docs }] : undefined,
         isExported: true,
-        members: definition.values.map(addDeprecatedToDocs).map(({ docs, value }) => ({
-            docs: docs != null ? [{ description: docs }] : undefined,
-            name: value,
-            value,
-        })),
+        members: definition.values.map(enumValue => {
+            return {
+                docs: addDeprecatedToDocs(enumValue),
+                name: enumValue.value,
+                value: enumValue.value,
+            };
+        }),
         name: definition.typeName.name,
     });
 
@@ -98,11 +100,8 @@ export async function generateObject(
             hasQuestionToken: IType.isOptional(fieldDefinition.type),
             name: singleQuote(fieldDefinition.fieldName),
             type: fieldType,
+            docs: addDeprecatedToDocs(fieldDefinition),
         };
-        addDeprecatedToDocs(fieldDefinition);
-        if (fieldDefinition.docs !== undefined && fieldDefinition.docs !== null) {
-            property.docs = [{ description: fieldDefinition.docs }];
-        }
         properties.push(property);
 
         imports.push(...IType.visit(fieldDefinition.type, importsVisitor));
@@ -219,9 +218,8 @@ function processUnionMembers(
 
         const interfaceName = `${unionTsType}_${uppercase(memberName)}`;
 
-        addDeprecatedToDocs(fieldDefinition);
         memberInterfaces.push({
-            docs: fieldDefinition.docs != null ? [{ description: fieldDefinition.docs }] : undefined,
+            docs: addDeprecatedToDocs(fieldDefinition),
             isExported: true,
             name: interfaceName,
             properties: [

@@ -102,9 +102,9 @@ export function generateService(
             parameters,
             returnType: `Promise<${returnTsType}>`,
         };
-        addDeprecatedToDocs(endpointDefinition);
-        if (endpointDefinition.docs != null) {
-            signature.docs = [{ description: endpointDefinition.docs }];
+        const docs = addDeprecatedToDocs(endpointDefinition);
+        if (docs != null) {
+            signature.docs = docs;
         }
         endpointSignatures.push(signature);
 

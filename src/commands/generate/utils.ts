@@ -92,16 +92,16 @@ const strictModeReservedKeywords = new Set([
 ]);
 
 type DeprecatableDefinitions = IFieldDefinition | IEnumValueDefinition | IEndpointDefinition;
-export function addDeprecatedToDocs<T extends DeprecatableDefinitions>(typeDefintion: T): T {
+export function addDeprecatedToDocs<T extends DeprecatableDefinitions>(typeDefintion: T): string[] | undefined {
     if (typeDefintion.deprecated !== undefined && typeDefintion.deprecated !== null) {
         if (typeDefintion.docs !== undefined && typeDefintion.docs !== null) {
             // Do not add deprecated JSDoc if already exists
             if (typeDefintion.docs.indexOf("@deprecated") === -1) {
-                typeDefintion.docs += `\n@deprecated ${typeDefintion.deprecated}`;
+                return [typeDefintion.docs + `\n@deprecated ${typeDefintion.deprecated}`];
             }
         } else {
-            typeDefintion.docs = `@deprecated ${typeDefintion.deprecated}`;
+            return [`@deprecated ${typeDefintion.deprecated}`];
         }
     }
-    return typeDefintion;
+    return typeDefintion.docs != null ? [typeDefintion.docs] : undefined;
 }
