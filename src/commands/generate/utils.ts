@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { ITypeName } from "conjure-api";
+import { IEndpointDefinition, IEnumValueDefinition, IFieldDefinition, ITypeName } from "conjure-api";
 
 export const CONJURE_CLIENT = "conjure-client";
 
@@ -91,3 +90,18 @@ const strictModeReservedKeywords = new Set([
     "static",
     "yield",
 ]);
+
+type DeprecatableDefinitions = IFieldDefinition | IEnumValueDefinition | IEndpointDefinition;
+export function addDeprecatedToDocs<T extends DeprecatableDefinitions>(typeDefintion: T): string[] | undefined {
+    if (typeDefintion.deprecated !== undefined && typeDefintion.deprecated !== null) {
+        if (typeDefintion.docs !== undefined && typeDefintion.docs !== null) {
+            // Do not add deprecated JSDoc if already exists
+            if (typeDefintion.docs.indexOf("@deprecated") === -1) {
+                return [typeDefintion.docs + `\n@deprecated ${typeDefintion.deprecated}`];
+            }
+        } else {
+            return [`@deprecated ${typeDefintion.deprecated}`];
+        }
+    }
+    return typeDefintion.docs != null ? [typeDefintion.docs] : undefined;
+}

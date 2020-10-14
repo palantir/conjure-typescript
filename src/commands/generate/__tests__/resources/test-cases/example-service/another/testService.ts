@@ -30,6 +30,7 @@ export interface ITestService {
     /**
      * Gets all branches of this dataset.
      * 
+     * @deprecated use getBranches instead
      */
     getBranchesDeprecated(datasetRid: string): Promise<Array<string>>;
     resolveBranch(datasetRid: string, branch: string): Promise<string | null>;
