@@ -106,13 +106,16 @@ export function addDeprecatedToDocs<T extends DeprecatableDefinitions>(typeDefin
     return typeDefintion.docs != null ? [typeDefintion.docs] : undefined;
 }
 
-export function addIncubatingDocs(endpointDefinition: IEndpointDefinition, existingDocs: string[] | undefined): string[] | undefined {
+export function addIncubatingDocs(
+    endpointDefinition: IEndpointDefinition,
+    existingDocs: string[] | undefined,
+): string[] | undefined {
     if (endpointDefinition.tags !== undefined && endpointDefinition.tags.indexOf("incubating") >= 0) {
-        if (existingDocs == undefined) {
+        if (existingDocs === undefined) {
             return [`@incubating`];
         } else {
             return [existingDocs + `\n@incubating`];
         }
     }
-    return existingDocs
+    return existingDocs;
 }

@@ -514,7 +514,7 @@ export interface IMyService {
                 endpoints: [
                     {
                         args: [],
-                        tags: ['incubating'],
+                        tags: ["incubating"],
                         endpointName: "foo",
                         httpMethod: HttpMethod.GET,
                         httpPath: "/foo",
@@ -536,8 +536,8 @@ export interface IMyService {
      */
     foo(): Promise<void>;
 }
-`);
-
+`,
+        );
     });
 
     it("emits endpoint with incubating and deprecated docs", async () => {
@@ -547,7 +547,7 @@ export interface IMyService {
                     {
                         args: [],
                         deprecated: "to be replaced",
-                        tags: ['incubating'],
+                        tags: ["incubating"],
                         endpointName: "foo",
                         httpMethod: HttpMethod.GET,
                         httpPath: "/foo",
@@ -570,8 +570,8 @@ export interface IMyService {
      */
     foo(): Promise<void>;
 }
-`);
-
+`,
+        );
     });
 
     it("emits service with optional params", async () => {

@@ -59,6 +59,7 @@ describe("simpleAst", () => {
                             primitive: PrimitiveType.INTEGER,
                             type: "primitive",
                         },
+                        tags: [],
                     },
                 ],
                 serviceName: {
