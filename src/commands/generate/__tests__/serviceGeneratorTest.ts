@@ -51,6 +51,7 @@ describe("serviceGenerator", () => {
                         httpPath: "/getPrimitive",
                         markers: [],
                         returns: { primitive: PrimitiveType.INTEGER, type: "primitive" },
+                        tags: [],
                     },
                 ],
                 serviceName: { name: "PrimitiveService", package: "com.palantir.services" },
@@ -72,12 +73,14 @@ describe("serviceGenerator", () => {
                                 markers: [],
                                 paramType: IParameterType.header({ paramId: "X-Investigation" }),
                                 type: IType.primitive(PrimitiveType.SAFELONG),
+                                tags: [],
                             },
                         ],
                         endpointName: "foo",
                         httpMethod: HttpMethod.GET,
                         httpPath: "/foo",
                         markers: [],
+                        tags: [],
                     },
                 ],
                 serviceName: { name: "ServiceWithSafelongHeader", package: "com.palantir.services" },
@@ -98,6 +101,7 @@ describe("serviceGenerator", () => {
                         httpMethod: HttpMethod.GET,
                         httpPath: "/bar",
                         markers: [],
+                        tags: [],
                     },
                 ],
                 serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -123,6 +127,7 @@ describe("serviceGenerator", () => {
                         httpPath: "/bar",
                         markers: [],
                         returns: { primitive: PrimitiveType.BINARY, type: "primitive" },
+                        tags: [],
                     },
                 ],
                 serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -147,6 +152,7 @@ describe("serviceGenerator", () => {
                                 markers: [],
                                 paramType: IParameterType.body({}),
                                 type: { primitive: PrimitiveType.BINARY, type: "primitive" },
+                                tags: [],
                             },
                         ],
                         endpointName: "foo",
@@ -154,6 +160,7 @@ describe("serviceGenerator", () => {
                         httpPath: "/bar",
                         markers: [],
                         returns: { primitive: PrimitiveType.BINARY, type: "primitive" },
+                        tags: [],
                     },
                 ],
                 serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -181,6 +188,7 @@ describe("serviceGenerator", () => {
                                 markers: [],
                                 paramType: IParameterType.body({}),
                                 type: localObject.reference,
+                                tags: [],
                             },
                         ],
                         endpointName: "foo",
@@ -188,6 +196,7 @@ describe("serviceGenerator", () => {
                         httpPath: "/foo",
                         markers: [],
                         returns: foreignObject.reference,
+                        tags: [],
                     },
                 ],
                 serviceName: {
@@ -219,6 +228,7 @@ describe("serviceGenerator", () => {
                                 markers: [],
                                 paramType: IParameterType.body({}),
                                 type: stringType,
+                                tags: [],
                             },
                             {
                                 argName: "header",
@@ -228,6 +238,7 @@ describe("serviceGenerator", () => {
                                     type: "header",
                                 },
                                 type: stringType,
+                                tags: [],
                             },
                             {
                                 argName: "path",
@@ -237,6 +248,7 @@ describe("serviceGenerator", () => {
                                     type: "path",
                                 },
                                 type: stringType,
+                                tags: [],
                             },
                             {
                                 argName: "query",
@@ -246,12 +258,14 @@ describe("serviceGenerator", () => {
                                     type: "query",
                                 },
                                 type: stringType,
+                                tags: [],
                             },
                         ],
                         endpointName: "foo",
                         httpMethod: HttpMethod.GET,
                         httpPath: "/foo/{path}",
                         markers: [],
+                        tags: [],
                     },
                 ],
                 serviceName: { name: "ParamTypeService", package: "com.palantir.services" },
@@ -276,6 +290,7 @@ describe("serviceGenerator", () => {
                                     type: "path",
                                 },
                                 type: stringType,
+                                tags: [],
                             },
                             {
                                 argName: "param2",
@@ -285,12 +300,14 @@ describe("serviceGenerator", () => {
                                     type: "path",
                                 },
                                 type: stringType,
+                                tags: [],
                             },
                         ],
                         endpointName: "foo",
                         httpMethod: HttpMethod.GET,
                         httpPath: "/{param2}/{param1}",
                         markers: [],
+                        tags: [],
                     },
                 ],
                 serviceName: { name: "OutOfOrderPathService", package: "com.palantir.services" },
@@ -312,6 +329,7 @@ describe("serviceGenerator", () => {
                                 markers: [],
                                 paramType: IParameterType.header({ paramId: "Header" }),
                                 type: stringType,
+                                tags: [],
                             },
                         ],
                         auth: {
@@ -322,6 +340,7 @@ describe("serviceGenerator", () => {
                         httpMethod: HttpMethod.GET,
                         httpPath: "/foo",
                         markers: [],
+                        tags: [],
                     },
                 ],
                 serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -349,6 +368,7 @@ describe("serviceGenerator", () => {
                                     markers: [],
                                     paramType: IParameterType.body({}),
                                     type: stringType,
+                                    tags: [],
                                 },
                                 {
                                     argName: "body2",
@@ -358,12 +378,14 @@ describe("serviceGenerator", () => {
                                         type: "body",
                                     },
                                     type: stringType,
+                                    tags: [],
                                 },
                             ],
                             endpointName: "foo",
                             httpMethod: HttpMethod.GET,
                             httpPath: "/foo",
                             markers: [],
+                            tags: [],
                         },
                     ],
                     serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -389,12 +411,14 @@ describe("serviceGenerator", () => {
                                     markers: [],
                                     paramType: IParameterType.header({} as any),
                                     type: stringType,
+                                    tags: [],
                                 },
                             ],
                             endpointName: "foo",
                             httpMethod: HttpMethod.GET,
                             httpPath: "/foo",
                             markers: [],
+                            tags: [],
                         },
                     ],
                     serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -420,12 +444,14 @@ describe("serviceGenerator", () => {
                                     markers: [],
                                     paramType: IParameterType.query({} as any),
                                     type: stringType,
+                                    tags: [],
                                 },
                             ],
                             endpointName: "foo",
                             httpMethod: HttpMethod.GET,
                             httpPath: "/foo",
                             markers: [],
+                            tags: [],
                         },
                     ],
                     serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -450,6 +476,7 @@ describe("serviceGenerator", () => {
                         httpMethod: HttpMethod.GET,
                         httpPath: "/foo",
                         markers: [],
+                        tags: [],
                     },
                 ],
                 serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -481,6 +508,72 @@ export interface IMyService {
         );
     });
 
+    it("emits endpoint with incubating doc", async () => {
+        await generateService(
+            {
+                endpoints: [
+                    {
+                        args: [],
+                        tags: ['incubating'],
+                        endpointName: "foo",
+                        httpMethod: HttpMethod.GET,
+                        httpPath: "/foo",
+                        markers: [],
+                    },
+                ],
+                serviceName: { name: "MyService", package: "com.palantir.services" },
+            },
+            new Map(),
+            simpleAst,
+        );
+        const outFile = path.join(outDir, "services/myService.ts");
+        const contents = fs.readFileSync(outFile, "utf8");
+        expect(contents).toContain(
+            `
+export interface IMyService {
+    /**
+     * @incubating
+     */
+    foo(): Promise<void>;
+}
+`);
+
+    });
+
+    it("emits endpoint with incubating and deprecated docs", async () => {
+        await generateService(
+            {
+                endpoints: [
+                    {
+                        args: [],
+                        deprecated: "to be replaced",
+                        tags: ['incubating'],
+                        endpointName: "foo",
+                        httpMethod: HttpMethod.GET,
+                        httpPath: "/foo",
+                        markers: [],
+                    },
+                ],
+                serviceName: { name: "MyService", package: "com.palantir.services" },
+            },
+            new Map(),
+            simpleAst,
+        );
+        const outFile = path.join(outDir, "services/myService.ts");
+        const contents = fs.readFileSync(outFile, "utf8");
+        expect(contents).toContain(
+            `
+export interface IMyService {
+    /**
+     * @deprecated to be replaced
+     * @incubating
+     */
+    foo(): Promise<void>;
+}
+`);
+
+    });
+
     it("emits service with optional params", async () => {
         await generateService(
             {
@@ -492,12 +585,14 @@ export interface IMyService {
                                 markers: [],
                                 paramType: IParameterType.query({ paramId: "Query" }),
                                 type: IType.optional({ itemType: IType.primitive(PrimitiveType.STRING) }),
+                                tags: [],
                             },
                             {
                                 argName: "header",
                                 markers: [],
                                 paramType: IParameterType.header({ paramId: "Header" }),
                                 type: stringType,
+                                tags: [],
                             },
                         ],
                         auth: {
@@ -508,6 +603,7 @@ export interface IMyService {
                         httpMethod: HttpMethod.GET,
                         httpPath: "/foo",
                         markers: [],
+                        tags: [],
                     },
                 ],
                 serviceName: { name: "OptionalService", package: "com.palantir.services" },
