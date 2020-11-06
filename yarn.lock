@@ -1518,7 +1518,7 @@ concat-stream@^1.5.0:
 
 conjure-api@^4.14.1:
   version "4.14.1"
-  resolved "https://artifactory.palantir.build/artifactory/api/npm/all-npm/conjure-api/-/conjure-api-4.14.1.tgz#d999ca713b41fac6e56e35ba377ece8662e016b6"
+  resolved "https://registry.yarnpkg.com/conjure-api/-/conjure-api-4.14.1.tgz#d999ca713b41fac6e56e35ba377ece8662e016b6"
   integrity sha1-2ZnKcTtB+sblbjW6N37OhmLgFrY=
 
 conjure-client@^2.4.1:
