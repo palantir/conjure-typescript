@@ -166,7 +166,6 @@ export async function createPackageJson(
     packageVersion: string,
     productDependencies?: string,
 ): Promise<IPackageJson> {
-    const peerDependencies = { "conjure-client": projectPackageJson.dependencies["conjure-client"] };
     const packageJson: IPackageJson = {
         name: packageName!,
         version: packageVersion!,
@@ -174,9 +173,10 @@ export async function createPackageJson(
         types: "index.d.ts",
         sideEffects: false,
         scripts: { build: "tsc" },
-        dependencies: {},
-        peerDependencies,
-        devDependencies: { ...peerDependencies, typescript: projectPackageJson.devDependencies.typescript },
+        dependencies: {
+            "conjure-client": projectPackageJson.dependencies["conjure-client"],
+        },
+        devDependencies: { typescript: projectPackageJson.devDependencies.typescript },
         author: "Conjure",
         license: "UNLICENSED",
     };

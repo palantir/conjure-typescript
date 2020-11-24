@@ -47,10 +47,8 @@ describe("generate command", () => {
                 scripts: {
                     build: "tsc",
                 },
-                dependencies: {},
-                peerDependencies: { "conjure-client": "1.0.0" },
+                dependencies: { "conjure-client": "1.0.0" },
                 devDependencies: {
-                    "conjure-client": "1.0.0",
                     typescript: "2.7.2",
                 },
                 author: "Conjure",
@@ -88,10 +86,8 @@ describe("generate command", () => {
                 scripts: {
                     build: "tsc",
                 },
-                dependencies: {},
-                peerDependencies: { "conjure-client": "1.0.0" },
+                dependencies: { "conjure-client": "1.0.0" },
                 devDependencies: {
-                    "conjure-client": "1.0.0",
                     typescript: "2.7.2",
                 },
                 author: "Conjure",
@@ -130,10 +126,8 @@ describe("generate command", () => {
                 scripts: {
                     build: "tsc",
                 },
-                dependencies: {},
-                peerDependencies: { "conjure-client": "1.0.0" },
+                dependencies: { "conjure-client": "1.0.0" },
                 devDependencies: {
-                    "conjure-client": "1.0.0",
                     typescript: "2.7.2",
                 },
                 author: "Conjure",
