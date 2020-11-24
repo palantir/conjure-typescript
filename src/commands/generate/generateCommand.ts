@@ -174,7 +174,7 @@ export async function createPackageJson(
         sideEffects: false,
         scripts: { build: "tsc" },
         dependencies: {
-            "conjure-client": projectPackageJson.dependencies["conjure-client"]
+            "conjure-client": projectPackageJson.dependencies["conjure-client"],
         },
         devDependencies: { typescript: projectPackageJson.devDependencies.typescript },
         author: "Conjure",
