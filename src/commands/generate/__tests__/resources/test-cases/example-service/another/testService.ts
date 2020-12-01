@@ -48,6 +48,10 @@ export class TestService {
     constructor(private bridge: IHttpApiBridge) {
     }
 
+    /**
+     * Returns a mapping from file system id to backing file system configuration.
+     * 
+     */
     public getFileSystems(): Promise<{ [key: string]: IBackingFileSystem }> {
         return this.bridge.call<{ [key: string]: IBackingFileSystem }>(
             "TestService",
@@ -212,6 +216,11 @@ export class TestService {
         );
     }
 
+    /**
+     * Gets all branches of this dataset.
+     * 
+     * @deprecated use getBranches instead
+     */
     public getBranchesDeprecated(datasetRid: string): Promise<Array<string>> {
         return this.bridge.call<Array<string>>(
             "TestService",
