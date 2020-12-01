@@ -120,6 +120,7 @@ export function generateService(
             returnType: `Promise<${returnTsType}>`,
             // this appears to be a no-op by ts-simple-ast, since default in typescript is public
             scope: Scope.Public,
+            docs: docs
         });
     });
 
