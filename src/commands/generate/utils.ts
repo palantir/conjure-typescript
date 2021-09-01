@@ -41,6 +41,7 @@ export function isValidFunctionName(value: string) {
 }
 
 // Keywords taken from https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md#221-reserved-words
+// with the addition of some build tools' specific keywords like "module"
 const reservedKeywords = new Set([
     "break",
     "case",
@@ -66,6 +67,7 @@ const reservedKeywords = new Set([
     "instanceof",
     "new",
     "null",
+    "module",
     "return",
     "super",
     "switch",
