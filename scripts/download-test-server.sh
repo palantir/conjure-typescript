@@ -24,12 +24,12 @@ function download() {
 
 DOWNLOAD_OUTPUT="$RESOURCES_DIR/${API}.conjure.json"
 ARTIFACT_NAME="${API}-${VERSION}.conjure.json"
-out=$(download "https://palantir.bintray.com/releases/com/palantir/conjure/verification/${API}/${VERSION}/${ARTIFACT_NAME}")
+out=$(download "https://repo1.maven.org/maven2/com/palantir/conjure/verification/${API}/${VERSION}/${ARTIFACT_NAME}")
 cp -f "$out" "$DOWNLOAD_OUTPUT"
 
 DOWNLOAD_OUTPUT="$RESOURCES_DIR/${TEST_CASES}.json"
 ARTIFACT_NAME="${TEST_CASES}-${VERSION}.json"
-out=$(download "https://palantir.bintray.com/releases/com/palantir/conjure/verification/${TEST_CASES}/${VERSION}/${ARTIFACT_NAME}")
+out=$(download "https://repo1.maven.org/maven2/com/palantir/conjure/verification/${TEST_CASES}/${VERSION}/${ARTIFACT_NAME}")
 cp -f "$out" "$DOWNLOAD_OUTPUT"
 
 
@@ -40,6 +40,6 @@ case $(uname -s) in
 esac
 
 ARTIFACT_NAME="${SERVER}-${VERSION}-${TARGET}.tgz"
-out=$(download "https://palantir.bintray.com/releases/com/palantir/conjure/verification/${SERVER}/${VERSION}/${ARTIFACT_NAME}")
+out=$(download "https://repo1.maven.org/maven2/com/palantir/conjure/verification/${SERVER}/${VERSION}/${ARTIFACT_NAME}")
 tar xf "$out" -C "$DOWNLOADS_DIR/bin"
 chmod +x "$DOWNLOADS_DIR/bin/conjure-verification-server"
