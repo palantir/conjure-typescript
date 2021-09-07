@@ -5,29 +5,10 @@
 version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/node:8.11.1-browsers
+    docker: [{ image: 'circleci/openjdk:11-node' }]
     steps:
       - checkout
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
-      - run: yarn install --non-interactive
-      # Yarn's --frozen-lockfile option should do this, but it doesn't work in practice.
-      - run:
-          name: Check if yarn.lock changed
-          command: git diff --exit-code
-      - save_cache:
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-          paths:
-            - /root/project/node_modules
-      - run: yarn build
-      - deploy:
-          command: |
-            if echo "${CIRCLE_TAG}" | grep -Eq '[0-9]+(\.[0-9]+)+(-[a-zA-Z]+[0-9]*)*'; then
-              yarn circle-publish
-            fi
+      - run: ./gradlew compileTypescript
 
 workflows:
   version: 2
