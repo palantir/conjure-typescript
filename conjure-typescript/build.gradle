@@ -36,3 +36,13 @@ dependencies {
 webpack {
     config 'webpack.config.js'
 }
+
+typeScript {
+    compilerOptions.putAll([
+        'lib': ['dom', 'es6', 'es5'],
+        'module': 'commonjs',
+        'target': 'es5',
+        'experimentalDecorators': true,
+        'explainFiles': true,
+    ])
+}

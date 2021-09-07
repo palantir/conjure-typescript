@@ -26,6 +26,6 @@ allprojects {
     apply plugin: 'com.gradlets.typescript'
 
     repositories {
-        npm { url 'https://registry.npmjs.org/' }
+        npm { url 'https://registry.npmjs.org' }
     }
 }

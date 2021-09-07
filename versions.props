@@ -27,7 +27,7 @@ npm:types/semver = 5.5.0
 npm:types/tempy = 0.1.0
 npm:types/yargs = 11.1.2
 
-npm:typescript = 3.7.5
+npm:typescript = 4.2.3
 npm:webpack = 4.44.1
 npm:webpack-cli = 3.3.12
 

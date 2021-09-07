@@ -5,7 +5,7 @@ module.exports = {
     mode: "production",
     devtool: false,
     // entry: "./src/conjureTypeScript.ts",
-    entry: "./build/scripts/main/index.js",
+    entry: "./build/scripts/main/conjureTypeScript.js",
     resolve: {
         extensions: [ ".js", ".ts", ".json" ],
     },
