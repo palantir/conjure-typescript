@@ -1,0 +1,17 @@
+apply plugin: 'com.gradlets.typescript'
+apply plugin: 'com.gradlets.webpack'
+
+dependencies {
+    deps 'npm:commander'
+    deps 'npm:conjure-api'
+    deps 'npm:conjure-client'
+    deps 'npm:fs-extra'
+    deps 'npm:lodash'
+    deps 'npm:mkdirp'
+    deps 'npm:path'
+    deps 'npm:semver'
+    deps 'npm:sls-version'
+    deps 'npm:ts-simple-ast'
+    deps 'npm:tslib'
+    deps 'npm:yargs'
+}

@@ -2,6 +2,9 @@
 .DS_Store
 Thumbs.db
 
+# Gradle
+.gradle
+
 # NPM
 node_modules/
 npm-debug.log

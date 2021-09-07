@@ -1,0 +1,10 @@
+rootProject.name = 'conjure-typescript-root'
+
+include 'conjure-typescript'
+
+boolean isCiServer = System.getenv().containsKey('CI')
+buildCache {
+    local {
+        enabled = !isCiServer
+    }
+}

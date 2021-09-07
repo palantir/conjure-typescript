@@ -1,3 +1,19 @@
 # User versions.props so that excavator can automatically keep our version up to date
 com.palantir.conjure.verification:* = 0.18.5
 com.palantir.conjure:conjure = 4.14.1
+npm:commander = 2.19.0
+npm:conjure-api = 4.14.1
+npm:conjure-client = 2.4.1
+npm:fs-extra = 5.0.0
+npm:lodash = 4.17.11
+npm:mkdirp = 0.5.1
+npm:path = 0.12.7
+npm:semver = 5.6.0
+npm:sls-version = 1.1.1
+npm:ts-simple-ast = 11.3.0
+npm:tslib = 1.9.3
+npm:yargs = 11.1.1
+
+# Transitives
+npm:path-dirname = 1.0.2
+npm:readdir-enhanced = 6.0.4
