@@ -14,4 +14,25 @@ dependencies {
     deps 'npm:ts-simple-ast'
     deps 'npm:tslib'
     deps 'npm:yargs'
+
+    types 'npm:types/chai'
+    types 'npm:types/commander'
+    types 'npm:types/download'
+    types 'npm:types/fs-extra'
+    types 'npm:types/jest'
+    types 'npm:types/lodash'
+    types 'npm:types/mkdirp'
+    types 'npm:types/nock'
+    types 'npm:types/node-dir'
+    types 'npm:types/semver'
+    types 'npm:types/tempy'
+    types 'npm:types/yargs'
+
+    webpack 'npm:typescript'
+    webpack 'npm:webpack'
+    webpack 'npm:webpack-cli'
+}
+
+webpack {
+    config 'webpack.config.js'
 }

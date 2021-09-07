@@ -4,12 +4,14 @@ const webpack = require("webpack");
 module.exports = {
     mode: "production",
     devtool: false,
-    entry: "./src/conjureTypeScript.ts",
+    // entry: "./src/conjureTypeScript.ts",
+    entry: "./build/scripts/main/index.js",
     resolve: {
         extensions: [ ".js", ".ts", ".json" ],
     },
     output: {
-        path: path.resolve(__dirname, 'dist/bin'),
+        // path: path.resolve(__dirname, 'dist/bin'),
+        path: path.resolve(__dirname, 'build/webpack'),
         filename: "conjure-typescript"
     },
     target: "node",
