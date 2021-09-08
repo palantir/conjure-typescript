@@ -6,28 +6,33 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:8.11.1-browsers
+      - image: circleci/openjdk:11-node-browsers
     steps:
       - checkout
       - restore_cache:
           name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          name: Restore Gradle wrapper
+          key: gradle-wrapper-v2-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
       - run: yarn install --non-interactive
       # Yarn's --frozen-lockfile option should do this, but it doesn't work in practice.
       - run:
           name: Check if yarn.lock changed
           command: git diff --exit-code
-      - save_cache:
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-          paths:
-            - /root/project/node_modules
       - run: yarn build
       - deploy:
           command: |
             if echo "${CIRCLE_TAG}" | grep -Eq '[0-9]+(\.[0-9]+)+(-[a-zA-Z]+[0-9]*)*'; then
               yarn circle-publish
             fi
+      - save_cache:
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - /root/project/node_modules
+      - save_cache:
+          key: 'gradle-wrapper-v2-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}'
+          paths: [ ~/.gradle/wrapper ]
 
 workflows:
   version: 2

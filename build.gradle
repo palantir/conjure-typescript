@@ -1,0 +1,51 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+
+    dependencies {
+        classpath 'com.palantir.gradle.externalpublish:gradle-external-publish-plugin:1.4.0'
+        classpath 'com.palantir.gradle.gitversion:gradle-git-version:0.12.3'
+    }
+}
+
+/**
+ * Previously we used a shell script to publish the distribution to bintray. With the migration to maven-central, we
+ * need to leverage more tooling coming from 'gradle-external-publish-plugin'. Based on that, this repo is currently
+ * in an awkward split-mode. This Gradle setup is just for publishing the dist to maven-central. The actual build and
+ * compilation is still done through yarn (see 'package.json').
+ * TODO(fawind): Move this project fully to Gradle (i.e. using 'gradlets/gradle-typescript').
+ */
+apply plugin: 'com.palantir.external-publish-dist'
+apply plugin: 'com.palantir.git-version'
+
+group 'com.palantir.conjure.typescript'
+version gitVersion()
+
+task verifyBinariesExist() {
+    [file('dist/bin/conjure-typescript'), file('dist/bin/conjure-typescript.bat')]
+            .forEach({
+                if (!it.exists()) {
+                    throw new GradleException("Compiled binary file does not exist: ${it}")
+                }
+            })
+}
+
+task distTar(type: Tar) {
+    archiveFileName = "conjure-typescript-${gitVersion()}.tgz"
+    destinationDirectory = layout.buildDirectory.dir('dist')
+
+    compression Compression.GZIP
+
+    into('/bin') {
+        from 'dist/bin'
+    }
+
+    eachFile { file ->
+        if (!file.getName().endsWith(".bat")) {
+            file.setMode(0755)
+        }
+    }
+}
+
+tasks.distTar.dependsOn(tasks.verifyBinariesExist)
