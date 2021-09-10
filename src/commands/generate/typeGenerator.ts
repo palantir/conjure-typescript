@@ -319,27 +319,3 @@ function processUnionMembers(
 function uppercase(value: string): string {
     return value.charAt(0).toUpperCase() + value.slice(1);
 }
-
-// enum A {
-//     /**
-//      * asdf
-//      */
-//     X,
-//     Y,
-// }
-
-// const a = A.X;
-
-// namespace A1 {
-//     /**
-//      * asdasd
-//      */
-//     export const X = "X";
-
-//     export type X = "X";
-
-// }
-
-// const b = A1.X;
-
-// type T = A1.X;
