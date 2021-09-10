@@ -2,11 +2,17 @@
  * This enumerates the numbers 1:2 also 100.
  * 
  */
-export enum EnumExample {
-    ONE = "ONE",
-    TWO = "TWO",
+export namespace EnumExample {
+    export type ONE = "ONE";
+    export type TWO = "TWO";
     /**
      * Value of 100.
      */
-    ONE_HUNDRED = "ONE_HUNDRED"
+    export type ONE_HUNDRED = "ONE_HUNDRED";
+
+    export const ONE = "ONE";
+    export const TWO = "TWO";
+    export const ONE_HUNDRED = "ONE_HUNDRED";
 }
+
+export type EnumExample = keyof typeof EnumExample;

@@ -50,22 +50,45 @@ export function generateType(
 /**
  * Generates a file of the following format:
  * ```
- * export type EnumExample = "ONE" | "TWO";
- * export const EnumExample = { ONE: "ONE" as "ONE", TWO: "TWO" as "TWO" };
+ * export namespace EnumExample {
+ *     export type ONE = "ONE";
+ *     export type TWO = "TWO";
+ *
+ *     export const ONE = "ONE";
+ *     export const TWO = "TWO";
+ * }
+ * export type EnumExample = keyof typeof EnumExample;
  * ```
+ *
+ * We do not use TypeScript Enums because they can not be assigned to an equivalent enum, making interop across
+ * libraries more difficult
  */
 export async function generateEnum(definition: IEnumDefinition, simpleAst: SimpleAst): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
 
-    sourceFile.addEnum({
-        docs: definition.docs != null ? [{ description: definition.docs }] : undefined,
+    const namespaceDefinition = sourceFile.addNamespace({
         isExported: true,
-        members: definition.values.map(enumValue => ({
-            docs: addDeprecatedToDocs(enumValue),
-            name: enumValue.value,
-            value: enumValue.value,
-        })),
         name: definition.typeName.name,
+        typeAliases: definition.values.map(enumValue => ({
+            isExported: true,
+            name: enumValue.value,
+            type: doubleQuote(enumValue.value),
+            docs: addDeprecatedToDocs(enumValue),
+        })),
+        bodyText: writer => {
+            definition.values.forEach(enumValue => {
+                writer.writeLine(`export const ${enumValue.value} = ${doubleQuote(enumValue.value)};`);
+            });
+        },
+    });
+    if (definition.docs != null) {
+        namespaceDefinition.addJsDoc(definition.docs);
+    }
+
+    sourceFile.addTypeAlias({
+        isExported: true,
+        name: definition.typeName.name,
+        type: `keyof typeof ${definition.typeName.name}`,
     });
 
     sourceFile.formatText();
@@ -296,3 +319,27 @@ function processUnionMembers(
 function uppercase(value: string): string {
     return value.charAt(0).toUpperCase() + value.slice(1);
 }
+
+// enum A {
+//     /**
+//      * asdf
+//      */
+//     X,
+//     Y,
+// }
+
+// const a = A.X;
+
+// namespace A1 {
+//     /**
+//      * asdasd
+//      */
+//     export const X = "X";
+
+//     export type X = "X";
+
+// }
+
+// const b = A1.X;
+
+// type T = A1.X;
