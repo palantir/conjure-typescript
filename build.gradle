@@ -23,12 +23,14 @@ group 'com.palantir.conjure.typescript'
 version gitVersion()
 
 task verifyBinariesExist() {
-    [file('dist/bin/conjure-typescript'), file('dist/bin/conjure-typescript.bat')]
-            .forEach({
-                if (!it.exists()) {
-                    throw new GradleException("Compiled binary file does not exist: ${it}")
-                }
-            })
+    doLast {
+        [file('dist/bin/conjure-typescript'), file('dist/bin/conjure-typescript.bat')]
+                .forEach({
+                    if (!it.exists()) {
+                        throw new GradleException("Compiled binary file does not exist: ${it}")
+                    }
+                })
+    }
 }
 
 task distTar(type: Tar) {
