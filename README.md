@@ -15,7 +15,7 @@ the browser or node.
 
 ## Usage
 The recommended way to use conjure-typescript is via a build tool like [gradle-conjure](https://github.com/palantir/gradle-conjure).
-However, if you don't want to use gradle-conjure, there is also an executable which conforms to [RFC 002](https://github.com/palantir/conjure/blob/master/docs/rfc/002-contract-for-conjure-generators.md),  published on [bintray](https://bintray.com/palantir/releases/conjure-typescript).
+However, if you don't want to use gradle-conjure, there is also an executable which conforms to [RFC 002](https://github.com/palantir/conjure/blob/master/docs/rfc/002-contract-for-conjure-generators.md), published on [maven.org](https://search.maven.org/artifact/com.palantir.conjure.typescript/conjure-typescript).
 
 ```
 conjure-typescript generate <input> <output> [..Options]
