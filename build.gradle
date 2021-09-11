@@ -20,7 +20,7 @@ apply plugin: 'com.palantir.external-publish-dist'
 apply plugin: 'com.palantir.git-version'
 
 group 'com.palantir.conjure.typescript'
-version gitVersion()
+version '5.0.0'
 
 task verifyBinariesExist() {
     doLast {

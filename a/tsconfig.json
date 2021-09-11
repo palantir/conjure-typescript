@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "removeComments": false,
+    "stripInternal": true,
+    "target": "es5",
+    "typeRoots": []
+  }
+}

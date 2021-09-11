@@ -8,8 +8,8 @@ export namespace EnumWithDocs {
     export type FOO = "FOO";
     export type BAR = "BAR";
 
-    export const FOO = "FOO";
-    export const BAR = "BAR";
+    export const FOO = "FOO" as "FOO";
+    export const BAR = "BAR" as "BAR";
 }
 
 export type EnumWithDocs = keyof typeof EnumWithDocs;

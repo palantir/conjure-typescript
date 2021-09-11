@@ -54,8 +54,8 @@ export function generateType(
  *     export type ONE = "ONE";
  *     export type TWO = "TWO";
  *
- *     export const ONE = "ONE";
- *     export const TWO = "TWO";
+ *     export const ONE = "ONE" as "ONE";
+ *     export const TWO = "TWO" as "TWO";
  * }
  * export type EnumExample = keyof typeof EnumExample;
  * ```
@@ -76,8 +76,9 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
             docs: addDeprecatedToDocs(enumValue),
         })),
         bodyText: writer => {
-            definition.values.forEach(enumValue => {
-                writer.writeLine(`export const ${enumValue.value} = ${doubleQuote(enumValue.value)};`);
+            definition.values.forEach(({ value }) => {
+                const quotedValue = doubleQuote(value);
+                writer.writeLine(`export const ${value} = ${quotedValue} as ${quotedValue};`);
             });
         },
     });

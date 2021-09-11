@@ -18,10 +18,10 @@ export namespace DeprecatedEnumExample {
      */
     export type OLD_DOCUMENTED_ONE = "OLD_DOCUMENTED_ONE";
 
-    export const ONE = "ONE";
-    export const OLD_ONE = "OLD_ONE";
-    export const OLD_DEPRECATED_ONE = "OLD_DEPRECATED_ONE";
-    export const OLD_DOCUMENTED_ONE = "OLD_DOCUMENTED_ONE";
+    export const ONE = "ONE" as "ONE";
+    export const OLD_ONE = "OLD_ONE" as "OLD_ONE";
+    export const OLD_DEPRECATED_ONE = "OLD_DEPRECATED_ONE" as "OLD_DEPRECATED_ONE";
+    export const OLD_DOCUMENTED_ONE = "OLD_DOCUMENTED_ONE" as "OLD_DOCUMENTED_ONE";
 }
 
 export type DeprecatedEnumExample = keyof typeof DeprecatedEnumExample;
