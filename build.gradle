@@ -35,12 +35,14 @@ task verifyBinariesExist() {
 }
 
 task distTar(type: Tar) {
-    archiveFileName = "conjure-typescript-${gitVersion()}.tgz"
+    String publicationName = "conjure-typescript-${gitVersion()}"
+
+    archiveFileName = "${publicationName}.tgz"
     destinationDirectory = layout.buildDirectory.dir('dist')
 
     compression Compression.GZIP
 
-    into('/bin') {
+    into("/${publicationName}/bin") {
         from 'dist/bin'
     }
 
