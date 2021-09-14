@@ -8,7 +8,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "npm-run-all clean compile verify",
-    "circle-publish": "./scripts/circle-publish-npm && ./scripts/circle-publish-dist",
+    "circle-publish": "./gradlew publish && ./scripts/circle-publish-npm",
     "clean": "rm -rf dist lib",
     "compile": "npm-run-all -p compile-ts compile-dist",
     "compile-dist": "webpack --config webpack.config.js && cp bin/conjure-typescript.bat dist/bin",
