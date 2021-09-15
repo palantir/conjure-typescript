@@ -50,22 +50,46 @@ export function generateType(
 /**
  * Generates a file of the following format:
  * ```
- * export type EnumExample = "ONE" | "TWO";
- * export const EnumExample = { ONE: "ONE" as "ONE", TWO: "TWO" as "TWO" };
+ * export namespace EnumExample {
+ *     export type ONE = "ONE";
+ *     export type TWO = "TWO";
+ *
+ *     export const ONE = "ONE" as "ONE";
+ *     export const TWO = "TWO" as "TWO";
+ * }
+ * export type EnumExample = keyof typeof EnumExample;
  * ```
+ *
+ * We do not use TypeScript Enums because they can not be assigned to an equivalent enum, making interop across
+ * libraries more difficult
  */
 export async function generateEnum(definition: IEnumDefinition, simpleAst: SimpleAst): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
 
-    sourceFile.addEnum({
-        docs: definition.docs != null ? [{ description: definition.docs }] : undefined,
+    const namespaceDefinition = sourceFile.addNamespace({
         isExported: true,
-        members: definition.values.map(enumValue => ({
-            docs: addDeprecatedToDocs(enumValue),
-            name: enumValue.value,
-            value: enumValue.value,
-        })),
         name: definition.typeName.name,
+        typeAliases: definition.values.map(enumValue => ({
+            isExported: true,
+            name: enumValue.value,
+            type: doubleQuote(enumValue.value),
+            docs: addDeprecatedToDocs(enumValue),
+        })),
+        bodyText: writer => {
+            definition.values.forEach(({ value }) => {
+                const quotedValue = doubleQuote(value);
+                writer.writeLine(`export const ${value} = ${quotedValue} as ${quotedValue};`);
+            });
+        },
+    });
+    if (definition.docs != null) {
+        namespaceDefinition.addJsDoc(definition.docs);
+    }
+
+    sourceFile.addTypeAlias({
+        isExported: true,
+        name: definition.typeName.name,
+        type: `keyof typeof ${definition.typeName.name}`,
     });
 
     sourceFile.formatText();

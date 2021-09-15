@@ -1,10 +1,15 @@
 /**
  * Some documentation
  */
-export enum EnumWithDocs {
+export namespace EnumWithDocs {
     /**
      * Some field documentation
      */
-    FOO = "FOO",
-    BAR = "BAR"
+    export type FOO = "FOO";
+    export type BAR = "BAR";
+
+    export const FOO = "FOO" as "FOO";
+    export const BAR = "BAR" as "BAR";
 }
+
+export type EnumWithDocs = keyof typeof EnumWithDocs;
