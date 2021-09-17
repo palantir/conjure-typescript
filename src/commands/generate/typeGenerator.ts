@@ -66,31 +66,56 @@ export function generateType(
 export async function generateEnum(definition: IEnumDefinition, simpleAst: SimpleAst): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
 
-    const namespaceDefinition = sourceFile.addNamespace({
-        isExported: true,
-        name: definition.typeName.name,
-        typeAliases: definition.values.map(enumValue => ({
+    if (definition.values.length > 0) {
+        const namespaceDefinition = sourceFile.addNamespace({
             isExported: true,
-            name: enumValue.value,
-            type: doubleQuote(enumValue.value),
-            docs: addDeprecatedToDocs(enumValue),
-        })),
-        bodyText: writer => {
-            definition.values.forEach(({ value }) => {
-                const quotedValue = doubleQuote(value);
-                writer.writeLine(`export const ${value} = ${quotedValue} as ${quotedValue};`);
-            });
-        },
-    });
-    if (definition.docs != null) {
-        namespaceDefinition.addJsDoc(definition.docs);
+            name: definition.typeName.name,
+            typeAliases: definition.values.map(enumValue => ({
+                isExported: true,
+                name: enumValue.value,
+                type: doubleQuote(enumValue.value),
+                docs: addDeprecatedToDocs(enumValue),
+            })),
+            bodyText: writer => {
+                definition.values.forEach(({ value }) => {
+                    const quotedValue = doubleQuote(value);
+                    writer.writeLine(`export const ${value} = ${quotedValue} as ${quotedValue};`);
+                });
+            },
+        });
+        if (definition.docs != null) {
+            namespaceDefinition.addJsDoc(definition.docs);
+        }
+        sourceFile.addTypeAlias({
+            isExported: true,
+            name: definition.typeName.name,
+            type: `keyof typeof ${definition.typeName.name}`,
+        });
+    } else {
+        // We need to special case empty enums for two reasons:
+        // 1) `keyof typeof MyEnum` results in an erorr
+        // 2) Typescript won't generate `const MyEnum = {}` and will instead just skip it from the compiled code.
+        const variableStatement = sourceFile.addVariableStatement({
+            declarationKind: VariableDeclarationKind.Const,
+            declarations: [
+                {
+                    initializer: "{}",
+                    name: definition.typeName.name,
+                },
+            ],
+            isExported: true,
+        });
+        if (definition.docs != null) {
+            variableStatement.addJsDoc(definition.docs);
+        }
+        sourceFile.addTypeAlias({
+            isExported: true,
+            name: definition.typeName.name,
+            // We use void instead of never because void can't be assigned to anything else
+            // (while never is assignable to anything)
+            type: "void",
+        });
     }
-
-    sourceFile.addTypeAlias({
-        isExported: true,
-        name: definition.typeName.name,
-        type: `keyof typeof ${definition.typeName.name}`,
-    });
 
     sourceFile.formatText();
     return sourceFile.save();

@@ -206,6 +206,8 @@ types:
         alias: binary
       BinaryAliasTwo:
         alias: BinaryAliasOne
+      EmptyEnum:
+        values: []
       ExternalLongAliasOne:
         alias: ExternalLong
       ExternalLongAliasTwo:
