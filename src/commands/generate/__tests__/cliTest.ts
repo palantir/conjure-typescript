@@ -242,7 +242,7 @@ describe("generate command", () => {
             const child = child_process.exec(command, { cwd });
             child.on("error", reject);
             child.on("exit", code => {
-                if (code != null){
+                if (code != null) {
                     resolve(code);
                 }
             });
