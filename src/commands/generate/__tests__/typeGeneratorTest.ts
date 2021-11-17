@@ -20,7 +20,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";
 import { SimpleAst } from "../simpleAst";
-import { generateEnum, generateObject, generateUnion } from "../typeGenerator";
+import { generateAlias, generateEnum, generateObject, generateUnion } from "../typeGenerator";
 import { createHashableTypeName } from "../utils";
 import {
     assertOutputAndExpectedAreEqual,
@@ -34,6 +34,13 @@ const stringAlias: ITypeDefinition = ITypeDefinition.alias({
     typeName: stringAliasName,
 });
 const stringAliasReference: IType = IType.reference(stringAliasName);
+
+const integerAliasName = { name: "NumberAlias", package: "com.palantir.types" };
+const integerAlias: ITypeDefinition = ITypeDefinition.alias({
+    alias: { primitive: PrimitiveType.INTEGER, type: "primitive" },
+    typeName: integerAliasName,
+});
+const integerAliasReference: IType = IType.reference(integerAliasName);
 
 describe("typeGenerator", () => {
     const expectedDir = path.join(__dirname, "./resources");
@@ -117,6 +124,30 @@ describe("typeGenerator", () => {
             simpleAst,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/uuidObject.ts");
+    });
+
+    it("emits flavored type for rid", async () => {
+        await generateAlias(
+            {
+                alias: IType.primitive(PrimitiveType.RID),
+                typeName: { name: "CustomEntityRid", package: "com.palantir.types" },
+            },
+            new Map(),
+            simpleAst,
+        );
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/customEntityRid.ts");
+    });
+
+    it("emits flavored type for strings", async () => {
+        await generateAlias(
+            {
+                alias: IType.primitive(PrimitiveType.STRING),
+                typeName: { name: "StringAlias", package: "com.palantir.types" },
+            },
+            new Map(),
+            simpleAst,
+        );
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/stringAlias.ts");
     });
 
     it("emits objects with map of enum", async () => {
@@ -374,11 +405,16 @@ describe("typeGenerator", () => {
                         fieldName: "foo",
                         type: localObject.reference,
                     },
+                    {
+                        fieldName: "stringAliasReference",
+                        type: stringAliasReference,
+                    },
                 ],
             },
             new Map([
                 [createHashableTypeName(foreignObject.typeName), foreignObject.definition],
                 [createHashableTypeName(localObject.typeName), localObject.definition],
+                [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
         );
@@ -387,6 +423,7 @@ describe("typeGenerator", () => {
         expect(contents).toContain(
             `import { IOtherObject } from "../other/otherObject";
 import { ISomeObject } from "./someObject";
+import { IStringAlias } from "./stringAlias";
 `,
         );
     });
@@ -401,6 +438,10 @@ import { ISomeObject } from "./someObject";
                         type: localObject.reference,
                     },
                     {
+                        fieldName: "integerAlias",
+                        type: integerAliasReference,
+                    },
+                    {
                         fieldName: "stringAlias",
                         type: stringAliasReference,
                     },
@@ -408,23 +449,33 @@ import { ISomeObject } from "./someObject";
             },
             new Map<string, ITypeDefinition>([
                 [createHashableTypeName(localObject.typeName), localObject.definition],
+                [createHashableTypeName(integerAliasName), integerAlias],
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
         const contents = fs.readFileSync(outFile, "utf8");
-        expect(contents).toContain(`import { ISomeObject } from "./someObject";
+        const expectedContent = `
+import { ISomeObject } from "./someObject";
+import { IStringAlias } from "./stringAlias";
 
 export interface IMyUnion_ReferenceAlias {
     'referenceAlias': ISomeObject;
     'type': "referenceAlias";
 }
 
+export interface IMyUnion_IntegerAlias {
+    'integerAlias': number;
+    'type': "integerAlias";
+}
+
 export interface IMyUnion_StringAlias {
-    'stringAlias': string;
+    'stringAlias': IStringAlias;
     'type': "stringAlias";
-}`);
+}
+`.trim();
+        expect(contents).toContain(expectedContent);
     });
 
     it("emits unions of unions", async () => {

@@ -91,7 +91,7 @@ describe("imports", () => {
     });
 
     it("follows alias reference", () => {
-        expect(visitor.reference(stringAliasName)).toEqual([]);
+        expect(visitor.reference(stringAliasName)).toEqual([namedImport("../imports/alias", "IAlias")]);
         expect(visitor.reference(listReferenceAliasName)).toEqual([
             namedImport("../imports/someObject", "ISomeObject"),
         ]);

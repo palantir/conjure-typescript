@@ -110,9 +110,9 @@ describe("TsTypeVisitor", () => {
     });
 
     it("follows alias reference", () => {
-        expect(visitor.reference(aliasName)).toEqual("string");
+        expect(visitor.reference(aliasName)).toEqual("IAlias");
         expect(visitor.reference(binaryAliasName)).toEqual("string");
-        expect(topLevelVisitor.reference(aliasName)).toEqual("string");
+        expect(topLevelVisitor.reference(aliasName)).toEqual("IAlias");
         expect(topLevelVisitor.reference(binaryAliasName)).toEqual("ReadableStream<Uint8Array>");
     });
 
@@ -140,6 +140,7 @@ describe("TsTypeVisitor", () => {
         expect(topLevelVisitor.set({ itemType: binaryAliasReference })).toEqual("Array<string>");
     });
 
+    // TODO: @mbeteille figure out story for map keys
     it("returns map type", () => {
         expect(visitor.map({ keyType: aliasReference, valueType: objectReference })).toEqual(
             "{ [key: string]: IObject }",

@@ -27,7 +27,7 @@ import {
     ITypeVisitor,
     PrimitiveType,
 } from "conjure-api";
-import { createHashableTypeName } from "./utils";
+import { createHashableTypeName, isFlavorizable } from "./utils";
 
 export class TsReturnTypeVisitor implements ITypeVisitor<string> {
     constructor(
@@ -64,8 +64,17 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
         const valueTsType = IType.visit(obj.valueType, this.nestedVisitor());
         if (IType.isReference(obj.keyType)) {
             const keyTypeDefinition = this.knownTypes.get(createHashableTypeName(obj.keyType.reference));
-            if (keyTypeDefinition != null && ITypeDefinition.isEnum(keyTypeDefinition)) {
-                return `{ [key in ${obj.keyType.reference.name}]?: ${valueTsType} }`;
+            if (keyTypeDefinition != null) {
+                if (ITypeDefinition.isEnum(keyTypeDefinition)) {
+                    return `{ [key in ${obj.keyType.reference.name}]?: ${valueTsType} }`;
+                }
+
+                // else if (
+                //     ITypeDefinition.isAlias(keyTypeDefinition) &&
+                //     isFlavorizable(keyTypeDefinition.alias.alias)
+                // ) {
+                //     return `Record<I${obj.keyType.reference.name}, ${valueTsType}>`;
+                // }
             }
         }
         return `{ [key: string]: ${valueTsType} }`;
@@ -86,7 +95,7 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
         const withIPrefix = "I" + obj.name;
         if (typeDefinition == null) {
             throw new Error(`unknown reference type. package: '${obj.package}', name: '${obj.name}'`);
-        } else if (ITypeDefinition.isAlias(typeDefinition)) {
+        } else if (ITypeDefinition.isAlias(typeDefinition) && !isFlavorizable(typeDefinition.alias.alias)) {
             return IType.visit(typeDefinition.alias.alias, this);
         } else if (ITypeDefinition.isEnum(typeDefinition)) {
             return obj.name;

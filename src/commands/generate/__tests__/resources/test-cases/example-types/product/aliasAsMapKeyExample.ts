@@ -1,5 +1,4 @@
 import { IManyFieldExample } from "./manyFieldExample";
-
 export interface IAliasAsMapKeyExample {
     'strings': { [key: string]: IManyFieldExample };
     'rids': { [key: string]: IManyFieldExample };

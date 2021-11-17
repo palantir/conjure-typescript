@@ -14,7 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IEnumDefinition, IObjectDefinition, IType, ITypeDefinition, IUnionDefinition } from "conjure-api";
+import {
+    IAliasDefinition,
+    IEnumDefinition,
+    IObjectDefinition,
+    IType,
+    ITypeDefinition,
+    IUnionDefinition,
+} from "conjure-api";
 import {
     FunctionDeclarationStructure,
     ImportDeclarationStructure,
@@ -26,7 +33,7 @@ import {
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
-import { addDeprecatedToDocs, doubleQuote, isValidFunctionName, singleQuote } from "./utils";
+import { addDeprecatedToDocs, doubleQuote, isFlavorizable, isValidFunctionName, singleQuote } from "./utils";
 
 export function generateType(
     definition: ITypeDefinition,
@@ -34,8 +41,7 @@ export function generateType(
     simpleAst: SimpleAst,
 ): Promise<void> {
     if (ITypeDefinition.isAlias(definition)) {
-        // TODO(gracew): implement at some point
-        return Promise.resolve();
+        return generateAlias(definition.alias, knownTypes, simpleAst);
     } else if (ITypeDefinition.isEnum(definition)) {
         return generateEnum(definition.enum, simpleAst);
     } else if (ITypeDefinition.isObject(definition)) {
@@ -44,6 +50,38 @@ export function generateType(
         return generateUnion(definition.union, knownTypes, simpleAst);
     } else {
         throw Error("unsupported type: " + definition);
+    }
+}
+
+/**
+ * Generates a file of the following format:
+ * ```
+ *  export type ExampleAlias = string & {
+ *     __conjure_flavor_type?: "_flavor_ExampleAlias";
+ *  };
+ * ```
+ * NOTE: for now we only generate flavored alias for primitives
+ */
+const FLAVOR_TYPE_FIELD = "__conjure_type";
+export async function generateAlias(
+    definition: IAliasDefinition,
+    knownTypes: Map<string, ITypeDefinition>,
+    simpleAst: SimpleAst,
+): Promise<void> {
+    if (isFlavorizable(definition.alias)) {
+        const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false);
+        const fieldType = IType.visit(definition.alias, tsTypeVisitor);
+        const sourceFile = simpleAst.createSourceFile(definition.typeName);
+        const typeAlias = sourceFile.addTypeAlias({
+            isExported: true,
+            name: "I" + definition.typeName.name,
+            type: `${fieldType} & { ${FLAVOR_TYPE_FIELD}?: "${definition.typeName.name}" }`,
+        });
+        if (definition.docs) {
+            typeAlias.addJsDoc(definition.docs);
+        }
+        sourceFile.formatText();
+        return sourceFile.save();
     }
 }
 
