@@ -42,6 +42,20 @@ const integerAlias: ITypeDefinition = ITypeDefinition.alias({
 });
 const integerAliasReference: IType = IType.reference(integerAliasName);
 
+const binaryAliasName = { name: "BinaryAlias", package: "com.palantir.types" };
+const binaryAlias: ITypeDefinition = ITypeDefinition.alias({
+    alias: { primitive: PrimitiveType.BINARY, type: "primitive" },
+    typeName: binaryAliasName,
+});
+const binaryAliasReference: IType = IType.reference(binaryAliasName);
+
+const dateAliasName = { name: "DateAlias", package: "com.palantir.types" };
+const dateAlias: ITypeDefinition = ITypeDefinition.alias({
+    alias: { primitive: PrimitiveType.DATETIME, type: "primitive" },
+    typeName: binaryAliasName,
+});
+const dateAliasReference: IType = IType.reference(dateAliasName);
+
 describe("typeGenerator", () => {
     const expectedDir = path.join(__dirname, "./resources");
     let outDir: string;
@@ -148,6 +162,54 @@ describe("typeGenerator", () => {
             simpleAst,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/stringAlias.ts");
+    });
+
+    it("emits flavored type for integers", async () => {
+        await generateAlias(
+            {
+                alias: IType.primitive(PrimitiveType.INTEGER),
+                typeName: { name: "IntegerAlias", package: "com.palantir.types" },
+            },
+            new Map(),
+            simpleAst,
+        );
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/integerAlias.ts");
+    });
+
+    it("emits flavored type for safe longs", async () => {
+        await generateAlias(
+            {
+                alias: IType.primitive(PrimitiveType.SAFELONG),
+                typeName: { name: "SafeLongAlias", package: "com.palantir.types" },
+            },
+            new Map(),
+            simpleAst,
+        );
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/safeLongAlias.ts");
+    });
+
+    it("emits flavored type for bearer tokens", async () => {
+        await generateAlias(
+            {
+                alias: IType.primitive(PrimitiveType.BEARERTOKEN),
+                typeName: { name: "BearerTokenAlias", package: "com.palantir.types" },
+            },
+            new Map(),
+            simpleAst,
+        );
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/bearerTokenAlias.ts");
+    });
+
+    it("emits flavored type for uuids", async () => {
+        await generateAlias(
+            {
+                alias: IType.primitive(PrimitiveType.UUID),
+                typeName: { name: "UuidAlias", package: "com.palantir.types" },
+            },
+            new Map(),
+            simpleAst,
+        );
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/uuidAlias.ts");
     });
 
     it("emits objects with map of enum", async () => {
@@ -445,18 +507,33 @@ import { IStringAlias } from "./stringAlias";
                         fieldName: "stringAlias",
                         type: stringAliasReference,
                     },
+                    {
+                        fieldName: "binaryAlias",
+                        type: binaryAliasReference,
+                    },
+                    {
+                        fieldName: "dateAlias",
+                        type: dateAliasReference,
+                    },
                 ],
             },
             new Map<string, ITypeDefinition>([
                 [createHashableTypeName(localObject.typeName), localObject.definition],
+
+                // integer and string alias should be flavorized
                 [createHashableTypeName(integerAliasName), integerAlias],
                 [createHashableTypeName(stringAliasName), stringAlias],
+
+                // binary and date aliases shouldn't be "flavorized"
+                [createHashableTypeName(binaryAliasName), binaryAlias],
+                [createHashableTypeName(dateAliasName), dateAlias],
             ]),
             simpleAst,
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         const expectedContent = `
+import { INumberAlias } from "./numberAlias";
 import { ISomeObject } from "./someObject";
 import { IStringAlias } from "./stringAlias";
 
@@ -466,13 +543,23 @@ export interface IMyUnion_ReferenceAlias {
 }
 
 export interface IMyUnion_IntegerAlias {
-    'integerAlias': number;
+    'integerAlias': INumberAlias;
     'type': "integerAlias";
 }
 
 export interface IMyUnion_StringAlias {
     'stringAlias': IStringAlias;
     'type': "stringAlias";
+}
+
+export interface IMyUnion_BinaryAlias {
+    'binaryAlias': string;
+    'type': "binaryAlias";
+}
+
+export interface IMyUnion_DateAlias {
+    'dateAlias': string;
+    'type': "dateAlias";
 }
 `.trim();
         expect(contents).toContain(expectedContent);

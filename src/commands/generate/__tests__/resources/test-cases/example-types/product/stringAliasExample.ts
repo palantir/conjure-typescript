@@ -1,1 +1,1 @@
-export type IStringAliasExample = string & { __conjure_type?: "IStringAliasExample" };
+export type IStringAliasExample = string & { __conjure_type?: "StringAliasExample" };

@@ -1,1 +1,1 @@
-export type IRidAliasExample = string & { __conjure_type?: "IRidAliasExample" };
+export type IRidAliasExample = string & { __conjure_type?: "RidAliasExample" };

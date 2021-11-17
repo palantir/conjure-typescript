@@ -81,6 +81,8 @@ types:
       UuidExample:
         fields:
           uuid: uuid
+      BearerAliasExample:
+        alias: bearertoken
       StringAliasExample:
         alias: string
       NestedStringAliasExample:

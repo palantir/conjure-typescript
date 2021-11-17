@@ -31,6 +31,7 @@ import { directory } from "tempy";
 import { loadConjureDefinition } from "../generateCommand";
 import { generate } from "../generator";
 import { typeNameToFilePath } from "../simpleAst";
+import { isFlavorizable } from "../utils";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
 describe("generator", () => {
@@ -129,7 +130,7 @@ describe("definitionTests", () => {
 function expectAllFilesAreTheSame(definition: IConjureDefinition, actualDir: string, expectedDir: string) {
     for (const type of definition.types) {
         // We do not currently generate anything for aliases
-        if (type.type === "alias") {
+        if (type.type === "alias" && !isFlavorizable(type.alias.alias)) {
             continue;
         }
         const relativeFilePath = typeNameToFilePath(ITypeDefinition.visit(type, typeNameVisitor));

@@ -60,7 +60,6 @@ export function generateType(
  *     __conjure_flavor_type?: "_flavor_ExampleAlias";
  *  };
  * ```
- * NOTE: for now we only generate flavored alias for primitives
  */
 const FLAVOR_TYPE_FIELD = "__conjure_type";
 export async function generateAlias(
