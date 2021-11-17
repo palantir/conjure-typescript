@@ -6,7 +6,7 @@ module.exports = {
     devtool: false,
     entry: "./src/conjureTypeScript.ts",
     resolve: {
-        extensions: [ ".js", ".ts", ".json" ],
+        extensions: [".js", ".ts", ".json"],
     },
     output: {
         path: path.resolve(__dirname, 'dist/bin'),
@@ -17,17 +17,19 @@ module.exports = {
         rules: [
             {
                 test: /\.ts$/,
-                loader: require.resolve("awesome-typescript-loader"),
-                options: {
-                    configFileName: "./src/tsconfig.json",
-                    useCache: true,
-                    declaration: false
-                }
+                use: [
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            configFile: "./tsconfig.json",
+                        }
+                    }
+                ],
             }
         ]
     },
     plugins: [
-        new webpack.IgnorePlugin(/^electron$/),
-        new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true})
+        new webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }),
+        new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true })
     ],
 };

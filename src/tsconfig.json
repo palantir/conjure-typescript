@@ -20,6 +20,7 @@
         "target": "es5",
         "outDir": "../lib"
     },
+    "include": ["./**/*"],
     "exclude": [
         "**/__integTest__/*"
     ]

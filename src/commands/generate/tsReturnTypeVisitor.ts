@@ -67,14 +67,12 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
             if (keyTypeDefinition != null) {
                 if (ITypeDefinition.isEnum(keyTypeDefinition)) {
                     return `{ [key in ${obj.keyType.reference.name}]?: ${valueTsType} }`;
+                } else if (
+                    ITypeDefinition.isAlias(keyTypeDefinition) &&
+                    isFlavorizable(keyTypeDefinition.alias.alias)
+                ) {
+                    return `{ [key: I${obj.keyType.reference.name}]: ${valueTsType} }`;
                 }
-
-                // else if (
-                //     ITypeDefinition.isAlias(keyTypeDefinition) &&
-                //     isFlavorizable(keyTypeDefinition.alias.alias)
-                // ) {
-                //     return `Record<I${obj.keyType.reference.name}, ${valueTsType}>`;
-                // }
             }
         }
         return `{ [key: string]: ${valueTsType} }`;
