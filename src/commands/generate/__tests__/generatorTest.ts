@@ -129,7 +129,7 @@ describe("definitionTests", () => {
 
 function expectAllFilesAreTheSame(definition: IConjureDefinition, actualDir: string, expectedDir: string) {
     for (const type of definition.types) {
-        // We do not currently generate anything for aliases
+        // We do not generate flavoured types for all aliases
         if (type.type === "alias" && !isFlavorizable(type.alias.alias)) {
             continue;
         }
