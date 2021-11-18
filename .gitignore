@@ -22,9 +22,6 @@ dist
 lerna-debug.log
 yerna.log
 
-# awesome-typescript-loader
-.awcache
-
 # Testing
 coverage
 test-report.xml
