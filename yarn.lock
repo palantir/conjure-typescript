@@ -1525,8 +1525,6 @@ conjure-client@^2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/conjure-client/-/conjure-client-2.4.1.tgz#f230d13d9cc6b8699d3f26955b806d431b652fe9"
   integrity sha512-D+m/j8G54CQVE/2i0RmgCZQXNqNy7TGOl4KrqVZV4LsTYhjrWXmBHvfHM+mhyPs69QWfDEgW48Yy/zUwEbuMYA==
-  dependencies:
-    web-streams-polyfill "^2.0.6"
 
 connect@^3.6.0:
   version "3.6.6"
