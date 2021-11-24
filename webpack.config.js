@@ -29,7 +29,10 @@ module.exports = {
         ]
     },
     plugins: [
+<<<<<<< HEAD
         new webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }),
+=======
+>>>>>>> mb/upgrade-ts
         new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true })
     ],
 };

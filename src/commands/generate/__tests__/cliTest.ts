@@ -186,8 +186,8 @@ describe("generate command", () => {
         expect(fs.existsSync(path.join(outDir, "node_modules/typescript/bin/tsc")));
     });
 
+    jest.setTimeout(10000);
     it("generated code compiles", async () => {
-        jest.setTimeout(10000);
         await generateCommand.handler({
             _: ["generate", input, outDir],
             packageName: "foo",
@@ -242,9 +242,7 @@ describe("generate command", () => {
             const child = child_process.exec(command, { cwd });
             child.on("error", reject);
             child.on("exit", code => {
-                if (code != null) {
-                    resolve(code);
-                }
+                resolve(code || 0);
             });
         });
     }
