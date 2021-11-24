@@ -29,7 +29,6 @@ module.exports = {
         ]
     },
     plugins: [
-        new webpack.IgnorePlugin({ resourceRegExp: /^electron$/ }),
         new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true })
     ],
 };
