@@ -26,6 +26,7 @@ describe("generate command", () => {
     let outDir: string;
     const input = path.join(__dirname, "../../../../build/ir-test-cases/example-types.json");
     const generateCommand = new GenerateCommand();
+    jest.setTimeout(10000);
 
     beforeEach(() => {
         outDir = directory();
@@ -140,7 +141,6 @@ describe("generate command", () => {
     });
 
     it("only generates raw source", async () => {
-        jest.setTimeout(10000);
         await generateCommand.handler({
             _: ["generate", input, outDir],
             rawSource: true,
@@ -159,7 +159,6 @@ describe("generate command", () => {
     });
 
     it("generates code", async () => {
-        jest.setTimeout(10000);
         await generateCommand.handler({
             _: ["generate", input, outDir],
             packageName: "foo",
@@ -173,7 +172,6 @@ describe("generate command", () => {
     });
 
     it("generated code installs dependencies", async () => {
-        jest.setTimeout(10000);
         await generateCommand.handler({
             _: ["generate", input, outDir],
             packageName: "foo",
@@ -186,7 +184,6 @@ describe("generate command", () => {
         expect(fs.existsSync(path.join(outDir, "node_modules/typescript/bin/tsc")));
     });
 
-    jest.setTimeout(10000);
     it("generated code compiles", async () => {
         await generateCommand.handler({
             _: ["generate", input, outDir],
@@ -201,7 +198,6 @@ describe("generate command", () => {
     });
 
     it("generates .npmignore file", async () => {
-        jest.setTimeout(10000);
         await generateCommand.handler({
             _: ["generate", input, outDir],
             packageName: "foo",
