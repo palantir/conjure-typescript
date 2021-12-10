@@ -20,18 +20,20 @@ import { ImportDeclarationStructure } from "ts-simple-ast";
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
+import { ITypeGenerationFlags } from "./typeGenerationFlags";
 import { doubleQuote, singleQuote } from "./utils";
 
 export function generateError(
     definition: IErrorDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
+    typeGenerationFlags: ITypeGenerationFlags
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.errorName);
     const interfaceName = "I" + definition.errorName.name;
     const errorName = `${definition.namespace}:${definition.errorName.name}`;
-    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.errorName, false);
-    const importsVisitor = new ImportsVisitor(knownTypes, definition.errorName);
+    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.errorName, false, typeGenerationFlags);
+    const importsVisitor = new ImportsVisitor(knownTypes, definition.errorName, typeGenerationFlags);
     const imports: ImportDeclarationStructure[] = [];
 
     const args = definition.safeArgs.concat(definition.unsafeArgs);

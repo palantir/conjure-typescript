@@ -23,6 +23,7 @@ import { SimpleAst } from "../simpleAst";
 import { generateAlias, generateEnum, generateObject, generateUnion } from "../typeGenerator";
 import { createHashableTypeName } from "../utils";
 import {
+    assertDoesNotExist,
     assertOutputAndExpectedAreEqual,
     foreignObject,
     typesLocalObject as localObject,
@@ -119,11 +120,15 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/primitiveObject.ts");
     });
 
-    it("emits objects with uuids ", async () => {
+
+    it("emits objects with uuids when flag is on", async () => {
         await generateObject(
             {
                 fields: [
@@ -136,81 +141,205 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/uuidObject.ts");
     });
 
-    it("emits flavored type for rid", async () => {
-        await generateAlias(
-            {
-                alias: IType.primitive(PrimitiveType.RID),
-                typeName: { name: "CustomEntityRid", package: "com.palantir.types" },
-            },
-            new Map(),
-            simpleAst,
-        );
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/customEntityRid.ts");
+    describe("alias for rids", () => {
+        it("emits flavored type for rid when flag is on", async () => {
+            await generateAlias(
+                {
+                    alias: IType.primitive(PrimitiveType.RID),
+                    typeName: { name: "CustomEntityRid", package: "com.palantir.types" },
+                },
+                new Map(),
+                simpleAst,
+                {
+                    shouldFlavorizeAliasWhenPossible: true
+                }
+            );
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/customEntityRid.ts");
+        });
+
+        it("does not emit flavored type for rid when flag is off", async () => {
+            await generateAlias(
+                {
+                    alias: IType.primitive(PrimitiveType.RID),
+                    typeName: { name: "CustomEntityRidWithFlagOff", package: "com.palantir.types" },
+                },
+                new Map(),
+                simpleAst,
+                {
+                    shouldFlavorizeAliasWhenPossible: false
+                }
+            );
+            assertDoesNotExist(outDir, "types/customEntityRidWithFlagOff.ts");
+        });
     });
 
-    it("emits flavored type for strings", async () => {
-        await generateAlias(
-            {
-                alias: IType.primitive(PrimitiveType.STRING),
-                typeName: { name: "StringAlias", package: "com.palantir.types" },
-            },
-            new Map(),
-            simpleAst,
-        );
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/stringAlias.ts");
+    describe("alias for strings", () => {
+        it("emits flavored type for strings when flag is on", async () => {
+            await generateAlias(
+                {
+                    alias: IType.primitive(PrimitiveType.STRING),
+                    typeName: { name: "StringAlias", package: "com.palantir.types" },
+                },
+                new Map(),
+                simpleAst,
+                {
+                    shouldFlavorizeAliasWhenPossible: true
+                }
+            );
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/stringAlias.ts");
+        });
+
+        it("does not emit flavored type for strings when flag is off", async () => {
+            await generateAlias(
+                {
+                    alias: IType.primitive(PrimitiveType.STRING),
+                    typeName: { name: "StringAliasWhenFlagOff", package: "com.palantir.types" },
+                },
+                new Map(),
+                simpleAst,
+                {
+                    shouldFlavorizeAliasWhenPossible: false
+                }
+            );
+            assertDoesNotExist(outDir, "types/stringAliasWhenFlagOff.ts");
+        });
     });
 
-    it("emits flavored type for integers", async () => {
-        await generateAlias(
-            {
-                alias: IType.primitive(PrimitiveType.INTEGER),
-                typeName: { name: "IntegerAlias", package: "com.palantir.types" },
-            },
-            new Map(),
-            simpleAst,
-        );
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/integerAlias.ts");
+    describe("alias for integers", () => {
+        it("emits flavored type for integers when flag is on", async () => {
+            await generateAlias(
+                {
+                    alias: IType.primitive(PrimitiveType.INTEGER),
+                    typeName: { name: "IntegerAlias", package: "com.palantir.types" },
+                },
+                new Map(),
+                simpleAst,
+                {
+                    shouldFlavorizeAliasWhenPossible: true
+                }
+            );
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/integerAlias.ts");
+        });
+
+        it("emits flavored type for integers when flag is on", async () => {
+            await generateAlias(
+                {
+                    alias: IType.primitive(PrimitiveType.INTEGER),
+                    typeName: { name: "IntegerAliasWithFlagOff", package: "com.palantir.types" },
+                },
+                new Map(),
+                simpleAst,
+                {
+                    shouldFlavorizeAliasWhenPossible: false
+                }
+            );
+            assertDoesNotExist(outDir, "types/integerAliasWithFlagOff.ts");
+        });
     });
 
-    it("emits flavored type for safe longs", async () => {
-        await generateAlias(
-            {
-                alias: IType.primitive(PrimitiveType.SAFELONG),
-                typeName: { name: "SafeLongAlias", package: "com.palantir.types" },
-            },
-            new Map(),
-            simpleAst,
-        );
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/safeLongAlias.ts");
+    describe("alias for safe longs", () => {
+        it("emits flavored type for safe longs when flag is on", async () => {
+            await generateAlias(
+                {
+                    alias: IType.primitive(PrimitiveType.SAFELONG),
+                    typeName: { name: "SafeLongAlias", package: "com.palantir.types" },
+                },
+                new Map(),
+                simpleAst,
+                {
+                    shouldFlavorizeAliasWhenPossible: true
+                }
+            );
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/safeLongAlias.ts");
+        });
+
+        it("does not emit flavored type for safe longs when flag is off", async () => {
+            await generateAlias(
+                {
+                    alias: IType.primitive(PrimitiveType.SAFELONG),
+                    typeName: { name: "SafeLongAliasWithFlagOff", package: "com.palantir.types" },
+                },
+                new Map(),
+                simpleAst,
+                {
+                    shouldFlavorizeAliasWhenPossible: false
+                }
+            );
+            assertDoesNotExist(outDir, "types/safeLongAliasWithFlagOff.ts");
+        });
     });
 
-    it("emits flavored type for bearer tokens", async () => {
-        await generateAlias(
-            {
-                alias: IType.primitive(PrimitiveType.BEARERTOKEN),
-                typeName: { name: "BearerTokenAlias", package: "com.palantir.types" },
-            },
-            new Map(),
-            simpleAst,
-        );
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/bearerTokenAlias.ts");
-    });
+    describe("alias for bearer tokens", () => {
+        it("emits flavored type for bearer tokens when flag is on", async () => {
+            await generateAlias(
+                {
+                    alias: IType.primitive(PrimitiveType.BEARERTOKEN),
+                    typeName: { name: "BearerTokenAlias", package: "com.palantir.types" },
+                },
+                new Map(),
+                simpleAst,
+                {
+                    shouldFlavorizeAliasWhenPossible: true
+                }
+            );
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/bearerTokenAlias.ts");
+        });
 
-    it("emits flavored type for uuids", async () => {
-        await generateAlias(
-            {
-                alias: IType.primitive(PrimitiveType.UUID),
-                typeName: { name: "UuidAlias", package: "com.palantir.types" },
-            },
-            new Map(),
-            simpleAst,
-        );
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/uuidAlias.ts");
-    });
+        it("does not emit flavored type for bearer tokens when flag is off", async () => {
+            await generateAlias(
+                {
+                    alias: IType.primitive(PrimitiveType.BEARERTOKEN),
+                    typeName: { name: "BearerTokenAliasWithFlagOff", package: "com.palantir.types" },
+                },
+                new Map(),
+                simpleAst,
+                {
+                    shouldFlavorizeAliasWhenPossible: false
+                }
+            );
+            assertDoesNotExist(outDir, "types/bearerTokenAliasWithFlagOff.ts");
+        });
+    })
+
+    describe("alias for uuids", () => {
+        it("emits flavored type for uuids when flag is on", async () => {
+            await generateAlias(
+                {
+                    alias: IType.primitive(PrimitiveType.UUID),
+                    typeName: { name: "UuidAlias", package: "com.palantir.types" },
+                },
+                new Map(),
+                simpleAst,
+                {
+                    shouldFlavorizeAliasWhenPossible: true
+                }
+            );
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/uuidAlias.ts");
+        });
+
+        it("does not emit flavored type for uuids when flag is off", async () => {
+            await generateAlias(
+                {
+                    alias: IType.primitive(PrimitiveType.UUID),
+                    typeName: { name: "UuidAliasWithFlagOff", package: "com.palantir.types" },
+                },
+                new Map(),
+                simpleAst,
+                {
+                    shouldFlavorizeAliasWhenPossible: false
+                }
+            );
+            assertDoesNotExist(outDir, "types/uuidAliasWithFlagOff.ts");
+        });
+    })
+
 
     it("emits objects with map of enum", async () => {
         const someEnum = {
@@ -233,6 +362,9 @@ describe("typeGenerator", () => {
             },
             new Map([[createHashableTypeName(someEnum.typeName), ITypeDefinition.enum_(someEnum)]]),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/enumMapObject.ts");
     });
@@ -257,6 +389,9 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(localObject.typeName), localObject.definition],
             ]),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/referenceObject.ts");
     });
@@ -281,9 +416,13 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/aliasReferenceObject.ts");
     });
+
 
     it("handles nested aliases", async () => {
         const stringAliasAlias: ITypeDefinition = ITypeDefinition.alias({
@@ -306,6 +445,9 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(stringAlias.alias.typeName), stringAlias],
             ]),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/nestedAliasReferenceObject.ts");
     });
@@ -328,6 +470,9 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/optionalObject.ts");
     });
@@ -352,6 +497,9 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/objectWithDocs.ts");
     });
@@ -377,6 +525,9 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/primitiveUnion.ts");
     });
@@ -392,6 +543,9 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/unionTypeExample.ts");
     });
@@ -415,6 +569,9 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/unionWithDocs.ts");
     });
@@ -436,6 +593,9 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -479,6 +639,9 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -529,6 +692,9 @@ import { IStringAlias } from "./stringAlias";
                 [createHashableTypeName(dateAliasName), dateAlias],
             ]),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -571,7 +737,9 @@ export interface IMyUnion_DateAlias {
             typeName: littleTypeName,
             union: [{ fieldName: "double", type: IType.primitive(PrimitiveType.DOUBLE) }],
         };
-        await generateUnion(littleUnion, new Map(), simpleAst);
+        await generateUnion(littleUnion, new Map(), simpleAst, {
+            shouldFlavorizeAliasWhenPossible: true
+        });
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/little.ts");
 
         await generateUnion(
@@ -581,6 +749,9 @@ export interface IMyUnion_DateAlias {
             },
             new Map([[createHashableTypeName(littleTypeName), ITypeDefinition.union(littleUnion)]]),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/big.ts");
     });
@@ -607,6 +778,9 @@ export interface IMyUnion_DateAlias {
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/recursiveUnion.ts");
     });
@@ -633,6 +807,9 @@ export interface IMyUnion_DateAlias {
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
+            {
+                shouldFlavorizeAliasWhenPossible: true
+            }
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/recursiveObject.ts");
     });

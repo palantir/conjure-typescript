@@ -20,6 +20,7 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
 import { SimpleAst } from "../simpleAst";
+import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { generateType } from "../typeGenerator";
 
 export function assertOutputAndExpectedAreEqual(outDir: string, expectedDir: string, fname: string) {
@@ -32,6 +33,11 @@ export function assertOutputAndExpectedAreEqual(outDir: string, expectedDir: str
         const expected = fs.readFileSync(actualFilePath, "utf8");
         expect(actual).toEqual(expected);
     }
+}
+
+export function assertDoesNotExist(outDir: string, fname: string) {
+    const doesFileExist = fs.existsSync(path.join(outDir, fname));
+    expect(doesFileExist).toBe(false)
 }
 
 function createSimpleObject(
@@ -53,6 +59,10 @@ export const typesLocalObject = createSimpleObject("SomeObject", "com.palantir.t
 export const servicesLocalObject = createSimpleObject("SomeObject", "com.palantir.services");
 export const importsLocalObject = createSimpleObject("SomeObject", "com.palantir.imports");
 export const foreignObject = createSimpleObject("OtherObject", "com.palantir.other");
+
+const DEFAULT_GENERATION_FLAGS: ITypeGenerationFlags = {
+    shouldFlavorizeAliasWhenPossible: true
+}
 
 describe("testTypesGenerator", () => {
     const expectedDir = path.join(__dirname, "./resources");
@@ -80,21 +90,22 @@ describe("testTypesGenerator", () => {
             }),
             new Map(),
             simpleAst,
+            DEFAULT_GENERATION_FLAGS
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/manyFieldExample.ts");
     });
 
     it("generates types local object", async () => {
-        await generateType(typesLocalObject.definition, new Map(), simpleAst);
+        await generateType(typesLocalObject.definition, new Map(), simpleAst, DEFAULT_GENERATION_FLAGS);
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/someObject.ts");
     });
 
     it("generates services local object", async () => {
-        await generateType(servicesLocalObject.definition, new Map(), simpleAst);
+        await generateType(servicesLocalObject.definition, new Map(), simpleAst, DEFAULT_GENERATION_FLAGS);
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/someObject.ts");
     });
     it("generates foreign object", async () => {
-        await generateType(foreignObject.definition, new Map(), simpleAst);
+        await generateType(foreignObject.definition, new Map(), simpleAst, DEFAULT_GENERATION_FLAGS);
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "other/otherObject.ts");
     });
 });

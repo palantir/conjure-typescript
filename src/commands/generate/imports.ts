@@ -30,13 +30,14 @@ import {
 import * as path from "path";
 import { ImportDeclarationStructure, ImportSpecifierStructure } from "ts-simple-ast";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
+import { ITypeGenerationFlags } from "./typeGenerationFlags";
 import { createHashableTypeName, isFlavorizable } from "./utils";
 
 export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]> {
     private tsTypeVisitor: TsReturnTypeVisitor;
 
-    constructor(private knownTypes: Map<string, ITypeDefinition>, private currType: ITypeName) {
-        this.tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, currType, false);
+    constructor(private knownTypes: Map<string, ITypeDefinition>, private currType: ITypeName, private typeGenerationFlags: ITypeGenerationFlags) {
+        this.tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, currType, false, typeGenerationFlags);
     }
 
     public primitive = (_: PrimitiveType): ImportDeclarationStructure[] => [];
@@ -57,7 +58,7 @@ export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]
         const typeDefinition = this.knownTypes.get(createHashableTypeName(obj));
         if (typeDefinition == null) {
             throw new Error(`unknown reference type. package: '${obj.package}', name: '${obj.name}'`);
-        } else if (ITypeDefinition.isAlias(typeDefinition) && !isFlavorizable(typeDefinition.alias.alias)) {
+        } else if (ITypeDefinition.isAlias(typeDefinition) && !isFlavorizable(typeDefinition.alias.alias, this.typeGenerationFlags.shouldFlavorizeAliasWhenPossible)) {
             return IType.visit(typeDefinition.alias.alias, this);
         } else if (obj.package === this.currType.package && obj.name === this.currType.name) {
             return [];

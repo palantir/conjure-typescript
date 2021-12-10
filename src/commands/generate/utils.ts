@@ -19,7 +19,6 @@ import {
     IEnumValueDefinition,
     IFieldDefinition,
     IType,
-    IType_Primitive,
     ITypeName,
     PrimitiveType,
 } from "conjure-api";
@@ -141,6 +140,7 @@ const FLAVORIZABLE_TYPES = new Set([
     PrimitiveType.UUID,
     PrimitiveType.BEARERTOKEN,
 ]);
-export function isFlavorizable(type: IType): type is IType_Primitive {
-    return IType.isPrimitive(type) && FLAVORIZABLE_TYPES.has(type.primitive);
+
+export function isFlavorizable(type: IType, shouldFlavorizeAliasWhenPossible: boolean): boolean {
+    return shouldFlavorizeAliasWhenPossible && IType.isPrimitive(type) && FLAVORIZABLE_TYPES.has(type.primitive);
 }

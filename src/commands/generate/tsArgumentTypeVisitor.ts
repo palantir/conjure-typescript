@@ -17,10 +17,11 @@
 
 import { ITypeDefinition, ITypeName, ITypeVisitor, PrimitiveType } from "conjure-api";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
+import { ITypeGenerationFlags } from "./typeGenerationFlags";
 
 export class TsArgumentTypeVisitor extends TsReturnTypeVisitor {
-    constructor(knownTypes: Map<string, ITypeDefinition>, currType: ITypeName, isTopLevelBinary: boolean) {
-        super(knownTypes, currType, isTopLevelBinary);
+    constructor(knownTypes: Map<string, ITypeDefinition>, currType: ITypeName, isTopLevelBinary: boolean, typeGenerationFlags: ITypeGenerationFlags) {
+        super(knownTypes, currType, isTopLevelBinary, typeGenerationFlags);
     }
 
     public primitive = (obj: PrimitiveType): string => {
@@ -49,6 +50,6 @@ export class TsArgumentTypeVisitor extends TsReturnTypeVisitor {
     };
 
     protected nestedVisitor = (): ITypeVisitor<string> => {
-        return new TsArgumentTypeVisitor(this.knownTypes, this.currType, false);
+        return new TsArgumentTypeVisitor(this.knownTypes, this.currType, false, this.typeGenerationFlags);
     };
 }

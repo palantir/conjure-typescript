@@ -17,8 +17,14 @@
 
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { ImportsVisitor, sortImports } from "../imports";
+import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { createHashableTypeName } from "../utils";
 import { foreignObject, importsLocalObject as localObject } from "./testTypesGeneratorTest";
+
+
+const GENERATION_FLAGS_TO_USE_FOR_IMPORTS: ITypeGenerationFlags = {
+    shouldFlavorizeAliasWhenPossible: true
+}
 
 describe("imports", () => {
     const currType = {
@@ -53,6 +59,7 @@ describe("imports", () => {
             [createHashableTypeName(enumName), enumType],
         ]),
         currType,
+        GENERATION_FLAGS_TO_USE_FOR_IMPORTS
     );
 
     function namedImport(moduleSpecifier: string, name: string) {
@@ -76,7 +83,7 @@ describe("imports", () => {
     });
 
     it("produces error for unknown reference type", () => {
-        const noKnownTypesVisitor = new ImportsVisitor(new Map(), currType);
+        const noKnownTypesVisitor = new ImportsVisitor(new Map(), currType, GENERATION_FLAGS_TO_USE_FOR_IMPORTS);
         expect(() => noKnownTypesVisitor.reference(localObject.typeName)).toThrowError(/unknown reference type/);
     });
 
@@ -218,6 +225,7 @@ describe("imports", () => {
                 ],
             ]),
             someType,
+            GENERATION_FLAGS_TO_USE_FOR_IMPORTS
         );
         expect(IType.visit(IType.reference(otherType), importVisistor)).toEqual([
             { moduleSpecifier: "../foo-request/bar", namedImports: [{ name: "I" + otherType.name }] },
