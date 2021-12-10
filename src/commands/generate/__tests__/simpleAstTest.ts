@@ -26,8 +26,8 @@ import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { generateEnum } from "../typeGenerator";
 
 const GENERATION_FLAGS_TO_USE: ITypeGenerationFlags = {
-    shouldFlavorizeAliasWhenPossible: true
-}
+    shouldFlavorizeAliasWhenPossible: true,
+};
 
 describe("simpleAst", () => {
     let outDir: string;
@@ -49,7 +49,7 @@ describe("simpleAst", () => {
             },
             new Map(),
             simpleAst,
-            GENERATION_FLAGS_TO_USE
+            GENERATION_FLAGS_TO_USE,
         );
 
         await generateService(
@@ -75,7 +75,7 @@ describe("simpleAst", () => {
             },
             new Map(),
             simpleAst,
-            GENERATION_FLAGS_TO_USE
+            GENERATION_FLAGS_TO_USE,
         );
 
         await generateEnum(

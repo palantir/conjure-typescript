@@ -27,7 +27,7 @@ export function generateError(
     definition: IErrorDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
-    typeGenerationFlags: ITypeGenerationFlags
+    typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.errorName);
     const interfaceName = "I" + definition.errorName.name;

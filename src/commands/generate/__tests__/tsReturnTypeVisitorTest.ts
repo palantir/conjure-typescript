@@ -20,10 +20,9 @@ import { TsReturnTypeVisitor } from "../tsReturnTypeVisitor";
 import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { createHashableTypeName } from "../utils";
 
-
 const GENERATION_FLAGS_TO_USE: ITypeGenerationFlags = {
-    shouldFlavorizeAliasWhenPossible: true
-}
+    shouldFlavorizeAliasWhenPossible: true,
+};
 
 describe("TsTypeVisitor", () => {
     const objectName = { name: "Object", package: "" };
@@ -65,7 +64,7 @@ describe("TsTypeVisitor", () => {
         ]),
         fakeTypeName,
         false,
-        GENERATION_FLAGS_TO_USE
+        GENERATION_FLAGS_TO_USE,
     );
 
     const topLevelVisitor = new TsReturnTypeVisitor(
@@ -77,7 +76,7 @@ describe("TsTypeVisitor", () => {
         ]),
         fakeTypeName,
         true,
-        GENERATION_FLAGS_TO_USE
+        GENERATION_FLAGS_TO_USE,
     );
 
     it("returns primitive types", () => {
@@ -109,7 +108,8 @@ describe("TsTypeVisitor", () => {
     });
 
     it("produces error for unknown reference", () => {
-        const tsType = () => new TsReturnTypeVisitor(new Map(), fakeTypeName, false, GENERATION_FLAGS_TO_USE).reference(objectName);
+        const tsType = () =>
+            new TsReturnTypeVisitor(new Map(), fakeTypeName, false, GENERATION_FLAGS_TO_USE).reference(objectName);
         expect(tsType).toThrowError(/unknown reference type/);
     });
 

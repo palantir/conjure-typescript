@@ -59,11 +59,16 @@ export function generateService(
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
-    typeGenerationFlags: ITypeGenerationFlags
+    typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
     const tsReturnTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.serviceName, true, typeGenerationFlags);
-    const tsArgumentTypeVisitor = new TsArgumentTypeVisitor(knownTypes, definition.serviceName, true, typeGenerationFlags);
+    const tsArgumentTypeVisitor = new TsArgumentTypeVisitor(
+        knownTypes,
+        definition.serviceName,
+        true,
+        typeGenerationFlags,
+    );
     const importsVisitor = new ImportsVisitor(knownTypes, definition.serviceName, typeGenerationFlags);
     const mediaTypeVisitor = new MediaTypeVisitor(knownTypes);
 

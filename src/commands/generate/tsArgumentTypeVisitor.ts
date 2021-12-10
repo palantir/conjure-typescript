@@ -20,7 +20,12 @@ import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
 
 export class TsArgumentTypeVisitor extends TsReturnTypeVisitor {
-    constructor(knownTypes: Map<string, ITypeDefinition>, currType: ITypeName, isTopLevelBinary: boolean, typeGenerationFlags: ITypeGenerationFlags) {
+    constructor(
+        knownTypes: Map<string, ITypeDefinition>,
+        currType: ITypeName,
+        isTopLevelBinary: boolean,
+        typeGenerationFlags: ITypeGenerationFlags,
+    ) {
         super(knownTypes, currType, isTopLevelBinary, typeGenerationFlags);
     }
 

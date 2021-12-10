@@ -36,7 +36,6 @@ import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
 import { addDeprecatedToDocs, doubleQuote, isFlavorizable, isValidFunctionName, singleQuote } from "./utils";
 
-
 export function generateType(
     definition: ITypeDefinition,
     knownTypes: Map<string, ITypeDefinition>,
@@ -176,7 +175,7 @@ export async function generateObject(
     definition: IObjectDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
-    typeGenerationFlags: ITypeGenerationFlags
+    typeGenerationFlags: ITypeGenerationFlags,
 ) {
     const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false, typeGenerationFlags);
     const importsVisitor = new ImportsVisitor(knownTypes, definition.typeName, typeGenerationFlags);
@@ -223,7 +222,7 @@ export async function generateUnion(
     definition: IUnionDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
-    typeGenerationFlags: ITypeGenerationFlags
+    typeGenerationFlags: ITypeGenerationFlags,
 ) {
     const unionTsType = "I" + definition.typeName.name;
     const unionSourceFileInput = processUnionMembers(unionTsType, definition, knownTypes, typeGenerationFlags);
@@ -292,7 +291,7 @@ function processUnionMembers(
     unionTsType: string,
     definition: IUnionDefinition,
     knownTypes: Map<string, ITypeDefinition>,
-    typeGenerationFlags: ITypeGenerationFlags
+    typeGenerationFlags: ITypeGenerationFlags,
 ) {
     const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false, typeGenerationFlags);
     const importsVisitor = new ImportsVisitor(knownTypes, definition.typeName, typeGenerationFlags);

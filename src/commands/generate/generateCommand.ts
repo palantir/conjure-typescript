@@ -126,7 +126,9 @@ export class GenerateCommand implements CommandModule {
         const { rawSource } = args;
         const { conjureDefinition, packageJson, tsConfig, gitIgnore } = await this.parseCommandLineArguments(args);
 
-        const generatePromise = generate(conjureDefinition, output, { shouldFlavorizeAliasWhenPossible: !!args.shouldFlavorizeAliasWhenPossible});
+        const generatePromise = generate(conjureDefinition, output, {
+            shouldFlavorizeAliasWhenPossible: !!args.shouldFlavorizeAliasWhenPossible,
+        });
         if (rawSource) {
             return generatePromise;
         }

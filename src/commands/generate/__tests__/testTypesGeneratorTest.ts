@@ -37,7 +37,7 @@ export function assertOutputAndExpectedAreEqual(outDir: string, expectedDir: str
 
 export function assertDoesNotExist(outDir: string, fname: string) {
     const doesFileExist = fs.existsSync(path.join(outDir, fname));
-    expect(doesFileExist).toBe(false)
+    expect(doesFileExist).toBe(false);
 }
 
 function createSimpleObject(
@@ -61,8 +61,8 @@ export const importsLocalObject = createSimpleObject("SomeObject", "com.palantir
 export const foreignObject = createSimpleObject("OtherObject", "com.palantir.other");
 
 const DEFAULT_GENERATION_FLAGS: ITypeGenerationFlags = {
-    shouldFlavorizeAliasWhenPossible: true
-}
+    shouldFlavorizeAliasWhenPossible: true,
+};
 
 describe("testTypesGenerator", () => {
     const expectedDir = path.join(__dirname, "./resources");
@@ -90,7 +90,7 @@ describe("testTypesGenerator", () => {
             }),
             new Map(),
             simpleAst,
-            DEFAULT_GENERATION_FLAGS
+            DEFAULT_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/manyFieldExample.ts");
     });

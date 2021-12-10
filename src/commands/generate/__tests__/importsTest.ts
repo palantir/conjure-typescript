@@ -21,10 +21,9 @@ import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { createHashableTypeName } from "../utils";
 import { foreignObject, importsLocalObject as localObject } from "./testTypesGeneratorTest";
 
-
 const GENERATION_FLAGS_TO_USE_FOR_IMPORTS: ITypeGenerationFlags = {
-    shouldFlavorizeAliasWhenPossible: true
-}
+    shouldFlavorizeAliasWhenPossible: true,
+};
 
 describe("imports", () => {
     const currType = {
@@ -59,7 +58,7 @@ describe("imports", () => {
             [createHashableTypeName(enumName), enumType],
         ]),
         currType,
-        GENERATION_FLAGS_TO_USE_FOR_IMPORTS
+        GENERATION_FLAGS_TO_USE_FOR_IMPORTS,
     );
 
     function namedImport(moduleSpecifier: string, name: string) {
@@ -225,7 +224,7 @@ describe("imports", () => {
                 ],
             ]),
             someType,
-            GENERATION_FLAGS_TO_USE_FOR_IMPORTS
+            GENERATION_FLAGS_TO_USE_FOR_IMPORTS,
         );
         expect(IType.visit(IType.reference(otherType), importVisistor)).toEqual([
             { moduleSpecifier: "../foo-request/bar", namedImports: [{ name: "I" + otherType.name }] },

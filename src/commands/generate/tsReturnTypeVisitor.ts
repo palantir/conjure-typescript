@@ -71,7 +71,10 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
                     return `{ [key in ${obj.keyType.reference.name}]?: ${valueTsType} }`;
                 } else if (
                     ITypeDefinition.isAlias(keyTypeDefinition) &&
-                    isFlavorizable(keyTypeDefinition.alias.alias, this.typeGenerationFlags.shouldFlavorizeAliasWhenPossible)
+                    isFlavorizable(
+                        keyTypeDefinition.alias.alias,
+                        this.typeGenerationFlags.shouldFlavorizeAliasWhenPossible,
+                    )
                 ) {
                     return `{ [key: I${obj.keyType.reference.name}]: ${valueTsType} }`;
                 }
@@ -95,7 +98,10 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
         const withIPrefix = "I" + obj.name;
         if (typeDefinition == null) {
             throw new Error(`unknown reference type. package: '${obj.package}', name: '${obj.name}'`);
-        } else if (ITypeDefinition.isAlias(typeDefinition) && !isFlavorizable(typeDefinition.alias.alias, this.typeGenerationFlags.shouldFlavorizeAliasWhenPossible)) {
+        } else if (
+            ITypeDefinition.isAlias(typeDefinition) &&
+            !isFlavorizable(typeDefinition.alias.alias, this.typeGenerationFlags.shouldFlavorizeAliasWhenPossible)
+        ) {
             return IType.visit(typeDefinition.alias.alias, this);
         } else if (ITypeDefinition.isEnum(typeDefinition)) {
             return obj.name;

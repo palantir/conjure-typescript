@@ -20,9 +20,9 @@ import { TsArgumentTypeVisitor } from "../tsArgumentTypeVisitor";
 import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { createHashableTypeName } from "../utils";
 
-const TYPE_GENERATION_FLAGS: ITypeGenerationFlags ={
-    shouldFlavorizeAliasWhenPossible: true
-}
+const TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
+    shouldFlavorizeAliasWhenPossible: true,
+};
 
 describe("TsTypeVisitor", () => {
     const binaryAliasName = { name: "BinaryAlias", package: "" };
@@ -38,14 +38,14 @@ describe("TsTypeVisitor", () => {
         new Map<string, ITypeDefinition>([[createHashableTypeName(binaryAliasName), binaryAlias]]),
         fakeTypeName,
         false,
-        TYPE_GENERATION_FLAGS
+        TYPE_GENERATION_FLAGS,
     );
 
     const topLevelVisitor = new TsArgumentTypeVisitor(
         new Map<string, ITypeDefinition>([[createHashableTypeName(binaryAliasName), binaryAlias]]),
         fakeTypeName,
         true,
-        TYPE_GENERATION_FLAGS
+        TYPE_GENERATION_FLAGS,
     );
 
     it("returns primitive types", () => {

@@ -36,7 +36,11 @@ import { createHashableTypeName, isFlavorizable } from "./utils";
 export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]> {
     private tsTypeVisitor: TsReturnTypeVisitor;
 
-    constructor(private knownTypes: Map<string, ITypeDefinition>, private currType: ITypeName, private typeGenerationFlags: ITypeGenerationFlags) {
+    constructor(
+        private knownTypes: Map<string, ITypeDefinition>,
+        private currType: ITypeName,
+        private typeGenerationFlags: ITypeGenerationFlags,
+    ) {
         this.tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, currType, false, typeGenerationFlags);
     }
 
@@ -58,7 +62,10 @@ export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]
         const typeDefinition = this.knownTypes.get(createHashableTypeName(obj));
         if (typeDefinition == null) {
             throw new Error(`unknown reference type. package: '${obj.package}', name: '${obj.name}'`);
-        } else if (ITypeDefinition.isAlias(typeDefinition) && !isFlavorizable(typeDefinition.alias.alias, this.typeGenerationFlags.shouldFlavorizeAliasWhenPossible)) {
+        } else if (
+            ITypeDefinition.isAlias(typeDefinition) &&
+            !isFlavorizable(typeDefinition.alias.alias, this.typeGenerationFlags.shouldFlavorizeAliasWhenPossible)
+        ) {
             return IType.visit(typeDefinition.alias.alias, this);
         } else if (obj.package === this.currType.package && obj.name === this.currType.name) {
             return [];
