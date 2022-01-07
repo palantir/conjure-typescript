@@ -15,6 +15,12 @@
  * limitations under the License.
  */
 
+/**
+ * Simple and convenient interface allowing for passing flags through the "generation" code.
+ */
 export interface ITypeGenerationFlags {
+    /**
+     * When set to true compatible alias types will be converted as flavoured strings.
+     */
     shouldFlavorizeAliasWhenPossible: boolean;
 }

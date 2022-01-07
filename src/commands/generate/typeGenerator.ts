@@ -64,6 +64,7 @@ export function generateType(
  * ```
  */
 const FLAVOR_TYPE_FIELD = "__conjure_type";
+const FLAVOR_PACKAGE_FIELD = "__conjure_package";
 export async function generateAlias(
     definition: IAliasDefinition,
     knownTypes: Map<string, ITypeDefinition>,
@@ -77,7 +78,12 @@ export async function generateAlias(
         const typeAlias = sourceFile.addTypeAlias({
             isExported: true,
             name: "I" + definition.typeName.name,
-            type: `${fieldType} & { ${FLAVOR_TYPE_FIELD}?: "${definition.typeName.name}" }`,
+            type: [
+                `${fieldType} & {`,
+                `\t${FLAVOR_TYPE_FIELD}?: "${definition.typeName.name}",`,
+                `\t${FLAVOR_PACKAGE_FIELD}?: "${definition.typeName.package}",`,
+                `}`
+            ].join('\n'),
         });
         if (definition.docs) {
             typeAlias.addJsDoc(definition.docs);
