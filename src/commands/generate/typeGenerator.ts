@@ -82,8 +82,8 @@ export async function generateAlias(
                 `${fieldType} & {`,
                 `\t${FLAVOR_TYPE_FIELD}?: "${definition.typeName.name}",`,
                 `\t${FLAVOR_PACKAGE_FIELD}?: "${definition.typeName.package}",`,
-                `}`
-            ].join('\n'),
+                "}",
+            ].join("\n"),
         });
         if (definition.docs) {
             typeAlias.addJsDoc(definition.docs);
