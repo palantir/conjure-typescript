@@ -71,10 +71,7 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
                     return `{ [key in ${obj.keyType.reference.name}]?: ${valueTsType} }`;
                 } else if (
                     ITypeDefinition.isAlias(keyTypeDefinition) &&
-                    isFlavorizable(
-                        keyTypeDefinition.alias.alias,
-                        this.typeGenerationFlags.flavorizedAliases,
-                    )
+                    isFlavorizable(keyTypeDefinition.alias.alias, this.typeGenerationFlags.flavorizedAliases)
                 ) {
                     return `{ [key: I${obj.keyType.reference.name}]: ${valueTsType} }`;
                 }

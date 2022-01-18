@@ -57,7 +57,7 @@ export interface IGenerateCommandArgs {
     /**
      * Generates flavoured types for compatible aliases (string, rids...)
      */
-     flavorizedAliases?: boolean;
+    flavorizedAliases?: boolean;
 }
 
 interface ICleanedGenerateCommandArgs {

@@ -142,10 +142,7 @@ function expectAllFilesAreTheSame(
 ) {
     for (const type of definition.types) {
         // We do not generate flavoured types for all aliases
-        if (
-            type.type === "alias" &&
-            !isFlavorizable(type.alias.alias, typeGenerationFlags.flavorizedAliases)
-        ) {
+        if (type.type === "alias" && !isFlavorizable(type.alias.alias, typeGenerationFlags.flavorizedAliases)) {
             continue;
         }
         const relativeFilePath = typeNameToFilePath(ITypeDefinition.visit(type, typeNameVisitor));
