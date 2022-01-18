@@ -64,7 +64,7 @@ export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]
             throw new Error(`unknown reference type. package: '${obj.package}', name: '${obj.name}'`);
         } else if (
             ITypeDefinition.isAlias(typeDefinition) &&
-            !isFlavorizable(typeDefinition.alias.alias, this.typeGenerationFlags.shouldFlavorizeAliasWhenPossible)
+            !isFlavorizable(typeDefinition.alias.alias, this.typeGenerationFlags.flavorizedAliases)
         ) {
             return IType.visit(typeDefinition.alias.alias, this);
         } else if (obj.package === this.currType.package && obj.name === this.currType.name) {

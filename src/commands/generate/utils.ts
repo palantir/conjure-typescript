@@ -129,18 +129,15 @@ export function addIncubatingDocs(
     return existingDocs;
 }
 
-const FLAVORIZABLE_TYPES = new Set([
-    PrimitiveType.RID,
-    PrimitiveType.STRING,
-    PrimitiveType.BEARERTOKEN,
+const NON_FLAVORIZABLE_TYPES = new Set<PrimitiveType>([
+    PrimitiveType.ANY,
     PrimitiveType.BOOLEAN,
-    PrimitiveType.DOUBLE,
-    PrimitiveType.INTEGER,
-    PrimitiveType.SAFELONG,
-    PrimitiveType.UUID,
-    PrimitiveType.BEARERTOKEN,
+    PrimitiveType.BINARY,
+    PrimitiveType.DATETIME,
+
 ]);
 
-export function isFlavorizable(type: IType, shouldFlavorizeAliasWhenPossible: boolean): boolean {
-    return shouldFlavorizeAliasWhenPossible && IType.isPrimitive(type) && FLAVORIZABLE_TYPES.has(type.primitive);
+
+export function isFlavorizable(type: IType, flavorizedAliases: boolean): boolean {
+    return flavorizedAliases && IType.isPrimitive(type) && !NON_FLAVORIZABLE_TYPES.has(type.primitive);
 }

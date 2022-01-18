@@ -22,5 +22,5 @@ export interface ITypeGenerationFlags {
     /**
      * When set to true compatible alias types will be converted as flavoured strings.
      */
-    shouldFlavorizeAliasWhenPossible: boolean;
+    flavorizedAliases: boolean;
 }

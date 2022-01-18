@@ -31,7 +31,7 @@ import {
 
 const stringType: IType = IType.primitive(PrimitiveType.STRING);
 
-const TYPE_GENERATION_FLAGS: ITypeGenerationFlags = { shouldFlavorizeAliasWhenPossible: true };
+const TYPE_GENERATION_FLAGS: ITypeGenerationFlags = { flavorizedAliases: true };
 
 describe("serviceGenerator", () => {
     const expectedDir = path.join(__dirname, "./resources");

@@ -121,7 +121,7 @@ describe("typeGenerator", () => {
             new Map(),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/primitiveObject.ts");
@@ -141,7 +141,7 @@ describe("typeGenerator", () => {
             new Map(),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/uuidObject.ts");
@@ -157,7 +157,7 @@ describe("typeGenerator", () => {
                 new Map(),
                 simpleAst,
                 {
-                    shouldFlavorizeAliasWhenPossible: true,
+                    flavorizedAliases: true,
                 },
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/customEntityRid.ts");
@@ -172,7 +172,7 @@ describe("typeGenerator", () => {
                 new Map(),
                 simpleAst,
                 {
-                    shouldFlavorizeAliasWhenPossible: false,
+                    flavorizedAliases: false,
                 },
             );
             assertDoesNotExist(outDir, "types/customEntityRidWithFlagOff.ts");
@@ -189,7 +189,7 @@ describe("typeGenerator", () => {
                 new Map(),
                 simpleAst,
                 {
-                    shouldFlavorizeAliasWhenPossible: true,
+                    flavorizedAliases: true,
                 },
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/stringAlias.ts");
@@ -204,7 +204,7 @@ describe("typeGenerator", () => {
                 new Map(),
                 simpleAst,
                 {
-                    shouldFlavorizeAliasWhenPossible: false,
+                    flavorizedAliases: false,
                 },
             );
             assertDoesNotExist(outDir, "types/stringAliasWhenFlagOff.ts");
@@ -221,7 +221,7 @@ describe("typeGenerator", () => {
                 new Map(),
                 simpleAst,
                 {
-                    shouldFlavorizeAliasWhenPossible: true,
+                    flavorizedAliases: true,
                 },
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/integerAlias.ts");
@@ -236,7 +236,7 @@ describe("typeGenerator", () => {
                 new Map(),
                 simpleAst,
                 {
-                    shouldFlavorizeAliasWhenPossible: false,
+                    flavorizedAliases: false,
                 },
             );
             assertDoesNotExist(outDir, "types/integerAliasWithFlagOff.ts");
@@ -253,7 +253,7 @@ describe("typeGenerator", () => {
                 new Map(),
                 simpleAst,
                 {
-                    shouldFlavorizeAliasWhenPossible: true,
+                    flavorizedAliases: true,
                 },
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/safeLongAlias.ts");
@@ -268,7 +268,7 @@ describe("typeGenerator", () => {
                 new Map(),
                 simpleAst,
                 {
-                    shouldFlavorizeAliasWhenPossible: false,
+                    flavorizedAliases: false,
                 },
             );
             assertDoesNotExist(outDir, "types/safeLongAliasWithFlagOff.ts");
@@ -285,7 +285,7 @@ describe("typeGenerator", () => {
                 new Map(),
                 simpleAst,
                 {
-                    shouldFlavorizeAliasWhenPossible: true,
+                    flavorizedAliases: true,
                 },
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/bearerTokenAlias.ts");
@@ -300,7 +300,7 @@ describe("typeGenerator", () => {
                 new Map(),
                 simpleAst,
                 {
-                    shouldFlavorizeAliasWhenPossible: false,
+                    flavorizedAliases: false,
                 },
             );
             assertDoesNotExist(outDir, "types/bearerTokenAliasWithFlagOff.ts");
@@ -317,7 +317,7 @@ describe("typeGenerator", () => {
                 new Map(),
                 simpleAst,
                 {
-                    shouldFlavorizeAliasWhenPossible: true,
+                    flavorizedAliases: true,
                 },
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/uuidAlias.ts");
@@ -332,7 +332,7 @@ describe("typeGenerator", () => {
                 new Map(),
                 simpleAst,
                 {
-                    shouldFlavorizeAliasWhenPossible: false,
+                    flavorizedAliases: false,
                 },
             );
             assertDoesNotExist(outDir, "types/uuidAliasWithFlagOff.ts");
@@ -361,7 +361,7 @@ describe("typeGenerator", () => {
             new Map([[createHashableTypeName(someEnum.typeName), ITypeDefinition.enum_(someEnum)]]),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/enumMapObject.ts");
@@ -388,7 +388,7 @@ describe("typeGenerator", () => {
             ]),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/referenceObject.ts");
@@ -415,7 +415,7 @@ describe("typeGenerator", () => {
             ]),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/aliasReferenceObject.ts");
@@ -443,7 +443,7 @@ describe("typeGenerator", () => {
             ]),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/nestedAliasReferenceObject.ts");
@@ -468,7 +468,7 @@ describe("typeGenerator", () => {
             new Map(),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/optionalObject.ts");
@@ -495,7 +495,7 @@ describe("typeGenerator", () => {
             new Map(),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/objectWithDocs.ts");
@@ -523,7 +523,7 @@ describe("typeGenerator", () => {
             new Map(),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/primitiveUnion.ts");
@@ -541,7 +541,7 @@ describe("typeGenerator", () => {
             new Map(),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/unionTypeExample.ts");
@@ -567,7 +567,7 @@ describe("typeGenerator", () => {
             new Map(),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/unionWithDocs.ts");
@@ -591,7 +591,7 @@ describe("typeGenerator", () => {
             new Map(),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
@@ -637,7 +637,7 @@ describe("typeGenerator", () => {
             ]),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
@@ -690,7 +690,7 @@ import { IStringAlias } from "./stringAlias";
             ]),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
@@ -735,7 +735,7 @@ export interface IMyUnion_DateAlias {
             union: [{ fieldName: "double", type: IType.primitive(PrimitiveType.DOUBLE) }],
         };
         await generateUnion(littleUnion, new Map(), simpleAst, {
-            shouldFlavorizeAliasWhenPossible: true,
+            flavorizedAliases: true,
         });
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/little.ts");
 
@@ -747,7 +747,7 @@ export interface IMyUnion_DateAlias {
             new Map([[createHashableTypeName(littleTypeName), ITypeDefinition.union(littleUnion)]]),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/big.ts");
@@ -776,7 +776,7 @@ export interface IMyUnion_DateAlias {
             ]),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/recursiveUnion.ts");
@@ -805,7 +805,7 @@ export interface IMyUnion_DateAlias {
             ]),
             simpleAst,
             {
-                shouldFlavorizeAliasWhenPossible: true,
+                flavorizedAliases: true,
             },
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/recursiveObject.ts");

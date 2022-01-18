@@ -36,7 +36,7 @@ import { isFlavorizable } from "../utils";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
 const TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
-    shouldFlavorizeAliasWhenPossible: true,
+    flavorizedAliases: true,
 };
 
 describe("generator", () => {
@@ -144,7 +144,7 @@ function expectAllFilesAreTheSame(
         // We do not generate flavoured types for all aliases
         if (
             type.type === "alias" &&
-            !isFlavorizable(type.alias.alias, typeGenerationFlags.shouldFlavorizeAliasWhenPossible)
+            !isFlavorizable(type.alias.alias, typeGenerationFlags.flavorizedAliases)
         ) {
             continue;
         }

@@ -21,7 +21,7 @@ import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { createHashableTypeName } from "../utils";
 
 const GENERATION_FLAGS_TO_USE: ITypeGenerationFlags = {
-    shouldFlavorizeAliasWhenPossible: true,
+    flavorizedAliases: true,
 };
 
 describe("TsTypeVisitor", () => {

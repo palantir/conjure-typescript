@@ -59,7 +59,8 @@ export function generateType(
  * Generates a file of the following format:
  * ```
  *  export type ExampleAlias = string & {
- *     __conjure_flavor_type?: "_flavor_ExampleAlias";
+ *     __conjure_type?: "ExampleAlias";
+ *     __conjure_package?: "com.palantir.product";
  *  };
  * ```
  */
@@ -71,7 +72,7 @@ export async function generateAlias(
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
-    if (isFlavorizable(definition.alias, typeGenerationFlags.shouldFlavorizeAliasWhenPossible)) {
+    if (isFlavorizable(definition.alias, typeGenerationFlags.flavorizedAliases)) {
         const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false, typeGenerationFlags);
         const fieldType = IType.visit(definition.alias, tsTypeVisitor);
         const sourceFile = simpleAst.createSourceFile(definition.typeName);

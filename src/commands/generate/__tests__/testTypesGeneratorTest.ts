@@ -61,7 +61,7 @@ export const importsLocalObject = createSimpleObject("SomeObject", "com.palantir
 export const foreignObject = createSimpleObject("OtherObject", "com.palantir.other");
 
 const DEFAULT_GENERATION_FLAGS: ITypeGenerationFlags = {
-    shouldFlavorizeAliasWhenPossible: true,
+    flavorizedAliases: true,
 };
 
 describe("testTypesGenerator", () => {

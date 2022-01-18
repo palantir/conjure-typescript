@@ -22,7 +22,7 @@ import { createHashableTypeName } from "../utils";
 import { foreignObject, importsLocalObject as localObject } from "./testTypesGeneratorTest";
 
 const GENERATION_FLAGS_TO_USE_FOR_IMPORTS: ITypeGenerationFlags = {
-    shouldFlavorizeAliasWhenPossible: true,
+    flavorizedAliases: true,
 };
 
 describe("imports", () => {

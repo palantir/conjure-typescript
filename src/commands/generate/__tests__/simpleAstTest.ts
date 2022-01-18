@@ -26,7 +26,7 @@ import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { generateEnum } from "../typeGenerator";
 
 const GENERATION_FLAGS_TO_USE: ITypeGenerationFlags = {
-    shouldFlavorizeAliasWhenPossible: true,
+    flavorizedAliases: true,
 };
 
 describe("simpleAst", () => {

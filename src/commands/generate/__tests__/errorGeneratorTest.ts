@@ -24,7 +24,7 @@ import { SimpleAst } from "../simpleAst";
 import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
-const TYPE_GENERATION_FLAGS: ITypeGenerationFlags = { shouldFlavorizeAliasWhenPossible: true };
+const TYPE_GENERATION_FLAGS: ITypeGenerationFlags = { flavorizedAliases: true };
 
 describe("errorGenerator", () => {
     const expectedDir = path.join(__dirname, "./resources");

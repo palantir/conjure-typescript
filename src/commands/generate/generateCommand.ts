@@ -57,7 +57,7 @@ export interface IGenerateCommandArgs {
     /**
      * Generates flavoured types for compatible aliases (string, rids...)
      */
-    shouldFlavorizeAliasWhenPossible?: boolean;
+     flavorizedAliases?: boolean;
 }
 
 interface ICleanedGenerateCommandArgs {
@@ -98,7 +98,7 @@ export class GenerateCommand implements CommandModule {
                 describe: "The name of the generated package",
                 type: "string",
             })
-            .option("shouldFlavorizeAliasWhenPossible", {
+            .option("flavorizedAliases", {
                 default: undefined,
                 describe: "Generates flavoured types for compatible aliases.",
                 type: "boolean",
@@ -125,9 +125,8 @@ export class GenerateCommand implements CommandModule {
         const [, , output] = args._;
         const { rawSource } = args;
         const { conjureDefinition, packageJson, tsConfig, gitIgnore } = await this.parseCommandLineArguments(args);
-
         const generatePromise = generate(conjureDefinition, output, {
-            shouldFlavorizeAliasWhenPossible: !!args.shouldFlavorizeAliasWhenPossible,
+            flavorizedAliases: !!args.flavorizedAliases,
         });
         if (rawSource) {
             return generatePromise;
