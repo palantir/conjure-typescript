@@ -55,6 +55,9 @@ export function generateType(
     }
 }
 
+const FLAVOR_TYPE_FIELD = "__conjure_type";
+const FLAVOR_PACKAGE_FIELD = "__conjure_package";
+
 /**
  * Generates a file of the following format:
  * ```
@@ -64,8 +67,6 @@ export function generateType(
  *  };
  * ```
  */
-const FLAVOR_TYPE_FIELD = "__conjure_type";
-const FLAVOR_PACKAGE_FIELD = "__conjure_package";
 export async function generateAlias(
     definition: IAliasDefinition,
     knownTypes: Map<string, ITypeDefinition>,

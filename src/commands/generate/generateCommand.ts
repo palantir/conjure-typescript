@@ -99,7 +99,7 @@ export class GenerateCommand implements CommandModule {
                 type: "string",
             })
             .option("flavorizedAliases", {
-                default: undefined,
+                default: false,
                 describe: "Generates flavoured types for compatible aliases.",
                 type: "boolean",
             })
