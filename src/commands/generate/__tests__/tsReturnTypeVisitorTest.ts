@@ -17,7 +17,12 @@
 
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { TsReturnTypeVisitor } from "../tsReturnTypeVisitor";
+import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { createHashableTypeName } from "../utils";
+
+const GENERATION_FLAGS_TO_USE: ITypeGenerationFlags = {
+    flavorizedAliases: true,
+};
 
 describe("TsTypeVisitor", () => {
     const objectName = { name: "Object", package: "" };
@@ -59,6 +64,7 @@ describe("TsTypeVisitor", () => {
         ]),
         fakeTypeName,
         false,
+        GENERATION_FLAGS_TO_USE,
     );
 
     const topLevelVisitor = new TsReturnTypeVisitor(
@@ -70,6 +76,7 @@ describe("TsTypeVisitor", () => {
         ]),
         fakeTypeName,
         true,
+        GENERATION_FLAGS_TO_USE,
     );
 
     it("returns primitive types", () => {
@@ -101,7 +108,8 @@ describe("TsTypeVisitor", () => {
     });
 
     it("produces error for unknown reference", () => {
-        const tsType = () => new TsReturnTypeVisitor(new Map(), fakeTypeName, false).reference(objectName);
+        const tsType = () =>
+            new TsReturnTypeVisitor(new Map(), fakeTypeName, false, GENERATION_FLAGS_TO_USE).reference(objectName);
         expect(tsType).toThrowError(/unknown reference type/);
     });
 
@@ -110,9 +118,9 @@ describe("TsTypeVisitor", () => {
     });
 
     it("follows alias reference", () => {
-        expect(visitor.reference(aliasName)).toEqual("string");
+        expect(visitor.reference(aliasName)).toEqual("IAlias");
         expect(visitor.reference(binaryAliasName)).toEqual("string");
-        expect(topLevelVisitor.reference(aliasName)).toEqual("string");
+        expect(topLevelVisitor.reference(aliasName)).toEqual("IAlias");
         expect(topLevelVisitor.reference(binaryAliasName)).toEqual("ReadableStream<Uint8Array>");
     });
 
@@ -142,13 +150,13 @@ describe("TsTypeVisitor", () => {
 
     it("returns map type", () => {
         expect(visitor.map({ keyType: aliasReference, valueType: objectReference })).toEqual(
-            "{ [key: string]: IObject }",
+            "{ [key: IAlias]: IObject }",
         );
         expect(visitor.map({ keyType: aliasReference, valueType: binaryAliasReference })).toEqual(
-            "{ [key: string]: string }",
+            "{ [key: IAlias]: string }",
         );
         expect(topLevelVisitor.map({ keyType: aliasReference, valueType: binaryAliasReference })).toEqual(
-            "{ [key: string]: string }",
+            "{ [key: IAlias]: string }",
         );
     });
 

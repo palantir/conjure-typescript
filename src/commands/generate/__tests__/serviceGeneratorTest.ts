@@ -21,6 +21,7 @@ import * as path from "path";
 import { directory } from "tempy";
 import { generateService } from "../serviceGenerator";
 import { SimpleAst } from "../simpleAst";
+import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { createHashableTypeName } from "../utils";
 import {
     assertOutputAndExpectedAreEqual,
@@ -29,6 +30,8 @@ import {
 } from "./testTypesGeneratorTest";
 
 const stringType: IType = IType.primitive(PrimitiveType.STRING);
+
+const TYPE_GENERATION_FLAGS: ITypeGenerationFlags = { flavorizedAliases: true };
 
 describe("serviceGenerator", () => {
     const expectedDir = path.join(__dirname, "./resources");
@@ -58,6 +61,7 @@ describe("serviceGenerator", () => {
             },
             new Map(),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/primitiveService.ts");
     });
@@ -87,6 +91,7 @@ describe("serviceGenerator", () => {
             },
             new Map(),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/serviceWithSafelongHeader.ts");
     });
@@ -108,6 +113,7 @@ describe("serviceGenerator", () => {
             },
             new Map(),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -134,6 +140,7 @@ describe("serviceGenerator", () => {
             },
             new Map(),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -167,6 +174,7 @@ describe("serviceGenerator", () => {
             },
             new Map(),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -209,6 +217,7 @@ describe("serviceGenerator", () => {
                 [createHashableTypeName(foreignObject.typeName), foreignObject.definition],
             ]),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -272,6 +281,7 @@ describe("serviceGenerator", () => {
             },
             new Map(),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/paramTypeService.ts");
     });
@@ -314,6 +324,7 @@ describe("serviceGenerator", () => {
             },
             new Map(),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/outOfOrderPathService.ts");
     });
@@ -347,6 +358,7 @@ describe("serviceGenerator", () => {
             },
             new Map(),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -392,6 +404,7 @@ describe("serviceGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
+                TYPE_GENERATION_FLAGS,
             );
         } catch (e) {
             expect(e).toEqual(new Error("endpoint cannot have more than one body arg, found: 2"));
@@ -425,6 +438,7 @@ describe("serviceGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
+                TYPE_GENERATION_FLAGS,
             );
         } catch (e) {
             expect(e).toEqual(new Error("header arguments must define a 'param-id': foo"));
@@ -458,6 +472,7 @@ describe("serviceGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
+                TYPE_GENERATION_FLAGS,
             );
         } catch (e) {
             expect(e).toEqual(new Error("query arguments must define a 'param-id': foo"));
@@ -483,6 +498,7 @@ describe("serviceGenerator", () => {
             },
             new Map(),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -525,6 +541,7 @@ export interface IMyService {
             },
             new Map(),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -558,6 +575,7 @@ export interface IMyService {
             },
             new Map(),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -610,6 +628,7 @@ export interface IMyService {
             },
             new Map(),
             simpleAst,
+            TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/optionalService.ts");
     });

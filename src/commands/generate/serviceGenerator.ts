@@ -41,6 +41,7 @@ import { SimpleAst } from "./simpleAst";
 import { StringConversionTypeVisitor } from "./stringConversionTypeVisitor";
 import { TsArgumentTypeVisitor } from "./tsArgumentTypeVisitor";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
+import { ITypeGenerationFlags } from "./typeGenerationFlags";
 import { addDeprecatedToDocs, addIncubatingDocs, CONJURE_CLIENT } from "./utils";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
@@ -58,11 +59,17 @@ export function generateService(
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
+    typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
-    const tsReturnTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.serviceName, true);
-    const tsArgumentTypeVisitor = new TsArgumentTypeVisitor(knownTypes, definition.serviceName, true);
-    const importsVisitor = new ImportsVisitor(knownTypes, definition.serviceName);
+    const tsReturnTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.serviceName, true, typeGenerationFlags);
+    const tsArgumentTypeVisitor = new TsArgumentTypeVisitor(
+        knownTypes,
+        definition.serviceName,
+        true,
+        typeGenerationFlags,
+    );
+    const importsVisitor = new ImportsVisitor(knownTypes, definition.serviceName, typeGenerationFlags);
     const mediaTypeVisitor = new MediaTypeVisitor(knownTypes);
 
     const endpointSignatures: MethodDeclarationStructure[] = [];

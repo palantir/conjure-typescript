@@ -14,7 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { IEndpointDefinition, IEnumValueDefinition, IFieldDefinition, ITypeName } from "conjure-api";
+import {
+    IEndpointDefinition,
+    IEnumValueDefinition,
+    IFieldDefinition,
+    IType,
+    ITypeName,
+    PrimitiveType,
+} from "conjure-api";
 
 export const CONJURE_CLIENT = "conjure-client";
 
@@ -120,4 +127,15 @@ export function addIncubatingDocs(
         }
     }
     return existingDocs;
+}
+
+const NON_FLAVORIZABLE_TYPES = new Set<PrimitiveType>([
+    PrimitiveType.ANY,
+    PrimitiveType.BOOLEAN,
+    PrimitiveType.BINARY,
+    PrimitiveType.DATETIME,
+]);
+
+export function isFlavorizable(type: IType, flavorizedAliases: boolean): boolean {
+    return flavorizedAliases && IType.isPrimitive(type) && !NON_FLAVORIZABLE_TYPES.has(type.primitive);
 }

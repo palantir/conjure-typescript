@@ -1,10 +1,12 @@
+import { IStringAlias } from "./stringAlias";
+
 export interface IRecursiveUnion_RecursiveField {
     'recursiveField': IRecursiveUnion;
     'type': "recursiveField";
 }
 
 export interface IRecursiveUnion_StringAlias {
-    'stringAlias': string;
+    'stringAlias': IStringAlias;
     'type': "stringAlias";
 }
 
@@ -23,7 +25,7 @@ function isStringAlias(obj: IRecursiveUnion): obj is IRecursiveUnion_StringAlias
     return (obj.type === "stringAlias");
 }
 
-function stringAlias(obj: string): IRecursiveUnion_StringAlias {
+function stringAlias(obj: IStringAlias): IRecursiveUnion_StringAlias {
     return {
         stringAlias: obj,
         type: "stringAlias",
@@ -34,7 +36,7 @@ export type IRecursiveUnion = IRecursiveUnion_RecursiveField | IRecursiveUnion_S
 
 export interface IRecursiveUnionVisitor<T> {
     'recursiveField': (obj: IRecursiveUnion) => T;
-    'stringAlias': (obj: string) => T;
+    'stringAlias': (obj: IStringAlias) => T;
     'unknown': (obj: IRecursiveUnion) => T;
 }
 

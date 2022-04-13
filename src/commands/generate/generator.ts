@@ -31,10 +31,15 @@ import { generateError } from "./errorGenerator";
 import { dir } from "./imports";
 import { generateService } from "./serviceGenerator";
 import { SimpleAst } from "./simpleAst";
+import { ITypeGenerationFlags } from "./typeGenerationFlags";
 import { generateType } from "./typeGenerator";
 import { createHashableTypeName, dissasembleHashableTypeName } from "./utils";
 
-export async function generate(definition: IConjureDefinition, outDir: string) {
+export async function generate(
+    definition: IConjureDefinition,
+    outDir: string,
+    typeGenerationFlags: ITypeGenerationFlags,
+) {
     // Create project structure
     const knownTypes = new Map();
     const indexingVisitor = new IndexByTypeNameVisitor(knownTypes);
@@ -57,10 +62,14 @@ export async function generate(definition: IConjureDefinition, outDir: string) {
     const simpleAst = new SimpleAst(outDir);
 
     definition.services.forEach(serviceDefinition =>
-        promises.push(generateService(serviceDefinition, knownTypes, simpleAst)),
+        promises.push(generateService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags)),
     );
-    definition.types.forEach(typeDefinition => promises.push(generateType(typeDefinition, knownTypes, simpleAst)));
-    definition.errors.forEach(errorDefinition => promises.push(generateError(errorDefinition, knownTypes, simpleAst)));
+    definition.types.forEach(typeDefinition =>
+        promises.push(generateType(typeDefinition, knownTypes, simpleAst, typeGenerationFlags)),
+    );
+    definition.errors.forEach(errorDefinition =>
+        promises.push(generateError(errorDefinition, knownTypes, simpleAst, typeGenerationFlags)),
+    );
 
     promises.push(simpleAst.generateIndexFiles());
     return Promise.all(promises)

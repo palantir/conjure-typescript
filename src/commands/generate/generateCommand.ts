@@ -53,6 +53,11 @@ export interface IGenerateCommandArgs {
      * Path to a file containing a list of product dependencies
      */
     productDependencies?: string;
+
+    /**
+     * Generates flavoured types for compatible aliases (string, rids...)
+     */
+    flavorizedAliases?: boolean;
 }
 
 interface ICleanedGenerateCommandArgs {
@@ -93,6 +98,11 @@ export class GenerateCommand implements CommandModule {
                 describe: "The name of the generated package",
                 type: "string",
             })
+            .option("flavorizedAliases", {
+                default: false,
+                describe: "Generates flavoured types for compatible aliases.",
+                type: "boolean",
+            })
             .option("nodeCompatibleModules", {
                 default: false,
                 describe: "Generate node compatible javascript",
@@ -115,8 +125,9 @@ export class GenerateCommand implements CommandModule {
         const [, , output] = args._;
         const { rawSource } = args;
         const { conjureDefinition, packageJson, tsConfig, gitIgnore } = await this.parseCommandLineArguments(args);
-
-        const generatePromise = generate(conjureDefinition, output);
+        const generatePromise = generate(conjureDefinition, output, {
+            flavorizedAliases: !!args.flavorizedAliases,
+        });
         if (rawSource) {
             return generatePromise;
         }

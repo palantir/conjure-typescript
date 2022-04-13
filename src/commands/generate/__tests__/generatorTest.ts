@@ -31,7 +31,13 @@ import { directory } from "tempy";
 import { loadConjureDefinition } from "../generateCommand";
 import { generate } from "../generator";
 import { typeNameToFilePath } from "../simpleAst";
+import { ITypeGenerationFlags } from "../typeGenerationFlags";
+import { isFlavorizable } from "../utils";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
+
+const TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
+    flavorizedAliases: true,
+};
 
 describe("generator", () => {
     let outDir: string;
@@ -58,6 +64,7 @@ describe("generator", () => {
                 extensions: {},
             },
             outDir,
+            TYPE_GENERATION_FLAGS,
         );
         const outFile1 = path.join(outDir, "integration/myEnum.ts");
         const outFile2 = path.join(outDir, "integration/myEnum2.ts");
@@ -83,6 +90,7 @@ describe("generator", () => {
                 extensions: {},
             },
             outDir,
+            TYPE_GENERATION_FLAGS,
         );
         expect(fs.existsSync(path.join(outDir, "integration-first/myEnum.ts"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "integration-second/myEnum2.ts"))).toBeTruthy();
@@ -119,17 +127,22 @@ describe("definitionTests", () => {
             await fs.mkdirp(outputDir);
             const conjureDefinition = await loadConjureDefinition(definitionFilePath);
 
-            await generate(conjureDefinition, outputDir);
+            await generate(conjureDefinition, outputDir, TYPE_GENERATION_FLAGS);
 
-            expectAllFilesAreTheSame(conjureDefinition, outputDir, actualDir);
+            expectAllFilesAreTheSame(conjureDefinition, outputDir, actualDir, TYPE_GENERATION_FLAGS);
         });
     }
 });
 
-function expectAllFilesAreTheSame(definition: IConjureDefinition, actualDir: string, expectedDir: string) {
+function expectAllFilesAreTheSame(
+    definition: IConjureDefinition,
+    actualDir: string,
+    expectedDir: string,
+    typeGenerationFlags: ITypeGenerationFlags,
+) {
     for (const type of definition.types) {
-        // We do not currently generate anything for aliases
-        if (type.type === "alias") {
+        // We do not generate flavoured types for all aliases
+        if (type.type === "alias" && !isFlavorizable(type.alias.alias, typeGenerationFlags.flavorizedAliases)) {
             continue;
         }
         const relativeFilePath = typeNameToFilePath(ITypeDefinition.visit(type, typeNameVisitor));
