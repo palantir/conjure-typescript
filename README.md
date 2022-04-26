@@ -27,13 +27,14 @@ Positionals:
   output  The output directory for the generated code
 
 Options:
-  --version                Show version number                                                         [boolean]
-  --help                   Show help                                                                   [boolean]
-  --packageVersion         The version of the generated package                                         [string]
-  --packageName            The name of the generated package                                            [string]
-  --nodeCompatibleModules  Generate node compatible javascript                        [boolean] [default: false]
-  --rawSource              Generate raw source without any package metadata           [boolean] [default: false]
-  --productDependencies    Path to a file containing a list of product dependencies                     [string]
+  --version                Show version number                                                                           [boolean]
+  --help                   Show help                                                                                     [boolean]
+  --packageVersion         The version of the generated package                                                           [string]
+  --packageName            The name of the generated package                                                              [string]
+  --flavorizedAliases      Generates flavoured types for compatible aliases.                            [boolean] [default: false]
+  --nodeCompatibleModules  Generate node compatible javascript                                          [boolean] [default: false]
+  --rawSource              Generate raw source without any package metadata                             [boolean] [default: false]
+  --productDependencies    Path to a file containing a list of product dependencies                                       [string]
 ```
 
 ## SemVer releases
