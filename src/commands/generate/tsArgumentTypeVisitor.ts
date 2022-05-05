@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { ITypeDefinition, ITypeName, ITypeVisitor, PrimitiveType } from "conjure-api";
+import { IListType, ISetType, IType, ITypeDefinition, ITypeName, ITypeVisitor, PrimitiveType } from "conjure-api";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
 
@@ -52,6 +52,16 @@ export class TsArgumentTypeVisitor extends TsReturnTypeVisitor {
             default:
                 throw new Error("unknown primitive type");
         }
+    };
+
+    public list = (obj: IListType): string => {
+        const itemType = IType.visit(obj.itemType, this.nestedVisitor());
+        return `ReadonlyArray<${itemType}>`;
+    };
+
+    public set = (obj: ISetType): string => {
+        const itemType = IType.visit(obj.itemType, this.nestedVisitor());
+        return `ReadonlyArray<${itemType}>`;
     };
 
     protected nestedVisitor = (): ITypeVisitor<string> => {
