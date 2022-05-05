@@ -36,8 +36,8 @@ export interface ITestService {
     getBranchesDeprecated(datasetRid: string): Promise<Array<string>>;
     resolveBranch(datasetRid: string, branch: string): Promise<string | null>;
     testParam(datasetRid: string): Promise<string | null>;
-    testQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<number>;
-    testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<void>;
+    testQueryParams(query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<number>;
+    testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<void>;
     testBoolean(): Promise<boolean>;
     testDouble(): Promise<number | "NaN">;
     testInteger(): Promise<number>;
@@ -275,7 +275,7 @@ export class TestService {
         );
     }
 
-    public testQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<number> {
+    public testQueryParams(query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<number> {
         return this.bridge.call<number>(
             "TestService",
             "testQueryParams",
@@ -300,7 +300,7 @@ export class TestService {
         );
     }
 
-    public testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<void> {
+    public testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<void> {
         return this.bridge.call<void>(
             "TestService",
             "testNoResponseQueryParams",
