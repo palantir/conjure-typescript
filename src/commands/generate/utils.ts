@@ -121,9 +121,9 @@ export function addIncubatingDocs(
 ): string[] | undefined {
     if (endpointDefinition.tags !== undefined && endpointDefinition.tags.indexOf("incubating") >= 0) {
         if (existingDocs === undefined) {
-            return [`@incubating`];
+            return [`@deprecated This function is incubating`];
         } else {
-            return [existingDocs + `\n@incubating`];
+            return [existingDocs + `\n@deprecated This function is incubating`];
         }
     }
     return existingDocs;
