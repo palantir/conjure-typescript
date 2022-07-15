@@ -58,6 +58,11 @@ export interface IGenerateCommandArgs {
      * Generates flavoured types for compatible aliases (string, rids...)
      */
     flavorizedAliases?: boolean;
+
+    /**
+     * Generated interfaces use ReadonlyArray instead of Array and readonly map patterns
+     */
+    readonlyCollections?: boolean;
 }
 
 interface ICleanedGenerateCommandArgs {
@@ -113,6 +118,11 @@ export class GenerateCommand implements CommandModule {
                 describe: "Generate raw source without any package metadata",
                 type: "boolean",
             })
+            .option("readonlyCollections", {
+                default: false,
+                describe: "Generated interfaces use ReadonlyArray instead of Array and readonly map patterns",
+                type: "boolean",
+            })
             .option("productDependencies", {
                 default: undefined,
                 describe: "Path to a file containing a list of product dependencies",
@@ -126,7 +136,8 @@ export class GenerateCommand implements CommandModule {
         const { rawSource } = args;
         const { conjureDefinition, packageJson, tsConfig, gitIgnore } = await this.parseCommandLineArguments(args);
         const generatePromise = generate(conjureDefinition, output, {
-            flavorizedAliases: !!args.flavorizedAliases,
+            flavorizedAliases: args.flavorizedAliases ?? false,
+            readonlyCollections: args.readonlyCollections ?? false,
         });
         if (rawSource) {
             return generatePromise;

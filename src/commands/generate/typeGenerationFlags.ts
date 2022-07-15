@@ -22,5 +22,10 @@ export interface ITypeGenerationFlags {
     /**
      * When set to true compatible alias types will be converted as flavoured strings.
      */
-    flavorizedAliases: boolean;
+    readonly flavorizedAliases: boolean;
+
+    /**
+     * Generated interfaces use ReadonlyArray instead of Array.
+     */
+    readonly readonlyCollections: boolean;
 }

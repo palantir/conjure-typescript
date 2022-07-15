@@ -36,7 +36,8 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
         protected currType: ITypeName,
         protected isTopLevelBinary: boolean,
         protected typeGenerationFlags: ITypeGenerationFlags,
-    ) {}
+    ) {
+    }
 
     public primitive = (obj: PrimitiveType): string => {
         switch (obj) {
@@ -64,28 +65,29 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
     };
     public map = (obj: IMapType): string => {
         const valueTsType = IType.visit(obj.valueType, this.nestedVisitor());
+        const maybeReadonly = this.typeGenerationFlags.readonlyCollections ? 'readonly ' : '';
         if (IType.isReference(obj.keyType)) {
             const keyTypeDefinition = this.knownTypes.get(createHashableTypeName(obj.keyType.reference));
             if (keyTypeDefinition != null) {
                 if (ITypeDefinition.isEnum(keyTypeDefinition)) {
-                    return `{ [key in ${obj.keyType.reference.name}]?: ${valueTsType} }`;
+                    return `{ ${maybeReadonly}[key in ${obj.keyType.reference.name}]?: ${valueTsType} }`;
                 } else if (
                     ITypeDefinition.isAlias(keyTypeDefinition) &&
                     isFlavorizable(keyTypeDefinition.alias.alias, this.typeGenerationFlags.flavorizedAliases)
                 ) {
-                    return `{ [key: I${obj.keyType.reference.name}]: ${valueTsType} }`;
+                    return `{ ${maybeReadonly}[key: I${obj.keyType.reference.name}]: ${valueTsType} }`;
                 }
             }
         }
-        return `{ [key: string]: ${valueTsType} }`;
+        return `{ ${maybeReadonly}[key: string]: ${valueTsType} }`;
     };
     public list = (obj: IListType): string => {
         const itemType = IType.visit(obj.itemType, this.nestedVisitor());
-        return `Array<${itemType}>`;
+        return this.getArrayType(itemType);
     };
     public set = (obj: ISetType): string => {
         const itemType = IType.visit(obj.itemType, this.nestedVisitor());
-        return `Array<${itemType}>`;
+        return this.getArrayType(itemType);
     };
     public optional = (obj: IOptionalType): string => {
         return IType.visit(obj.itemType, this) + " | null";
@@ -121,4 +123,7 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
     protected nestedVisitor = (): ITypeVisitor<string> => {
         return new TsReturnTypeVisitor(this.knownTypes, this.currType, false, this.typeGenerationFlags);
     };
+    protected getArrayType(itemType: string) {
+        return this.typeGenerationFlags.readonlyCollections ? `ReadonlyArray<${itemType}>` :  `Array<${itemType}>`;
+    }
 }
