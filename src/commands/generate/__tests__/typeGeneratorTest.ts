@@ -22,6 +22,7 @@ import { directory } from "tempy";
 import { SimpleAst } from "../simpleAst";
 import { generateAlias, generateEnum, generateObject, generateUnion } from "../typeGenerator";
 import { createHashableTypeName } from "../utils";
+import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import {
     assertDoesNotExist,
     assertOutputAndExpectedAreEqual,
@@ -120,9 +121,7 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            FLAVORED_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/primitiveObject.ts");
     });
@@ -140,9 +139,7 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            FLAVORED_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/uuidObject.ts");
     });
@@ -156,9 +153,7 @@ describe("typeGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
-                {
-                    flavorizedAliases: true,
-                },
+                FLAVORED_TYPE_GENERATION_FLAGS,
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/customEntityRid.ts");
         });
@@ -171,9 +166,7 @@ describe("typeGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
-                {
-                    flavorizedAliases: false,
-                },
+                DEFAULT_TYPE_GENERATION_FLAGS,
             );
             assertDoesNotExist(outDir, "types/customEntityRidWithFlagOff.ts");
         });
@@ -188,9 +181,7 @@ describe("typeGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
-                {
-                    flavorizedAliases: true,
-                },
+                FLAVORED_TYPE_GENERATION_FLAGS,
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/stringAlias.ts");
         });
@@ -203,9 +194,7 @@ describe("typeGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
-                {
-                    flavorizedAliases: false,
-                },
+                DEFAULT_TYPE_GENERATION_FLAGS,
             );
             assertDoesNotExist(outDir, "types/stringAliasWhenFlagOff.ts");
         });
@@ -220,9 +209,7 @@ describe("typeGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
-                {
-                    flavorizedAliases: true,
-                },
+                FLAVORED_TYPE_GENERATION_FLAGS,
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/integerAlias.ts");
         });
@@ -235,9 +222,7 @@ describe("typeGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
-                {
-                    flavorizedAliases: false,
-                },
+                DEFAULT_TYPE_GENERATION_FLAGS,
             );
             assertDoesNotExist(outDir, "types/integerAliasWithFlagOff.ts");
         });
@@ -252,9 +237,7 @@ describe("typeGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
-                {
-                    flavorizedAliases: true,
-                },
+                FLAVORED_TYPE_GENERATION_FLAGS,
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/safeLongAlias.ts");
         });
@@ -267,9 +250,7 @@ describe("typeGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
-                {
-                    flavorizedAliases: false,
-                },
+                DEFAULT_TYPE_GENERATION_FLAGS,
             );
             assertDoesNotExist(outDir, "types/safeLongAliasWithFlagOff.ts");
         });
@@ -284,9 +265,7 @@ describe("typeGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
-                {
-                    flavorizedAliases: true,
-                },
+                FLAVORED_TYPE_GENERATION_FLAGS,
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/bearerTokenAlias.ts");
         });
@@ -299,9 +278,7 @@ describe("typeGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
-                {
-                    flavorizedAliases: false,
-                },
+                DEFAULT_TYPE_GENERATION_FLAGS,
             );
             assertDoesNotExist(outDir, "types/bearerTokenAliasWithFlagOff.ts");
         });
@@ -316,9 +293,7 @@ describe("typeGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
-                {
-                    flavorizedAliases: true,
-                },
+                FLAVORED_TYPE_GENERATION_FLAGS,
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/uuidAlias.ts");
         });
@@ -331,9 +306,7 @@ describe("typeGenerator", () => {
                 },
                 new Map(),
                 simpleAst,
-                {
-                    flavorizedAliases: false,
-                },
+                DEFAULT_TYPE_GENERATION_FLAGS,
             );
             assertDoesNotExist(outDir, "types/uuidAliasWithFlagOff.ts");
         });
@@ -360,9 +333,7 @@ describe("typeGenerator", () => {
             },
             new Map([[createHashableTypeName(someEnum.typeName), ITypeDefinition.enum_(someEnum)]]),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            FLAVORED_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/enumMapObject.ts");
     });
@@ -387,9 +358,7 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(localObject.typeName), localObject.definition],
             ]),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            FLAVORED_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/referenceObject.ts");
     });
@@ -414,9 +383,7 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            FLAVORED_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/aliasReferenceObject.ts");
     });
@@ -442,9 +409,7 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(stringAlias.alias.typeName), stringAlias],
             ]),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            FLAVORED_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/nestedAliasReferenceObject.ts");
     });
@@ -467,9 +432,7 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/optionalObject.ts");
     });
@@ -494,9 +457,7 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/objectWithDocs.ts");
     });
@@ -522,9 +483,7 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/primitiveUnion.ts");
     });
@@ -540,9 +499,7 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/unionTypeExample.ts");
     });
@@ -566,9 +523,7 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/unionWithDocs.ts");
     });
@@ -590,9 +545,7 @@ describe("typeGenerator", () => {
             },
             new Map(),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -636,9 +589,7 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -689,9 +640,7 @@ import { IStringAlias } from "./stringAlias";
                 [createHashableTypeName(dateAliasName), dateAlias],
             ]),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -734,9 +683,7 @@ export interface IMyUnion_DateAlias {
             typeName: littleTypeName,
             union: [{ fieldName: "double", type: IType.primitive(PrimitiveType.DOUBLE) }],
         };
-        await generateUnion(littleUnion, new Map(), simpleAst, {
-            flavorizedAliases: true,
-        });
+        await generateUnion(littleUnion, new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/little.ts");
 
         await generateUnion(
@@ -746,9 +693,7 @@ export interface IMyUnion_DateAlias {
             },
             new Map([[createHashableTypeName(littleTypeName), ITypeDefinition.union(littleUnion)]]),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/big.ts");
     });
@@ -775,9 +720,7 @@ export interface IMyUnion_DateAlias {
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/recursiveUnion.ts");
     });
@@ -804,9 +747,7 @@ export interface IMyUnion_DateAlias {
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
-            {
-                flavorizedAliases: true,
-            },
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/recursiveObject.ts");
     });

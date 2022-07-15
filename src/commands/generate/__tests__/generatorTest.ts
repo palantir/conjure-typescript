@@ -33,11 +33,8 @@ import { generate } from "../generator";
 import { typeNameToFilePath } from "../simpleAst";
 import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { isFlavorizable } from "../utils";
+import { DEFAULT_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
-
-const TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
-    flavorizedAliases: true,
-};
 
 describe("generator", () => {
     let outDir: string;
@@ -64,7 +61,7 @@ describe("generator", () => {
                 extensions: {},
             },
             outDir,
-            TYPE_GENERATION_FLAGS,
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         const outFile1 = path.join(outDir, "integration/myEnum.ts");
         const outFile2 = path.join(outDir, "integration/myEnum2.ts");
@@ -90,7 +87,7 @@ describe("generator", () => {
                 extensions: {},
             },
             outDir,
-            TYPE_GENERATION_FLAGS,
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         expect(fs.existsSync(path.join(outDir, "integration-first/myEnum.ts"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "integration-second/myEnum2.ts"))).toBeTruthy();
@@ -127,9 +124,9 @@ describe("definitionTests", () => {
             await fs.mkdirp(outputDir);
             const conjureDefinition = await loadConjureDefinition(definitionFilePath);
 
-            await generate(conjureDefinition, outputDir, TYPE_GENERATION_FLAGS);
+            await generate(conjureDefinition, outputDir, DEFAULT_TYPE_GENERATION_FLAGS);
 
-            expectAllFilesAreTheSame(conjureDefinition, outputDir, actualDir, TYPE_GENERATION_FLAGS);
+            expectAllFilesAreTheSame(conjureDefinition, outputDir, actualDir, DEFAULT_TYPE_GENERATION_FLAGS);
         });
     }
 });
