@@ -33,7 +33,7 @@ import { generate } from "../generator";
 import { typeNameToFilePath } from "../simpleAst";
 import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { isFlavorizable } from "../utils";
-import { DEFAULT_TYPE_GENERATION_FLAGS } from "./resources/constants";
+import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
 describe("generator", () => {
@@ -106,6 +106,7 @@ export { integrationSecond };
 
 const irDir = path.join(__dirname, "../../../../build/ir-test-cases");
 const testCaseDir = path.join(__dirname, "resources/test-cases");
+const flavoredTestCaseDir = path.join(__dirname, "resources/flavored-test-cases");
 
 describe("definitionTests", () => {
     let tempDir: string;
@@ -115,19 +116,34 @@ describe("definitionTests", () => {
     });
 
     for (const fileName of fs.readdirSync(irDir)) {
-        it(`${fileName} produces equivalent TypeScript`, async () => {
-            const definitionFilePath = path.join(irDir, fileName);
-            const paths = fileName.substring(0, fileName.lastIndexOf("."));
-            const actualDir = path.join(testCaseDir, paths);
-            const outputDir = path.join(tempDir, paths);
+        const definitionFilePath = path.join(irDir, fileName);
+        const paths = fileName.substring(0, fileName.lastIndexOf("."));
+        const actualTestCaseDir = path.join(testCaseDir, paths);
+        const actualFlavoredTestCaseDir = path.join(flavoredTestCaseDir, paths);
 
+        it(`${fileName} produces equivalent TypeScript`, async () => {
+            const outputDir = path.join(tempDir, paths);
             await fs.mkdirp(outputDir);
             const conjureDefinition = await loadConjureDefinition(definitionFilePath);
 
             await generate(conjureDefinition, outputDir, DEFAULT_TYPE_GENERATION_FLAGS);
 
-            expectAllFilesAreTheSame(conjureDefinition, outputDir, actualDir, DEFAULT_TYPE_GENERATION_FLAGS);
+            expectAllFilesAreTheSame(conjureDefinition, outputDir, actualTestCaseDir, DEFAULT_TYPE_GENERATION_FLAGS);
         });
+
+        // Not every test has a flavored version
+        if (fs.existsSync(actualFlavoredTestCaseDir)) {
+            it(`${fileName} produces equivalent flavored TypeScript`, async () => {
+                const outputDir = path.join(tempDir, paths);
+
+                await fs.mkdirp(outputDir);
+                const conjureDefinition = await loadConjureDefinition(definitionFilePath);
+
+                await generate(conjureDefinition, outputDir, FLAVORED_TYPE_GENERATION_FLAGS);
+
+                expectAllFilesAreTheSame(conjureDefinition, outputDir, actualFlavoredTestCaseDir, FLAVORED_TYPE_GENERATION_FLAGS);
+            });
+        }
     }
 });
 

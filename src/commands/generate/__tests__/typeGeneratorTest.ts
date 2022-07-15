@@ -589,7 +589,7 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
-            DEFAULT_TYPE_GENERATION_FLAGS,
+            FLAVORED_TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -640,7 +640,7 @@ import { IStringAlias } from "./stringAlias";
                 [createHashableTypeName(dateAliasName), dateAlias],
             ]),
             simpleAst,
-            DEFAULT_TYPE_GENERATION_FLAGS,
+            FLAVORED_TYPE_GENERATION_FLAGS,
         );
         const outFile = path.join(outDir, "types/myUnion.ts");
         const contents = fs.readFileSync(outFile, "utf8");
@@ -720,7 +720,7 @@ export interface IMyUnion_DateAlias {
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
-            DEFAULT_TYPE_GENERATION_FLAGS,
+            FLAVORED_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/recursiveUnion.ts");
     });
@@ -747,7 +747,7 @@ export interface IMyUnion_DateAlias {
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
             simpleAst,
-            DEFAULT_TYPE_GENERATION_FLAGS,
+            FLAVORED_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/recursiveObject.ts");
     });
