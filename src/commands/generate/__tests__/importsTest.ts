@@ -18,10 +18,10 @@
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { ImportsVisitor, sortImports } from "../imports";
 import { createHashableTypeName } from "../utils";
-import { DEFAULT_TYPE_GENERATION_FLAGS } from "./resources/constants";
+import { FLAVORED_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import { foreignObject, importsLocalObject as localObject } from "./testTypesGeneratorTest";
 
-const GENERATION_FLAGS_TO_USE_FOR_IMPORTS = DEFAULT_TYPE_GENERATION_FLAGS;
+const GENERATION_FLAGS_TO_USE_FOR_IMPORTS = FLAVORED_TYPE_GENERATION_FLAGS;
 
 describe("imports", () => {
     const currType = {
