@@ -1,6 +1,6 @@
 export interface ISingleUnion_Foo {
-    'foo': string;
-    'type': "foo";
+    readonly 'foo': string;
+    readonly 'type': "foo";
 }
 
 function isFoo(obj: ISingleUnion): obj is ISingleUnion_Foo {
@@ -17,8 +17,8 @@ function foo(obj: string): ISingleUnion_Foo {
 export type ISingleUnion = ISingleUnion_Foo;
 
 export interface ISingleUnionVisitor<T> {
-    'foo': (obj: string) => T;
-    'unknown': (obj: ISingleUnion) => T;
+    readonly 'foo': (obj: string) => T;
+    readonly 'unknown': (obj: ISingleUnion) => T;
 }
 
 function visit<T>(obj: ISingleUnion, visitor: ISingleUnionVisitor<T>): T {

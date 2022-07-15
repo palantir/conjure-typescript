@@ -4,38 +4,38 @@ import { IStringExample } from "./stringExample";
  * Docs for when UnionTypeExample is of type StringExample.
  */
 export interface IUnionTypeExample_StringExample {
-    'stringExample': IStringExample;
-    'type': "stringExample";
+    readonly 'stringExample': IStringExample;
+    readonly 'type': "stringExample";
 }
 
 export interface IUnionTypeExample_Set {
-    'set': ReadonlyArray<string>;
-    'type': "set";
+    readonly 'set': ReadonlyArray<string>;
+    readonly 'type': "set";
 }
 
 export interface IUnionTypeExample_ThisFieldIsAnInteger {
-    'thisFieldIsAnInteger': number;
-    'type': "thisFieldIsAnInteger";
+    readonly 'thisFieldIsAnInteger': number;
+    readonly 'type': "thisFieldIsAnInteger";
 }
 
 export interface IUnionTypeExample_AlsoAnInteger {
-    'alsoAnInteger': number;
-    'type': "alsoAnInteger";
+    readonly 'alsoAnInteger': number;
+    readonly 'type': "alsoAnInteger";
 }
 
 export interface IUnionTypeExample_If {
-    'if': number;
-    'type': "if";
+    readonly 'if': number;
+    readonly 'type': "if";
 }
 
 export interface IUnionTypeExample_New {
-    'new': number;
-    'type': "new";
+    readonly 'new': number;
+    readonly 'type': "new";
 }
 
 export interface IUnionTypeExample_Interface {
-    'interface': number;
-    'type': "interface";
+    readonly 'interface': number;
+    readonly 'type': "interface";
 }
 
 function isStringExample(obj: IUnionTypeExample): obj is IUnionTypeExample_StringExample {
@@ -121,14 +121,14 @@ function interface_(obj: number): IUnionTypeExample_Interface {
 export type IUnionTypeExample = IUnionTypeExample_StringExample | IUnionTypeExample_Set | IUnionTypeExample_ThisFieldIsAnInteger | IUnionTypeExample_AlsoAnInteger | IUnionTypeExample_If | IUnionTypeExample_New | IUnionTypeExample_Interface;
 
 export interface IUnionTypeExampleVisitor<T> {
-    'stringExample': (obj: IStringExample) => T;
-    'set': (obj: ReadonlyArray<string>) => T;
-    'thisFieldIsAnInteger': (obj: number) => T;
-    'alsoAnInteger': (obj: number) => T;
-    'if': (obj: number) => T;
-    'new': (obj: number) => T;
-    'interface': (obj: number) => T;
-    'unknown': (obj: IUnionTypeExample) => T;
+    readonly 'stringExample': (obj: IStringExample) => T;
+    readonly 'set': (obj: ReadonlyArray<string>) => T;
+    readonly 'thisFieldIsAnInteger': (obj: number) => T;
+    readonly 'alsoAnInteger': (obj: number) => T;
+    readonly 'if': (obj: number) => T;
+    readonly 'new': (obj: number) => T;
+    readonly 'interface': (obj: number) => T;
+    readonly 'unknown': (obj: IUnionTypeExample) => T;
 }
 
 function visit<T>(obj: IUnionTypeExample, visitor: IUnionTypeExampleVisitor<T>): T {

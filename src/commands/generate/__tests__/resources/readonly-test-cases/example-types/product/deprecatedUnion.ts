@@ -1,14 +1,14 @@
 export interface IDeprecatedUnion_Good {
-    'good': string;
-    'type': "good";
+    readonly 'good': string;
+    readonly 'type': "good";
 }
 
 /**
  * @deprecated use good
  */
 export interface IDeprecatedUnion_NoGood {
-    'noGood': string;
-    'type': "noGood";
+    readonly 'noGood': string;
+    readonly 'type': "noGood";
 }
 
 /**
@@ -16,8 +16,8 @@ export interface IDeprecatedUnion_NoGood {
  * @deprecated use good
  */
 export interface IDeprecatedUnion_NoGoodDoc {
-    'noGoodDoc': string;
-    'type': "noGoodDoc";
+    readonly 'noGoodDoc': string;
+    readonly 'type': "noGoodDoc";
 }
 
 function isGood(obj: IDeprecatedUnion): obj is IDeprecatedUnion_Good {
@@ -62,10 +62,10 @@ function noGoodDoc(obj: string): IDeprecatedUnion_NoGoodDoc {
 export type IDeprecatedUnion = IDeprecatedUnion_Good | IDeprecatedUnion_NoGood | IDeprecatedUnion_NoGoodDoc;
 
 export interface IDeprecatedUnionVisitor<T> {
-    'good': (obj: string) => T;
-    'noGood': (obj: string) => T;
-    'noGoodDoc': (obj: string) => T;
-    'unknown': (obj: IDeprecatedUnion) => T;
+    readonly 'good': (obj: string) => T;
+    readonly 'noGood': (obj: string) => T;
+    readonly 'noGoodDoc': (obj: string) => T;
+    readonly 'unknown': (obj: IDeprecatedUnion) => T;
 }
 
 function visit<T>(obj: IDeprecatedUnion, visitor: IDeprecatedUnionVisitor<T>): T {

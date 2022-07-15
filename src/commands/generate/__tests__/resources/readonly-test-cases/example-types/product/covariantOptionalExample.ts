@@ -1,3 +1,3 @@
 export interface ICovariantOptionalExample {
-    'item'?: any | null;
+    readonly 'item'?: any | null;
 }

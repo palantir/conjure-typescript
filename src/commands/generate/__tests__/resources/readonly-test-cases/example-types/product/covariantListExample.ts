@@ -1,4 +1,4 @@
 export interface ICovariantListExample {
-    'items': ReadonlyArray<any>;
-    'externalItems': ReadonlyArray<string>;
+    readonly 'items': ReadonlyArray<any>;
+    readonly 'externalItems': ReadonlyArray<string>;
 }

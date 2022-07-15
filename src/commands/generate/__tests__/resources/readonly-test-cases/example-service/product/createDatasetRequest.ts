@@ -1,4 +1,4 @@
 export interface ICreateDatasetRequest {
-    'fileSystemId': string;
-    'path': string;
+    readonly 'fileSystemId': string;
+    readonly 'path': string;
 }

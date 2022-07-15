@@ -1,7 +1,7 @@
 export interface IDataset {
-    'fileSystemId': string;
+    readonly 'fileSystemId': string;
     /**
      * Uniquely identifies this dataset.
      */
-    'rid': string;
+    readonly 'rid': string;
 }

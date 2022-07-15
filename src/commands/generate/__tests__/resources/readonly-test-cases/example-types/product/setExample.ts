@@ -1,4 +1,4 @@
 export interface ISetExample {
-    'items': ReadonlyArray<string>;
-    'doubleItems': ReadonlyArray<number | "NaN">;
+    readonly 'items': ReadonlyArray<string>;
+    readonly 'doubleItems': ReadonlyArray<number | "NaN">;
 }

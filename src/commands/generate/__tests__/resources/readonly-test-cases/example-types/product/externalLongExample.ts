@@ -1,5 +1,5 @@
 export interface IExternalLongExample {
-    'externalLong': number;
-    'optionalExternalLong'?: number | null;
-    'listExternalLong': ReadonlyArray<number>;
+    readonly 'externalLong': number;
+    readonly 'optionalExternalLong'?: number | null;
+    readonly 'listExternalLong': ReadonlyArray<number>;
 }

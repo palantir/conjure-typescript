@@ -1,3 +1,3 @@
 export interface IOptionalExample {
-    'item'?: string | null;
+    readonly 'item'?: string | null;
 }

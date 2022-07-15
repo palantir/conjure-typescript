@@ -1,9 +1,9 @@
 export interface IPrimitiveOptionalsExample {
-    'num'?: number | "NaN" | null;
-    'bool'?: boolean | null;
-    'integer'?: number | null;
-    'safelong'?: number | null;
-    'rid'?: string | null;
-    'bearertoken'?: string | null;
-    'uuid'?: string | null;
+    readonly 'num'?: number | "NaN" | null;
+    readonly 'bool'?: boolean | null;
+    readonly 'integer'?: number | null;
+    readonly 'safelong'?: number | null;
+    readonly 'rid'?: string | null;
+    readonly 'bearertoken'?: string | null;
+    readonly 'uuid'?: string | null;
 }

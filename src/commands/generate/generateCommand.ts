@@ -63,6 +63,11 @@ export interface IGenerateCommandArgs {
      * Generated interfaces use ReadonlyArray instead of Array and readonly map patterns
      */
     readonlyCollections?: boolean;
+
+    /**
+     * Generated interfaces have readonly properties
+     */
+    readonlyInterfaces?: boolean;
 }
 
 interface ICleanedGenerateCommandArgs {
@@ -123,6 +128,11 @@ export class GenerateCommand implements CommandModule {
                 describe: "Generated interfaces use ReadonlyArray instead of Array and readonly map patterns",
                 type: "boolean",
             })
+            .option("readonlyInterfaces", {
+                default: false,
+                describe: "Generated interfaces have readonly properties",
+                type: "boolean",
+            })
             .option("productDependencies", {
                 default: undefined,
                 describe: "Path to a file containing a list of product dependencies",
@@ -138,6 +148,7 @@ export class GenerateCommand implements CommandModule {
         const generatePromise = generate(conjureDefinition, output, {
             flavorizedAliases: args.flavorizedAliases ?? false,
             readonlyCollections: args.readonlyCollections ?? false,
+            readonlyInterfaces: args.readonlyInterfaces ?? false,
         });
         if (rawSource) {
             return generatePromise;

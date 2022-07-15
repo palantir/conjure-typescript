@@ -1,3 +1,3 @@
 export interface IAnyMapExample {
-    'items': { readonly [key: string]: any };
+    readonly 'items': { readonly [key: string]: any };
 }
