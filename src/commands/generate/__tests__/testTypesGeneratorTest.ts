@@ -24,14 +24,21 @@ import { generateType } from "../typeGenerator";
 import { DEFAULT_TYPE_GENERATION_FLAGS } from "./resources/constants";
 
 export function assertOutputAndExpectedAreEqual(outDir: string, expectedDir: string, fname: string) {
-    const actual = fs.readFileSync(path.join(outDir, fname), "utf8");
-    const actualFilePath = path.join(expectedDir, fname);
+    const actualFilePath = path.join(outDir, fname);
+    const actual = fs.readFileSync(actualFilePath, "utf8");
+    const expectedFilePath = path.join(expectedDir, fname);
     if (process.env.RECREATE === "true") {
-        fs.mkdirpSync(path.dirname(actualFilePath));
-        fs.writeFileSync(actualFilePath, actual);
+        fs.mkdirpSync(path.dirname(expectedFilePath));
+        fs.writeFileSync(expectedFilePath, actual);
     } else {
-        const expected = fs.readFileSync(actualFilePath, "utf8");
-        expect(actual).toEqual(expected);
+        const expected = fs.readFileSync(expectedFilePath, "utf8");
+        try {
+            expect(actual).toEqual(expected);
+        } catch (error) {
+            // Ideally this would be a part of the expect fail message but that requires custom matchers.
+            console.error(`Expected '${actualFilePath}' contents to match '${expectedFilePath}'`);
+            throw error;
+        }
     }
 }
 
