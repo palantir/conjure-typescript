@@ -18,7 +18,7 @@
 import { IConjureDefinition } from "conjure-api";
 import * as fs from "fs-extra";
 import * as path from "path";
-import { isValid, SlsVersionMatcher } from "sls-version";
+import { SlsVersion, SlsVersionMatcher } from "sls-version";
 import { Argv, CommandModule } from "yargs";
 import { IPackageJson, IProductDependency, ISlsManifestDependency, writeJson } from "../../utils";
 import { generate } from "./generator";
@@ -146,7 +146,7 @@ export class GenerateCommand implements CommandModule {
             throw Error('Must either specify "rawSource" or specify "packageName" and "packageVersion"');
         } else if (!fs.existsSync(output)) {
             throw new Error(`Directory "${output}" does not exist`);
-        } else if (!rawSource && !isValid(packageVersion!)) {
+        } else if (!rawSource && !SlsVersion.isValid(packageVersion!)) {
             throw new Error(
                 `Expected version to be valid SLS version but found "${packageVersion}. ` +
                     "Please see https://github.com/palantir/sls-version-js for more details on SLS version.",
@@ -213,9 +213,9 @@ export async function resolveProductDependencies(
         const maxVersion = productDependency["maximum-version"];
         const recommendedVersion = productDependency["recommended-version"];
         if (
-            !isValid(minVersion) ||
+            !SlsVersion.isValid(minVersion) ||
             SlsVersionMatcher.safeValueOf(maxVersion) == null ||
-            (recommendedVersion && !isValid(recommendedVersion))
+            (recommendedVersion && !SlsVersion.isValid(recommendedVersion))
         ) {
             throw new Error("Encountered invalid product dependency");
         }
