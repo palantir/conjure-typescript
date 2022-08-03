@@ -26,7 +26,7 @@ describe("generate command", () => {
     let outDir: string;
     const input = path.join(__dirname, "../../../../build/ir-test-cases/example-types.json");
     const generateCommand = new GenerateCommand();
-    jest.setTimeout(10000);
+    jest.setTimeout(30000);
 
     beforeEach(() => {
         outDir = directory();
