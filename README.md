@@ -31,6 +31,7 @@ Options:
   --help                   Show help                                                                                     [boolean]
   --packageVersion         The version of the generated package                                                           [string]
   --packageName            The name of the generated package                                                              [string]
+  --brandedAliases         Generates strongly branded types for compatible aliases.                     [boolean] [default: false]
   --flavorizedAliases      Generates flavoured types for compatible aliases.                            [boolean] [default: false]
   --nodeCompatibleModules  Generate node compatible javascript                                          [boolean] [default: false]
   --rawSource              Generate raw source without any package metadata                             [boolean] [default: false]
@@ -109,7 +110,61 @@ We also consider the command line interface and feature flags to be public API.
 
 - **Conjure alias**
 
-  TypeScript uses structural (duck-typing) so aliases are currently elided.
+  By default alias types are not generated and the underlying data type is use instead.
+  However typed Aliases can be generated with either branded or flavored nominal types, with a tradeoff between the two.
+
+  Branded aliases (via `--brandedAliases`) are stronger typed and require type assertions for more intentional usage, similar to the conjure-java generator.
+
+  ```typescript
+  // generated from conjure:
+  //    FooId:
+  //      alias: string
+  export type IFooId = string & {
+    __conjure_type: "FooId",
+    __conjure_package: "com.palantir.product",
+  };
+  // generated from conjure:
+  //    BarId:
+  //      alias: string
+  export type IBarId = string & {
+    __conjure_type: "BarId",
+    __conjure_package: "com.palantir.product",
+  };
+
+  let foo: IFooId;
+  foo = "foo"; // compile error
+  foo = "foo" as IFooId; // explicit type assertion ok
+
+  const bar: IBarId = value; // compile error, different alias types do not mix
+
+  const id: string = foo; // ok, can set string value from alias
+  const bar2: IBarId = id; // compile error, cannot set alias type from string without type assertion.
+  ```
+
+  Flavored types (via `--flavorizedAliases`) protect only between aliases but still allow implicit casting to & from the base type.
+
+  ```typescript
+  // generated from conjure:
+  //    FooId:
+  //      alias: string
+  export type IFooId = string & {
+    __conjure_type?: "FooId",
+    __conjure_package?: "com.palantir.product",
+  };
+  // generated from conjure:
+  //    BarId:
+  //      alias: string
+  export type IBarId = string & {
+    __conjure_type?: "BarId",
+    __conjure_package?: "com.palantir.product",
+  };
+
+  const foo: IFooId = "foo"; // ok to set from string
+  const bar: IBarId = foo; // compile error, different alias types do not mix
+
+  const id: string = foo; // ok, can set string value from alias
+  const bar2: IBarId = id; // ok, but no protection from string back to alias type this may mask an unintentional bug depending on usage.
+  ```
 
 ## Example Client interfaces
 
