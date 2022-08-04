@@ -34,7 +34,8 @@ Options:
   --flavorizedAliases      Generates flavoured types for compatible aliases.                            [boolean] [default: false]
   --nodeCompatibleModules  Generate node compatible javascript                                          [boolean] [default: false]
   --rawSource              Generate raw source without any package metadata                             [boolean] [default: false]
-  --readonlyInterfaces     Generated interfaces have readonly properties and collections                [boolean] [default: false]  --productDependencies    Path to a file containing a list of product dependencies                                       [string]
+  --readonlyInterfaces     Generated interfaces have readonly properties and collections                [boolean] [default: false]
+  --productDependencies    Path to a file containing a list of product dependencies                                       [string]
 ```
 
 ## SemVer releases
