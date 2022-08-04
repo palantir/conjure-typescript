@@ -25,12 +25,7 @@ export interface ITypeGenerationFlags {
     readonly flavorizedAliases: boolean;
 
     /**
-     * Generated interfaces use ReadonlyArray instead of Array.
-     */
-    readonly readonlyCollections: boolean;
-
-    /**
-     * Generated interfaces have readonly properties.
+     * Generated interfaces have readonly properties and use ReadonlyArray instead of Array.
      */
     readonly readonlyInterfaces: boolean;
 }

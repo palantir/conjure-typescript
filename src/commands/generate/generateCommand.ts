@@ -60,12 +60,7 @@ export interface IGenerateCommandArgs {
     flavorizedAliases?: boolean;
 
     /**
-     * Generated interfaces use ReadonlyArray instead of Array and readonly map patterns
-     */
-    readonlyCollections?: boolean;
-
-    /**
-     * Generated interfaces have readonly properties
+     * Generated interfaces have readonly properties and collections
      */
     readonlyInterfaces?: boolean;
 }
@@ -123,14 +118,9 @@ export class GenerateCommand implements CommandModule {
                 describe: "Generate raw source without any package metadata",
                 type: "boolean",
             })
-            .option("readonlyCollections", {
-                default: false,
-                describe: "Generated interfaces use ReadonlyArray instead of Array and readonly map patterns",
-                type: "boolean",
-            })
             .option("readonlyInterfaces", {
                 default: false,
-                describe: "Generated interfaces have readonly properties",
+                describe: "Generated interfaces have readonly properties and collections",
                 type: "boolean",
             })
             .option("productDependencies", {
@@ -147,7 +137,6 @@ export class GenerateCommand implements CommandModule {
         const { conjureDefinition, packageJson, tsConfig, gitIgnore } = await this.parseCommandLineArguments(args);
         const generatePromise = generate(conjureDefinition, output, {
             flavorizedAliases: args.flavorizedAliases ?? false,
-            readonlyCollections: args.readonlyCollections ?? false,
             readonlyInterfaces: args.readonlyInterfaces ?? false,
         });
         if (rawSource) {

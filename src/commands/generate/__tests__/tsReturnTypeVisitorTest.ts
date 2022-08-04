@@ -218,7 +218,7 @@ describe("TsTypeVisitor", () => {
         });
     });
 
-    describe("with readonlyCollections flag", () => {
+    describe("with readonlyInterfaces flag", () => {
 
         const visitor = new TsReturnTypeVisitor(
             new Map<string, ITypeDefinition>([
