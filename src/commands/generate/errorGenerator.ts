@@ -53,18 +53,22 @@ export function generateError(
             {
                 name: singleQuote("errorCode"),
                 type: doubleQuote(definition.code),
+                isReadonly: typeGenerationFlags.readonlyInterfaces,
             },
             {
                 name: singleQuote("errorInstanceId"),
                 type: "string",
+                isReadonly: typeGenerationFlags.readonlyInterfaces,
             },
             {
                 name: singleQuote("errorName"),
                 type: doubleQuote(errorName),
+                isReadonly: typeGenerationFlags.readonlyInterfaces,
             },
             {
                 name: singleQuote("parameters"),
                 type: `{\n${properties}}`,
+                isReadonly: typeGenerationFlags.readonlyInterfaces,
             },
         ],
     });

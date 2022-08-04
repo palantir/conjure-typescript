@@ -18,7 +18,7 @@
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { TsArgumentTypeVisitor } from "../tsArgumentTypeVisitor";
 import { createHashableTypeName } from "../utils";
-import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS, READONLY_COLLECTION_TYPE_GENERATION_FLAGS } from "./resources/constants";
+import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS, READONLY_TYPE_GENERATION_FLAGS } from "./resources/constants";
 
 describe("TsTypeVisitor", () => {
     const aliasName = { name: "Alias", package: "" };
@@ -179,7 +179,7 @@ describe("TsTypeVisitor", () => {
             ]),
             fakeTypeName,
             false,
-            READONLY_COLLECTION_TYPE_GENERATION_FLAGS,
+            READONLY_TYPE_GENERATION_FLAGS,
         );
 
         const topLevelVisitor = new TsArgumentTypeVisitor(
@@ -189,7 +189,7 @@ describe("TsTypeVisitor", () => {
             ]),
             fakeTypeName,
             true,
-            READONLY_COLLECTION_TYPE_GENERATION_FLAGS,
+            READONLY_TYPE_GENERATION_FLAGS,
         );
 
         it("returns list type", () => {

@@ -18,7 +18,7 @@
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { TsReturnTypeVisitor } from "../tsReturnTypeVisitor";
 import { createHashableTypeName } from "../utils";
-import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS, READONLY_COLLECTION_TYPE_GENERATION_FLAGS } from "./resources/constants";
+import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS, READONLY_TYPE_GENERATION_FLAGS } from "./resources/constants";
 
 const objectName = { name: "Object", package: "" };
 const objectReference = IType.reference(objectName);
@@ -229,7 +229,7 @@ describe("TsTypeVisitor", () => {
             ]),
             fakeTypeName,
             false,
-            READONLY_COLLECTION_TYPE_GENERATION_FLAGS,
+            READONLY_TYPE_GENERATION_FLAGS,
         );
 
         const topLevelVisitor = new TsReturnTypeVisitor(
@@ -241,7 +241,7 @@ describe("TsTypeVisitor", () => {
             ]),
             fakeTypeName,
             true,
-            READONLY_COLLECTION_TYPE_GENERATION_FLAGS,
+            READONLY_TYPE_GENERATION_FLAGS,
         );
 
         it("returns list type", () => {

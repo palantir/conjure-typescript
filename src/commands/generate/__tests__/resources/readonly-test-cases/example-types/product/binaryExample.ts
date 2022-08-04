@@ -1,3 +1,3 @@
 export interface IBinaryExample {
-    'binary': string;
+    readonly 'binary': string;
 }

@@ -1,3 +1,3 @@
 export interface IMapExample {
-    'items': { readonly [key: string]: string };
+    readonly 'items': { readonly [key: string]: string };
 }

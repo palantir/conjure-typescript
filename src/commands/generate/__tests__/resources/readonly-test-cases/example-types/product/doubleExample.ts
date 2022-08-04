@@ -1,3 +1,3 @@
 export interface IDoubleExample {
-    'doubleValue': number | "NaN";
+    readonly 'doubleValue': number | "NaN";
 }

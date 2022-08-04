@@ -1,3 +1,3 @@
 export interface IUuidExample {
-    'uuid': string;
+    readonly 'uuid': string;
 }

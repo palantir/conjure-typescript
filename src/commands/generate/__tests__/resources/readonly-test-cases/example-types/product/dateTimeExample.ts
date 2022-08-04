@@ -1,3 +1,3 @@
 export interface IDateTimeExample {
-    'datetime': string;
+    readonly 'datetime': string;
 }

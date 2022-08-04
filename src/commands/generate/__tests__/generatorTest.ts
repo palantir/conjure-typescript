@@ -33,7 +33,7 @@ import { generate } from "../generator";
 import { typeNameToFilePath } from "../simpleAst";
 import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { isFlavorizable } from "../utils";
-import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS, READONLY_COLLECTION_TYPE_GENERATION_FLAGS } from "./resources/constants";
+import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS, READONLY_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
 describe("generator", () => {
@@ -126,7 +126,7 @@ describe("definitionTests", () => {
 
         // Not every test has a readonly version
         if (fs.existsSync(actualReadonlyTestCaseDir)) {
-            it(`${fileName} produces equivalent readonly TypeScript`, testGenerateAllFilesAreTheSame(definitionFilePath, paths, actualReadonlyTestCaseDir, READONLY_COLLECTION_TYPE_GENERATION_FLAGS));
+            it(`${fileName} produces equivalent readonly TypeScript`, testGenerateAllFilesAreTheSame(definitionFilePath, paths, actualReadonlyTestCaseDir, READONLY_TYPE_GENERATION_FLAGS));
         }
     }
 });

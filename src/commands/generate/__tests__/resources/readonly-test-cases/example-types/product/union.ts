@@ -1,16 +1,16 @@
 export interface IUnion_Foo {
-    'foo': string;
-    'type': "foo";
+    readonly 'foo': string;
+    readonly 'type': "foo";
 }
 
 export interface IUnion_Bar {
-    'bar': number;
-    'type': "bar";
+    readonly 'bar': number;
+    readonly 'type': "bar";
 }
 
 export interface IUnion_Baz {
-    'baz': number;
-    'type': "baz";
+    readonly 'baz': number;
+    readonly 'type': "baz";
 }
 
 function isFoo(obj: IUnion): obj is IUnion_Foo {
@@ -49,10 +49,10 @@ function baz(obj: number): IUnion_Baz {
 export type IUnion = IUnion_Foo | IUnion_Bar | IUnion_Baz;
 
 export interface IUnionVisitor<T> {
-    'foo': (obj: string) => T;
-    'bar': (obj: number) => T;
-    'baz': (obj: number) => T;
-    'unknown': (obj: IUnion) => T;
+    readonly 'foo': (obj: string) => T;
+    readonly 'bar': (obj: number) => T;
+    readonly 'baz': (obj: number) => T;
+    readonly 'unknown': (obj: IUnion) => T;
 }
 
 function visit<T>(obj: IUnion, visitor: IUnionVisitor<T>): T {

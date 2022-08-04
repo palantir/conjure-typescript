@@ -1,20 +1,20 @@
 export interface IDeprecatedFieldExample {
-    'one': string;
+    readonly 'one': string;
     /**
      * @deprecated use ONE
      */
-    'deprecatedOne': string;
+    readonly 'deprecatedOne': string;
     /**
      * You should no longer use this
      * 
      * @deprecated use ONE
      */
-    'documentedDeprecatedOne': string;
+    readonly 'documentedDeprecatedOne': string;
     /**
      * You should no longer use this
      * 
      * @deprecated should use ONE
      * 
      */
-    'deprecatedWithinDocumentOne': string;
+    readonly 'deprecatedWithinDocumentOne': string;
 }

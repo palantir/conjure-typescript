@@ -28,4 +28,9 @@ export interface ITypeGenerationFlags {
      * Generated interfaces use ReadonlyArray instead of Array.
      */
     readonly readonlyCollections: boolean;
+
+    /**
+     * Generated interfaces have readonly properties.
+     */
+    readonly readonlyInterfaces: boolean;
 }

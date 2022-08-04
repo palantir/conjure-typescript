@@ -1,3 +1,3 @@
 export interface ISafeLongExample {
-    'safeLongValue': number;
+    readonly 'safeLongValue': number;
 }

@@ -197,6 +197,7 @@ export async function generateObject(
             name: singleQuote(fieldDefinition.fieldName),
             type: fieldType,
             docs: addDeprecatedToDocs(fieldDefinition),
+            isReadonly: typeGenerationFlags.readonlyInterfaces,
         };
 
         properties.push(property);
@@ -325,10 +326,12 @@ function processUnionMembers(
                 {
                     name: singleQuote(memberName),
                     type: fieldType,
+                    isReadonly: typeGenerationFlags.readonlyInterfaces,
                 },
                 {
                     name: singleQuote("type"),
                     type: doubleQuote(memberName),
+                    isReadonly: typeGenerationFlags.readonlyInterfaces,
                 },
             ],
         });
@@ -372,6 +375,7 @@ function processUnionMembers(
         visitorProperties.push({
             name: singleQuote(memberName),
             type: `(obj: ${fieldType}) => T`,
+            isReadonly: typeGenerationFlags.readonlyInterfaces,
         });
         visitorStatements.push(`if (${typeGuard.name}(${obj})) {
             return ${visitor}.${memberName}(${obj}.${memberName});
@@ -381,6 +385,7 @@ function processUnionMembers(
     visitorProperties.push({
         name: singleQuote("unknown"),
         type: `(obj: ${unionTsType}) => T`,
+        isReadonly: typeGenerationFlags.readonlyInterfaces,
     });
     visitorStatements.push(`return ${visitor}.unknown(${obj});`);
 
