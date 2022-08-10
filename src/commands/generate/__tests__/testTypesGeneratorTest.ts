@@ -20,18 +20,25 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
 import { SimpleAst } from "../simpleAst";
-import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { generateType } from "../typeGenerator";
+import { DEFAULT_TYPE_GENERATION_FLAGS } from "./resources/constants";
 
 export function assertOutputAndExpectedAreEqual(outDir: string, expectedDir: string, fname: string) {
-    const actual = fs.readFileSync(path.join(outDir, fname), "utf8");
-    const actualFilePath = path.join(expectedDir, fname);
+    const actualFilePath = path.join(outDir, fname);
+    const actual = fs.readFileSync(actualFilePath, "utf8");
+    const expectedFilePath = path.join(expectedDir, fname);
     if (process.env.RECREATE === "true") {
-        fs.mkdirpSync(path.dirname(actualFilePath));
-        fs.writeFileSync(actualFilePath, actual);
+        fs.mkdirpSync(path.dirname(expectedFilePath));
+        fs.writeFileSync(expectedFilePath, actual);
     } else {
-        const expected = fs.readFileSync(actualFilePath, "utf8");
-        expect(actual).toEqual(expected);
+        const expected = fs.readFileSync(expectedFilePath, "utf8");
+        try {
+            expect(actual).toEqual(expected);
+        } catch (error) {
+            // Ideally this would be a part of the expect fail message but that requires custom matchers.
+            console.error(`Expected '${actualFilePath}' contents to match '${expectedFilePath}'`);
+            throw error;
+        }
     }
 }
 
@@ -60,10 +67,6 @@ export const servicesLocalObject = createSimpleObject("SomeObject", "com.palanti
 export const importsLocalObject = createSimpleObject("SomeObject", "com.palantir.imports");
 export const foreignObject = createSimpleObject("OtherObject", "com.palantir.other");
 
-const DEFAULT_GENERATION_FLAGS: ITypeGenerationFlags = {
-    flavorizedAliases: true,
-};
-
 describe("testTypesGenerator", () => {
     const expectedDir = path.join(__dirname, "./resources");
     let outDir: string;
@@ -90,22 +93,22 @@ describe("testTypesGenerator", () => {
             }),
             new Map(),
             simpleAst,
-            DEFAULT_GENERATION_FLAGS,
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/manyFieldExample.ts");
     });
 
     it("generates types local object", async () => {
-        await generateType(typesLocalObject.definition, new Map(), simpleAst, DEFAULT_GENERATION_FLAGS);
+        await generateType(typesLocalObject.definition, new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/someObject.ts");
     });
 
     it("generates services local object", async () => {
-        await generateType(servicesLocalObject.definition, new Map(), simpleAst, DEFAULT_GENERATION_FLAGS);
+        await generateType(servicesLocalObject.definition, new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/someObject.ts");
     });
     it("generates foreign object", async () => {
-        await generateType(foreignObject.definition, new Map(), simpleAst, DEFAULT_GENERATION_FLAGS);
+        await generateType(foreignObject.definition, new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "other/otherObject.ts");
     });
 });

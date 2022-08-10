@@ -17,14 +17,17 @@
 
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { TsArgumentTypeVisitor } from "../tsArgumentTypeVisitor";
-import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { createHashableTypeName } from "../utils";
-
-const TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
-    flavorizedAliases: true,
-};
+import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS, READONLY_TYPE_GENERATION_FLAGS } from "./resources/constants";
 
 describe("TsTypeVisitor", () => {
+    const aliasName = { name: "Alias", package: "" };
+    const aliasReference = IType.reference(aliasName);
+    const alias = ITypeDefinition.alias({
+        alias: { primitive: PrimitiveType.STRING, type: "primitive" },
+        typeName: aliasName,
+    });
+
     const binaryAliasName = { name: "BinaryAlias", package: "" };
     const binaryAliasReference = IType.reference(binaryAliasName);
     const binaryAlias = ITypeDefinition.alias({
@@ -34,59 +37,173 @@ describe("TsTypeVisitor", () => {
 
     const fakeTypeName = { name: "someObject", package: "com.palantir.example" };
 
-    const visitor = new TsArgumentTypeVisitor(
-        new Map<string, ITypeDefinition>([[createHashableTypeName(binaryAliasName), binaryAlias]]),
-        fakeTypeName,
-        false,
-        TYPE_GENERATION_FLAGS,
-    );
-
-    const topLevelVisitor = new TsArgumentTypeVisitor(
-        new Map<string, ITypeDefinition>([[createHashableTypeName(binaryAliasName), binaryAlias]]),
-        fakeTypeName,
-        true,
-        TYPE_GENERATION_FLAGS,
-    );
-
-    it("returns primitive types", () => {
-        expect(visitor.primitive(PrimitiveType.STRING)).toEqual("string");
-        expect(visitor.primitive(PrimitiveType.DATETIME)).toEqual("string");
-        expect(visitor.primitive(PrimitiveType.INTEGER)).toEqual("number");
-        expect(visitor.primitive(PrimitiveType.DOUBLE)).toEqual('number | "NaN"');
-        expect(visitor.primitive(PrimitiveType.SAFELONG)).toEqual("number");
-        expect(visitor.primitive(PrimitiveType.BINARY)).toEqual("string");
-        expect(visitor.primitive(PrimitiveType.ANY)).toEqual("any");
-        expect(visitor.primitive(PrimitiveType.BOOLEAN)).toEqual("boolean");
-        expect(visitor.primitive(PrimitiveType.RID)).toEqual("string");
-        expect(visitor.primitive(PrimitiveType.BEARERTOKEN)).toEqual("string");
-        expect(visitor.primitive(PrimitiveType.UUID)).toEqual("string");
-    });
-
-    it("has correct top level types", () => {
-        expect(topLevelVisitor.primitive(PrimitiveType.STRING)).toEqual("string");
-        expect(topLevelVisitor.primitive(PrimitiveType.DATETIME)).toEqual("string");
-        expect(topLevelVisitor.primitive(PrimitiveType.INTEGER)).toEqual("number");
-        expect(topLevelVisitor.primitive(PrimitiveType.DOUBLE)).toEqual('number | "NaN"');
-        expect(topLevelVisitor.primitive(PrimitiveType.SAFELONG)).toEqual("number");
-        expect(topLevelVisitor.primitive(PrimitiveType.BINARY)).toEqual(
-            "ReadableStream<Uint8Array> | BufferSource | Blob",
+    describe("with default generation flags", () => {
+        const visitor = new TsArgumentTypeVisitor(
+            new Map<string, ITypeDefinition>([
+                [createHashableTypeName(aliasName), alias],
+                [createHashableTypeName(binaryAliasName), binaryAlias]
+            ]),
+            fakeTypeName,
+            false,
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        expect(topLevelVisitor.primitive(PrimitiveType.ANY)).toEqual("any");
-        expect(topLevelVisitor.primitive(PrimitiveType.BOOLEAN)).toEqual("boolean");
-        expect(topLevelVisitor.primitive(PrimitiveType.RID)).toEqual("string");
-        expect(topLevelVisitor.primitive(PrimitiveType.BEARERTOKEN)).toEqual("string");
-        expect(topLevelVisitor.primitive(PrimitiveType.UUID)).toEqual("string");
-    });
 
-    it("follows alias reference", () => {
-        expect(visitor.reference(binaryAliasName)).toEqual("string");
-        expect(topLevelVisitor.reference(binaryAliasName)).toEqual("ReadableStream<Uint8Array> | BufferSource | Blob");
-    });
-
-    it("returns optional type", () => {
-        expect(visitor.optional({ itemType: binaryAliasReference })).toEqual("string | null");
-        expect(topLevelVisitor.optional({ itemType: binaryAliasReference })).toEqual(
-            "ReadableStream<Uint8Array> | BufferSource | Blob | null",
+        const topLevelVisitor = new TsArgumentTypeVisitor(
+            new Map<string, ITypeDefinition>([
+                [createHashableTypeName(aliasName), alias],
+                [createHashableTypeName(binaryAliasName), binaryAlias]
+            ]),
+            fakeTypeName,
+            true,
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
+
+        it("returns primitive types", () => {
+            expect(visitor.primitive(PrimitiveType.STRING)).toEqual("string");
+            expect(visitor.primitive(PrimitiveType.DATETIME)).toEqual("string");
+            expect(visitor.primitive(PrimitiveType.INTEGER)).toEqual("number");
+            expect(visitor.primitive(PrimitiveType.DOUBLE)).toEqual('number | "NaN"');
+            expect(visitor.primitive(PrimitiveType.SAFELONG)).toEqual("number");
+            expect(visitor.primitive(PrimitiveType.BINARY)).toEqual("string");
+            expect(visitor.primitive(PrimitiveType.ANY)).toEqual("any");
+            expect(visitor.primitive(PrimitiveType.BOOLEAN)).toEqual("boolean");
+            expect(visitor.primitive(PrimitiveType.RID)).toEqual("string");
+            expect(visitor.primitive(PrimitiveType.BEARERTOKEN)).toEqual("string");
+            expect(visitor.primitive(PrimitiveType.UUID)).toEqual("string");
+        });
+
+        it("has correct top level types", () => {
+            expect(topLevelVisitor.primitive(PrimitiveType.STRING)).toEqual("string");
+            expect(topLevelVisitor.primitive(PrimitiveType.DATETIME)).toEqual("string");
+            expect(topLevelVisitor.primitive(PrimitiveType.INTEGER)).toEqual("number");
+            expect(topLevelVisitor.primitive(PrimitiveType.DOUBLE)).toEqual('number | "NaN"');
+            expect(topLevelVisitor.primitive(PrimitiveType.SAFELONG)).toEqual("number");
+            expect(topLevelVisitor.primitive(PrimitiveType.BINARY)).toEqual(
+                "ReadableStream<Uint8Array> | BufferSource | Blob",
+            );
+            expect(topLevelVisitor.primitive(PrimitiveType.ANY)).toEqual("any");
+            expect(topLevelVisitor.primitive(PrimitiveType.BOOLEAN)).toEqual("boolean");
+            expect(topLevelVisitor.primitive(PrimitiveType.RID)).toEqual("string");
+            expect(topLevelVisitor.primitive(PrimitiveType.BEARERTOKEN)).toEqual("string");
+            expect(topLevelVisitor.primitive(PrimitiveType.UUID)).toEqual("string");
+        });
+
+        it("follows alias reference", () => {
+            expect(visitor.reference(aliasName)).toEqual("string");
+            expect(visitor.reference(binaryAliasName)).toEqual("string");
+            expect(topLevelVisitor.reference(aliasName)).toEqual("string");
+            expect(topLevelVisitor.reference(binaryAliasName)).toEqual("ReadableStream<Uint8Array> | BufferSource | Blob");
+        });
+
+        it("returns optional type", () => {
+            expect(visitor.optional({ itemType: aliasReference })).toEqual("string | null");
+            expect(visitor.optional({ itemType: binaryAliasReference })).toEqual("string | null");
+            expect(topLevelVisitor.optional({ itemType: aliasReference })).toEqual("string | null");
+            expect(topLevelVisitor.optional({ itemType: binaryAliasReference })).toEqual(
+                "ReadableStream<Uint8Array> | BufferSource | Blob | null",
+            );
+        });
+
+        it("returns list type", () => {
+            expect(visitor.list({ itemType: aliasReference })).toEqual("Array<string>");
+            expect(visitor.list({ itemType: binaryAliasReference })).toEqual("Array<string>");
+            expect(topLevelVisitor.list({ itemType: aliasReference })).toEqual("Array<string>");
+            expect(topLevelVisitor.list({ itemType: binaryAliasReference })).toEqual("Array<string>");
+        });
+
+        it("returns set type", () => {
+            expect(visitor.set({ itemType: aliasReference })).toEqual("Array<string>");
+            expect(visitor.set({ itemType: binaryAliasReference })).toEqual("Array<string>");
+            expect(visitor.set({ itemType: aliasReference })).toEqual("Array<string>");
+            expect(topLevelVisitor.set({ itemType: binaryAliasReference })).toEqual("Array<string>");
+        });
+    });
+
+    describe("with flavored generation flags", () => {
+        const visitor = new TsArgumentTypeVisitor(
+            new Map<string, ITypeDefinition>([
+                [createHashableTypeName(aliasName), alias],
+                [createHashableTypeName(binaryAliasName), binaryAlias]
+            ]),
+            fakeTypeName,
+            false,
+            FLAVORED_TYPE_GENERATION_FLAGS,
+        );
+
+        const topLevelVisitor = new TsArgumentTypeVisitor(
+            new Map<string, ITypeDefinition>([
+                [createHashableTypeName(aliasName), alias],
+                [createHashableTypeName(binaryAliasName), binaryAlias]
+            ]),
+            fakeTypeName,
+            true,
+            FLAVORED_TYPE_GENERATION_FLAGS,
+        );
+
+        it("follows alias reference", () => {
+            expect(visitor.reference(aliasName)).toEqual("IAlias");
+            expect(visitor.reference(binaryAliasName)).toEqual("string");
+            expect(topLevelVisitor.reference(aliasName)).toEqual("IAlias");
+            expect(topLevelVisitor.reference(binaryAliasName)).toEqual("ReadableStream<Uint8Array> | BufferSource | Blob");
+        });
+
+        it("returns optional type", () => {
+            expect(visitor.optional({ itemType: aliasReference })).toEqual("IAlias | null");
+            expect(visitor.optional({ itemType: binaryAliasReference })).toEqual("string | null");
+            expect(topLevelVisitor.optional({ itemType: aliasReference })).toEqual("IAlias | null");
+            expect(topLevelVisitor.optional({ itemType: binaryAliasReference })).toEqual(
+                "ReadableStream<Uint8Array> | BufferSource | Blob | null",
+            );
+        });
+
+        it("returns list type", () => {
+            expect(visitor.list({ itemType: aliasReference })).toEqual("Array<IAlias>");
+            expect(visitor.list({ itemType: binaryAliasReference })).toEqual("Array<string>");
+            expect(topLevelVisitor.list({ itemType: aliasReference })).toEqual("Array<IAlias>");
+            expect(topLevelVisitor.list({ itemType: binaryAliasReference })).toEqual("Array<string>");
+        });
+
+        it("returns set type", () => {
+            expect(visitor.set({ itemType: aliasReference })).toEqual("Array<IAlias>");
+            expect(visitor.set({ itemType: binaryAliasReference })).toEqual("Array<string>");
+            expect(visitor.set({ itemType: aliasReference })).toEqual("Array<IAlias>");
+            expect(topLevelVisitor.set({ itemType: binaryAliasReference })).toEqual("Array<string>");
+        });
+    });
+
+    describe("with readonly generation flags", () => {
+        const visitor = new TsArgumentTypeVisitor(
+            new Map<string, ITypeDefinition>([
+                [createHashableTypeName(aliasName), alias],
+                [createHashableTypeName(binaryAliasName), binaryAlias]
+            ]),
+            fakeTypeName,
+            false,
+            READONLY_TYPE_GENERATION_FLAGS,
+        );
+
+        const topLevelVisitor = new TsArgumentTypeVisitor(
+            new Map<string, ITypeDefinition>([
+                [createHashableTypeName(aliasName), alias],
+                [createHashableTypeName(binaryAliasName), binaryAlias]
+            ]),
+            fakeTypeName,
+            true,
+            READONLY_TYPE_GENERATION_FLAGS,
+        );
+
+        it("returns list type", () => {
+            expect(visitor.list({ itemType: aliasReference })).toEqual("ReadonlyArray<string>");
+            expect(visitor.list({ itemType: binaryAliasReference })).toEqual("ReadonlyArray<string>");
+            expect(topLevelVisitor.list({ itemType: aliasReference })).toEqual("ReadonlyArray<string>");
+            expect(topLevelVisitor.list({ itemType: binaryAliasReference })).toEqual("ReadonlyArray<string>");
+        });
+
+        it("returns set type", () => {
+            expect(visitor.set({ itemType: aliasReference })).toEqual("ReadonlyArray<string>");
+            expect(visitor.set({ itemType: binaryAliasReference })).toEqual("ReadonlyArray<string>");
+            expect(visitor.set({ itemType: aliasReference })).toEqual("ReadonlyArray<string>");
+            expect(topLevelVisitor.set({ itemType: binaryAliasReference })).toEqual("ReadonlyArray<string>");
+        });
     });
 });

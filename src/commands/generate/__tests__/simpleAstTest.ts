@@ -22,12 +22,8 @@ import { directory } from "tempy";
 import { generateError } from "../errorGenerator";
 import { generateService } from "../serviceGenerator";
 import { SimpleAst } from "../simpleAst";
-import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { generateEnum } from "../typeGenerator";
-
-const GENERATION_FLAGS_TO_USE: ITypeGenerationFlags = {
-    flavorizedAliases: true,
-};
+import { DEFAULT_TYPE_GENERATION_FLAGS } from "./resources/constants";
 
 describe("simpleAst", () => {
     let outDir: string;
@@ -49,7 +45,7 @@ describe("simpleAst", () => {
             },
             new Map(),
             simpleAst,
-            GENERATION_FLAGS_TO_USE,
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
 
         await generateService(
@@ -75,7 +71,7 @@ describe("simpleAst", () => {
             },
             new Map(),
             simpleAst,
-            GENERATION_FLAGS_TO_USE,
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
 
         await generateEnum(

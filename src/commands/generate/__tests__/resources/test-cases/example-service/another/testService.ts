@@ -1,6 +1,5 @@
 import { IBackingFileSystem } from "../product-datasets/backingFileSystem";
 import { IDataset } from "../product-datasets/dataset";
-import { IAliasedString } from "../product/aliasedString";
 import { ICreateDatasetRequest } from "../product/createDatasetRequest";
 import { IHttpApiBridge } from "conjure-client";
 
@@ -24,7 +23,7 @@ export interface ITestService {
     getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
     getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
     maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null>;
-    getAliasedString(datasetRid: string): Promise<IAliasedString>;
+    getAliasedString(datasetRid: string): Promise<string>;
     uploadRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<void>;
     uploadAliasedRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<void>;
     getBranches(datasetRid: string): Promise<Array<string>>;
@@ -153,8 +152,8 @@ export class TestService {
         );
     }
 
-    public getAliasedString(datasetRid: string): Promise<IAliasedString> {
-        return this.bridge.call<IAliasedString>(
+    public getAliasedString(datasetRid: string): Promise<string> {
+        return this.bridge.call<string>(
             "TestService",
             "getAliasedString",
             "GET",

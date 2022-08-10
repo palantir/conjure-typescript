@@ -17,13 +17,11 @@
 
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { ImportsVisitor, sortImports } from "../imports";
-import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { createHashableTypeName } from "../utils";
+import { FLAVORED_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import { foreignObject, importsLocalObject as localObject } from "./testTypesGeneratorTest";
 
-const GENERATION_FLAGS_TO_USE_FOR_IMPORTS: ITypeGenerationFlags = {
-    flavorizedAliases: true,
-};
+const GENERATION_FLAGS_TO_USE_FOR_IMPORTS = FLAVORED_TYPE_GENERATION_FLAGS;
 
 describe("imports", () => {
     const currType = {

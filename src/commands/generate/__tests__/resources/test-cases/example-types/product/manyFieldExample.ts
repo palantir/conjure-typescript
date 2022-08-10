@@ -1,5 +1,3 @@
-import { IStringAliasExample } from "./stringAliasExample";
-
 export interface IManyFieldExample {
     /**
      * docs for string field
@@ -32,5 +30,5 @@ export interface IManyFieldExample {
     /**
      * docs for alias field
      */
-    'alias': IStringAliasExample;
+    'alias': string;
 }

@@ -21,10 +21,8 @@ import * as path from "path";
 import { directory } from "tempy";
 import { generateError } from "../errorGenerator";
 import { SimpleAst } from "../simpleAst";
-import { ITypeGenerationFlags } from "../typeGenerationFlags";
+import { DEFAULT_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
-
-const TYPE_GENERATION_FLAGS: ITypeGenerationFlags = { flavorizedAliases: true };
 
 describe("errorGenerator", () => {
     const expectedDir = path.join(__dirname, "./resources");
@@ -47,7 +45,7 @@ describe("errorGenerator", () => {
             },
             new Map(),
             simpleAst,
-            TYPE_GENERATION_FLAGS,
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
 
         const outFile1 = path.join(outDir, "errors/error.ts");
@@ -80,7 +78,7 @@ describe("errorGenerator", () => {
             },
             new Map(),
             simpleAst,
-            TYPE_GENERATION_FLAGS,
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
 
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "errors/primitiveError.ts");
@@ -102,7 +100,7 @@ describe("errorGenerator", () => {
             },
             new Map(),
             simpleAst,
-            TYPE_GENERATION_FLAGS,
+            DEFAULT_TYPE_GENERATION_FLAGS,
         );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "errors/importError.ts");
     });
