@@ -22,6 +22,7 @@ import {
     ITypeName,
     PrimitiveType,
 } from "conjure-api";
+import { AliasGenerationType } from "./typeGenerationFlags";
 
 export const CONJURE_CLIENT = "conjure-client";
 
@@ -136,6 +137,7 @@ const NON_FLAVORIZABLE_TYPES = new Set<PrimitiveType>([
     PrimitiveType.DATETIME,
 ]);
 
-export function isFlavorizable(type: IType, flavorizedAliases: boolean): boolean {
-    return flavorizedAliases && IType.isPrimitive(type) && !NON_FLAVORIZABLE_TYPES.has(type.primitive);
+export function isFlavorizable(type: IType, aliasesGenerationType: AliasGenerationType): boolean {
+    return (aliasesGenerationType === AliasGenerationType.FLAVORED || aliasesGenerationType === AliasGenerationType.BRANDED)
+        && IType.isPrimitive(type) && !NON_FLAVORIZABLE_TYPES.has(type.primitive);
 }

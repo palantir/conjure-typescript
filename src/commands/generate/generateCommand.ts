@@ -22,6 +22,7 @@ import { SlsVersion, SlsVersionMatcher } from "sls-version";
 import { Argv, CommandModule } from "yargs";
 import { IPackageJson, IProductDependency, ISlsManifestDependency, writeJson } from "../../utils";
 import { generate } from "./generator";
+import { AliasGenerationType } from "./typeGenerationFlags";
 
 export interface IGenerateCommandArgs {
     /*
@@ -53,6 +54,11 @@ export interface IGenerateCommandArgs {
      * Path to a file containing a list of product dependencies
      */
     productDependencies?: string;
+
+    /**
+     * Generates strongly branded types for compatible aliases (string, rids...)
+     */
+    brandedAliases?: boolean;
 
     /**
      * Generates flavoured types for compatible aliases (string, rids...)
@@ -103,6 +109,11 @@ export class GenerateCommand implements CommandModule {
                 describe: "The name of the generated package",
                 type: "string",
             })
+            .option("brandedAliases", {
+                default: false,
+                describe: "Generates strongly branded types for compatible aliases.",
+                type: "boolean",
+            })
             .option("flavorizedAliases", {
                 default: false,
                 describe: "Generates flavoured types for compatible aliases.",
@@ -136,7 +147,9 @@ export class GenerateCommand implements CommandModule {
         const { rawSource } = args;
         const { conjureDefinition, packageJson, tsConfig, gitIgnore } = await this.parseCommandLineArguments(args);
         const generatePromise = generate(conjureDefinition, output, {
-            flavorizedAliases: args.flavorizedAliases ?? false,
+            aliases: args.brandedAliases ? AliasGenerationType.BRANDED
+                : args.flavorizedAliases ? AliasGenerationType.FLAVORED
+                : AliasGenerationType.DEFAULT,
             readonlyInterfaces: args.readonlyInterfaces ?? false,
         });
         if (rawSource) {

@@ -33,7 +33,7 @@ import {
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
-import { ITypeGenerationFlags } from "./typeGenerationFlags";
+import { AliasGenerationType, ITypeGenerationFlags } from "./typeGenerationFlags";
 import { addDeprecatedToDocs, doubleQuote, isFlavorizable, isValidFunctionName, singleQuote } from "./utils";
 
 export function generateType(
@@ -59,11 +59,21 @@ const FLAVOR_TYPE_FIELD = "__conjure_type";
 const FLAVOR_PACKAGE_FIELD = "__conjure_package";
 
 /**
- * Generates a file of the following format:
+ * Generates a file of the following formats depending on alias generation flags
+ *
+ * For Flavored Aliases, the fields are optional allow implicit conversion to and from string, but providing type safety between aliases:
  * ```
  *  export type ExampleAlias = string & {
  *     __conjure_type?: "ExampleAlias";
  *     __conjure_package?: "com.palantir.product";
+ *  };
+ * ```
+ *
+ * For Branded Aliases, the fields are not optional, providing type safety between aliases and disallowing implicit type satisfaction from string:
+ * ```
+ *  export type ExampleAlias = string & {
+ *     __conjure_type: "ExampleAlias";
+ *     __conjure_package: "com.palantir.product";
  *  };
  * ```
  */
@@ -73,17 +83,20 @@ export async function generateAlias(
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
-    if (isFlavorizable(definition.alias, typeGenerationFlags.flavorizedAliases)) {
+    if (isFlavorizable(definition.alias, typeGenerationFlags.aliases)) {
         const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false, typeGenerationFlags);
         const fieldType = IType.visit(definition.alias, tsTypeVisitor);
         const sourceFile = simpleAst.createSourceFile(definition.typeName);
+
+        const maybeOptional = typeGenerationFlags.aliases === AliasGenerationType.FLAVORED ? "?" : "";
+
         const typeAlias = sourceFile.addTypeAlias({
             isExported: true,
             name: "I" + definition.typeName.name,
             type: [
                 `${fieldType} & {`,
-                `\t${FLAVOR_TYPE_FIELD}?: "${definition.typeName.name}",`,
-                `\t${FLAVOR_PACKAGE_FIELD}?: "${definition.typeName.package}",`,
+                `\t${FLAVOR_TYPE_FIELD}${maybeOptional}: "${definition.typeName.name}",`,
+                `\t${FLAVOR_PACKAGE_FIELD}${maybeOptional}: "${definition.typeName.package}",`,
                 "}",
             ].join("\n"),
         });

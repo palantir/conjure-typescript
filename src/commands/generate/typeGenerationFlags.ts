@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
+export const AliasGenerationType = {
+    DEFAULT: "DEFAULT",
+    BRANDED: "BRANDED",
+    FLAVORED: "FLAVORED",
+} as const;
+
+export type AliasGenerationType = keyof typeof AliasGenerationType;
+
 /**
  * Simple and convenient interface allowing for passing flags through the "generation" code.
  */
 export interface ITypeGenerationFlags {
     /**
-     * When set to true compatible alias types will be converted as flavoured strings.
+     * When set compatible alias types will be converted as strict branded or flavoured strings.
      */
-    readonly flavorizedAliases: boolean;
+    readonly aliases: AliasGenerationType;
 
     /**
      * Generated interfaces have readonly properties and use ReadonlyArray instead of Array.

@@ -33,7 +33,7 @@ import { generate } from "../generator";
 import { typeNameToFilePath } from "../simpleAst";
 import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { isFlavorizable } from "../utils";
-import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS, READONLY_TYPE_GENERATION_FLAGS } from "./resources/constants";
+import { BRANDED_TYPE_GENERATION_FLAGS, DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS, READONLY_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
 describe("generator", () => {
@@ -106,6 +106,7 @@ export { integrationSecond };
 
 const irDir = path.join(__dirname, "../../../../build/ir-test-cases");
 const testCaseDir = path.join(__dirname, "resources/test-cases");
+const brandedTestCaseDir = path.join(__dirname, "resources/branded-test-cases");
 const flavoredTestCaseDir = path.join(__dirname, "resources/flavored-test-cases");
 const readonlyTestCaseDir = path.join(__dirname, "resources/readonly-test-cases");
 
@@ -114,10 +115,16 @@ describe("definitionTests", () => {
         const definitionFilePath = path.join(irDir, fileName);
         const paths = fileName.substring(0, fileName.lastIndexOf("."));
         const actualTestCaseDir = path.join(testCaseDir, paths);
+        const actualBrandedTestCaseDir = path.join(brandedTestCaseDir, paths);
         const actualFlavoredTestCaseDir = path.join(flavoredTestCaseDir, paths);
         const actualReadonlyTestCaseDir = path.join(readonlyTestCaseDir, paths);
 
         it(`${fileName} produces equivalent TypeScript`, testGenerateAllFilesAreTheSame(definitionFilePath, paths, actualTestCaseDir, DEFAULT_TYPE_GENERATION_FLAGS));
+
+        // Not every test has a branded version
+        if (fs.existsSync(actualBrandedTestCaseDir)) {
+            it(`${fileName} produces equivalent branded TypeScript`, testGenerateAllFilesAreTheSame(definitionFilePath, paths, actualBrandedTestCaseDir, BRANDED_TYPE_GENERATION_FLAGS));
+        }
 
         // Not every test has a flavored version
         if (fs.existsSync(actualFlavoredTestCaseDir)) {
@@ -152,7 +159,7 @@ function expectAllFilesAreTheSame(
 ) {
     for (const type of definition.types) {
         // We do not generate flavoured types for all aliases
-        if (type.type === "alias" && !isFlavorizable(type.alias.alias, typeGenerationFlags.flavorizedAliases)) {
+        if (type.type === "alias" && !isFlavorizable(type.alias.alias, typeGenerationFlags.aliases)) {
             continue;
         }
         const relativeFilePath = typeNameToFilePath(ITypeDefinition.visit(type, typeNameVisitor));

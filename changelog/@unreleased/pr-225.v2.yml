@@ -1,0 +1,5 @@
+type: feature
+feature:
+  description: Add brandedAliases option for strongly branded aliases
+  links:
+  - https://github.com/palantir/conjure-typescript/pull/225
