@@ -65,6 +65,7 @@ describe("generate command", () => {
                     "minimum-version": "1.0.0",
                     "recommended-version": "1.2.0",
                     "maximum-version": "2.x.x",
+                    "optional": false,
                 },
             ];
             const productDependencyPath = path.join(outDir, "productDependencies.json");
@@ -78,6 +79,7 @@ describe("generate command", () => {
                             minVersion: "1.0.0",
                             recommendedVersion: "1.2.0",
                             maxVersion: "2.x.x",
+                            optional: false,
                         },
                     },
                 },
@@ -106,6 +108,7 @@ describe("generate command", () => {
                     "product-name": "conjure",
                     "minimum-version": "1.0.0",
                     "maximum-version": "2.x.x",
+                    "optional": false,
                 },
             ];
             const productDependencyPath = path.join(outDir, "productDependencies.json");
@@ -118,6 +121,7 @@ describe("generate command", () => {
                         "com.palantir.conjure:conjure": {
                             minVersion: "1.0.0",
                             maxVersion: "2.x.x",
+                            optional: false,
                         },
                     },
                 },
