@@ -222,7 +222,7 @@ export async function resolveProductDependencies(
         const coordinate = `${productDependency["product-group"]}:${productDependency["product-name"]}`;
         const minVersion = productDependency["minimum-version"];
         const maxVersion = productDependency["maximum-version"];
-        const optional = productDependency["optional"];
+        const optional = productDependency.optional;
         const recommendedVersion = productDependency["recommended-version"];
         if (
             !SlsVersion.isValid(minVersion) ||
