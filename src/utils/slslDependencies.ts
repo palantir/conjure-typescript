@@ -8,12 +8,14 @@ export interface ISlsManifestDependency {
     "minimum-version": string;
     "maximum-version": string;
     "recommended-version"?: string;
-    "optional": boolean;
+    // Optional for backcompat
+    "optional"?: boolean;
 }
 
 export interface IProductDependency {
     minVersion: string;
     maxVersion: string;
-    optional: boolean;
+    // Optional for backcompat
+    optional?: boolean;
     recommendedVersion?: string;
 }

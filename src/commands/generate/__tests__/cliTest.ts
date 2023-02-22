@@ -65,6 +65,48 @@ describe("generate command", () => {
                     "minimum-version": "1.0.0",
                     "recommended-version": "1.2.0",
                     "maximum-version": "2.x.x",
+                },
+            ];
+            const productDependencyPath = path.join(outDir, "productDependencies.json");
+            await fs.writeJSON(productDependencyPath, productDependencies);
+            const expectedPackageJson = {
+                name: "foo",
+                version: "1.0.0",
+                sls: {
+                    dependencies: {
+                        "com.palantir.conjure:conjure": {
+                            minVersion: "1.0.0",
+                            recommendedVersion: "1.2.0",
+                            maxVersion: "2.x.x",
+                        },
+                    },
+                },
+                main: "index.js",
+                types: "index.d.ts",
+                sideEffects: false,
+                scripts: {
+                    build: "tsc",
+                },
+                dependencies: { "conjure-client": "1.0.0" },
+                devDependencies: {
+                    typescript: "2.7.2",
+                },
+                author: "Conjure",
+                license: "UNLICENSED",
+            };
+            expect(await createPackageJson(inputPackage, "foo", "1.0.0", productDependencyPath)).toEqual(
+                expectedPackageJson,
+            );
+        });
+
+        it("generate packageJson with productDependencies with specified optional", async () => {
+            const productDependencies: ISlsManifestDependency[] = [
+                {
+                    "product-group": "com.palantir.conjure",
+                    "product-name": "conjure",
+                    "minimum-version": "1.0.0",
+                    "recommended-version": "1.2.0",
+                    "maximum-version": "2.x.x",
                     "optional": false,
                 },
             ];
