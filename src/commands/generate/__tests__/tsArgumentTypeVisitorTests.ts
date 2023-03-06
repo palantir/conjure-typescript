@@ -18,7 +18,11 @@
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { TsArgumentTypeVisitor } from "../tsArgumentTypeVisitor";
 import { createHashableTypeName } from "../utils";
-import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS, READONLY_TYPE_GENERATION_FLAGS } from "./resources/constants";
+import {
+    DEFAULT_TYPE_GENERATION_FLAGS,
+    FLAVORED_TYPE_GENERATION_FLAGS,
+    READONLY_TYPE_GENERATION_FLAGS,
+} from "./resources/constants";
 
 describe("TsTypeVisitor", () => {
     const aliasName = { name: "Alias", package: "" };
@@ -41,7 +45,7 @@ describe("TsTypeVisitor", () => {
         const visitor = new TsArgumentTypeVisitor(
             new Map<string, ITypeDefinition>([
                 [createHashableTypeName(aliasName), alias],
-                [createHashableTypeName(binaryAliasName), binaryAlias]
+                [createHashableTypeName(binaryAliasName), binaryAlias],
             ]),
             fakeTypeName,
             false,
@@ -51,7 +55,7 @@ describe("TsTypeVisitor", () => {
         const topLevelVisitor = new TsArgumentTypeVisitor(
             new Map<string, ITypeDefinition>([
                 [createHashableTypeName(aliasName), alias],
-                [createHashableTypeName(binaryAliasName), binaryAlias]
+                [createHashableTypeName(binaryAliasName), binaryAlias],
             ]),
             fakeTypeName,
             true,
@@ -92,7 +96,9 @@ describe("TsTypeVisitor", () => {
             expect(visitor.reference(aliasName)).toEqual("string");
             expect(visitor.reference(binaryAliasName)).toEqual("string");
             expect(topLevelVisitor.reference(aliasName)).toEqual("string");
-            expect(topLevelVisitor.reference(binaryAliasName)).toEqual("ReadableStream<Uint8Array> | BufferSource | Blob");
+            expect(topLevelVisitor.reference(binaryAliasName)).toEqual(
+                "ReadableStream<Uint8Array> | BufferSource | Blob",
+            );
         });
 
         it("returns optional type", () => {
@@ -123,7 +129,7 @@ describe("TsTypeVisitor", () => {
         const visitor = new TsArgumentTypeVisitor(
             new Map<string, ITypeDefinition>([
                 [createHashableTypeName(aliasName), alias],
-                [createHashableTypeName(binaryAliasName), binaryAlias]
+                [createHashableTypeName(binaryAliasName), binaryAlias],
             ]),
             fakeTypeName,
             false,
@@ -133,7 +139,7 @@ describe("TsTypeVisitor", () => {
         const topLevelVisitor = new TsArgumentTypeVisitor(
             new Map<string, ITypeDefinition>([
                 [createHashableTypeName(aliasName), alias],
-                [createHashableTypeName(binaryAliasName), binaryAlias]
+                [createHashableTypeName(binaryAliasName), binaryAlias],
             ]),
             fakeTypeName,
             true,
@@ -144,7 +150,9 @@ describe("TsTypeVisitor", () => {
             expect(visitor.reference(aliasName)).toEqual("IAlias");
             expect(visitor.reference(binaryAliasName)).toEqual("string");
             expect(topLevelVisitor.reference(aliasName)).toEqual("IAlias");
-            expect(topLevelVisitor.reference(binaryAliasName)).toEqual("ReadableStream<Uint8Array> | BufferSource | Blob");
+            expect(topLevelVisitor.reference(binaryAliasName)).toEqual(
+                "ReadableStream<Uint8Array> | BufferSource | Blob",
+            );
         });
 
         it("returns optional type", () => {
@@ -175,7 +183,7 @@ describe("TsTypeVisitor", () => {
         const visitor = new TsArgumentTypeVisitor(
             new Map<string, ITypeDefinition>([
                 [createHashableTypeName(aliasName), alias],
-                [createHashableTypeName(binaryAliasName), binaryAlias]
+                [createHashableTypeName(binaryAliasName), binaryAlias],
             ]),
             fakeTypeName,
             false,
@@ -185,7 +193,7 @@ describe("TsTypeVisitor", () => {
         const topLevelVisitor = new TsArgumentTypeVisitor(
             new Map<string, ITypeDefinition>([
                 [createHashableTypeName(aliasName), alias],
-                [createHashableTypeName(binaryAliasName), binaryAlias]
+                [createHashableTypeName(binaryAliasName), binaryAlias],
             ]),
             fakeTypeName,
             true,
