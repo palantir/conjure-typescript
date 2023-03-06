@@ -26,12 +26,12 @@ import {
     FunctionDeclarationStructure,
     ImportDeclarationStructure,
     InterfaceDeclarationStructure,
+    ModuleDeclarationKind,
     ObjectLiteralExpression,
     PropertySignatureStructure,
-    VariableDeclarationKind,
     StructureKind,
     TypeAliasDeclarationStructure,
-    ModuleDeclarationKind,
+    VariableDeclarationKind,
     VariableStatementStructure,
 } from "ts-morph";
 import { ImportsVisitor, sortImports } from "./imports";
