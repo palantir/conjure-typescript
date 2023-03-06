@@ -18,7 +18,11 @@
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { TsReturnTypeVisitor } from "../tsReturnTypeVisitor";
 import { createHashableTypeName } from "../utils";
-import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS, READONLY_TYPE_GENERATION_FLAGS } from "./resources/constants";
+import {
+    DEFAULT_TYPE_GENERATION_FLAGS,
+    FLAVORED_TYPE_GENERATION_FLAGS,
+    READONLY_TYPE_GENERATION_FLAGS,
+} from "./resources/constants";
 
 const objectName = { name: "Object", package: "" };
 const objectReference = IType.reference(objectName);
@@ -51,9 +55,7 @@ const enumType = ITypeDefinition.enum_({
 const fakeTypeName = { name: "someObject", package: "com.palantir.example" };
 
 describe("TsTypeVisitor", () => {
-
     describe("with default generation flags", () => {
-
         const visitor = new TsReturnTypeVisitor(
             new Map<string, ITypeDefinition>([
                 [createHashableTypeName(objectName), object],
@@ -108,7 +110,9 @@ describe("TsTypeVisitor", () => {
 
         it("produces error for unknown reference", () => {
             const tsType = () =>
-                new TsReturnTypeVisitor(new Map(), fakeTypeName, false, FLAVORED_TYPE_GENERATION_FLAGS).reference(objectName);
+                new TsReturnTypeVisitor(new Map(), fakeTypeName, false, FLAVORED_TYPE_GENERATION_FLAGS).reference(
+                    objectName,
+                );
             expect(tsType).toThrowError(/unknown reference type/);
         });
 
@@ -183,9 +187,7 @@ describe("TsTypeVisitor", () => {
         });
     });
 
-
     describe("with flavored generation flags", () => {
-
         const visitor = new TsReturnTypeVisitor(
             new Map<string, ITypeDefinition>([
                 [createHashableTypeName(objectName), object],
@@ -219,7 +221,6 @@ describe("TsTypeVisitor", () => {
     });
 
     describe("with readonlyInterfaces flag", () => {
-
         const visitor = new TsReturnTypeVisitor(
             new Map<string, ITypeDefinition>([
                 [createHashableTypeName(objectName), object],

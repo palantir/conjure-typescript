@@ -19,6 +19,7 @@ import * as yargs from "yargs";
 import { GenerateCommand } from "./commands/generate";
 
 (async function main() {
+    // prettier-ignore
     yargs
         .wrap(130)
         .command(new GenerateCommand())

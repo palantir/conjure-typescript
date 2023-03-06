@@ -36,8 +36,7 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
         protected currType: ITypeName,
         protected isTopLevelBinary: boolean,
         protected typeGenerationFlags: ITypeGenerationFlags,
-    ) {
-    }
+    ) {}
 
     public primitive = (obj: PrimitiveType): string => {
         switch (obj) {
@@ -65,7 +64,7 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
     };
     public map = (obj: IMapType): string => {
         const valueTsType = IType.visit(obj.valueType, this.nestedVisitor());
-        const maybeReadonly = this.typeGenerationFlags.readonlyInterfaces ? 'readonly ' : '';
+        const maybeReadonly = this.typeGenerationFlags.readonlyInterfaces ? "readonly " : "";
         if (IType.isReference(obj.keyType)) {
             const keyTypeDefinition = this.knownTypes.get(createHashableTypeName(obj.keyType.reference));
             if (keyTypeDefinition != null) {
@@ -124,6 +123,6 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
         return new TsReturnTypeVisitor(this.knownTypes, this.currType, false, this.typeGenerationFlags);
     };
     protected getArrayType(itemType: string) {
-        return this.typeGenerationFlags.readonlyInterfaces ? `ReadonlyArray<${itemType}>` :  `Array<${itemType}>`;
+        return this.typeGenerationFlags.readonlyInterfaces ? `ReadonlyArray<${itemType}>` : `Array<${itemType}>`;
     }
 }

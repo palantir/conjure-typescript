@@ -33,7 +33,11 @@ import { generate } from "../generator";
 import { typeNameToFilePath } from "../simpleAst";
 import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { isFlavorizable } from "../utils";
-import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS, READONLY_TYPE_GENERATION_FLAGS } from "./resources/constants";
+import {
+    DEFAULT_TYPE_GENERATION_FLAGS,
+    FLAVORED_TYPE_GENERATION_FLAGS,
+    READONLY_TYPE_GENERATION_FLAGS,
+} from "./resources/constants";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
 describe("generator", () => {
@@ -117,21 +121,45 @@ describe("definitionTests", () => {
         const actualFlavoredTestCaseDir = path.join(flavoredTestCaseDir, paths);
         const actualReadonlyTestCaseDir = path.join(readonlyTestCaseDir, paths);
 
-        it(`${fileName} produces equivalent TypeScript`, testGenerateAllFilesAreTheSame(definitionFilePath, paths, actualTestCaseDir, DEFAULT_TYPE_GENERATION_FLAGS));
+        it(
+            `${fileName} produces equivalent TypeScript`,
+            testGenerateAllFilesAreTheSame(definitionFilePath, paths, actualTestCaseDir, DEFAULT_TYPE_GENERATION_FLAGS),
+        );
 
         // Not every test has a flavored version
         if (fs.existsSync(actualFlavoredTestCaseDir)) {
-            it(`${fileName} produces equivalent flavored TypeScript`, testGenerateAllFilesAreTheSame(definitionFilePath, paths, actualFlavoredTestCaseDir, FLAVORED_TYPE_GENERATION_FLAGS));
+            it(
+                `${fileName} produces equivalent flavored TypeScript`,
+                testGenerateAllFilesAreTheSame(
+                    definitionFilePath,
+                    paths,
+                    actualFlavoredTestCaseDir,
+                    FLAVORED_TYPE_GENERATION_FLAGS,
+                ),
+            );
         }
 
         // Not every test has a readonly version
         if (fs.existsSync(actualReadonlyTestCaseDir)) {
-            it(`${fileName} produces equivalent readonly TypeScript`, testGenerateAllFilesAreTheSame(definitionFilePath, paths, actualReadonlyTestCaseDir, READONLY_TYPE_GENERATION_FLAGS));
+            it(
+                `${fileName} produces equivalent readonly TypeScript`,
+                testGenerateAllFilesAreTheSame(
+                    definitionFilePath,
+                    paths,
+                    actualReadonlyTestCaseDir,
+                    READONLY_TYPE_GENERATION_FLAGS,
+                ),
+            );
         }
     }
 });
 
-function testGenerateAllFilesAreTheSame(definitionFilePath: string, paths: string, actualTestCaseDir: string, typeGenerationFlags: ITypeGenerationFlags) {
+function testGenerateAllFilesAreTheSame(
+    definitionFilePath: string,
+    paths: string,
+    actualTestCaseDir: string,
+    typeGenerationFlags: ITypeGenerationFlags,
+) {
     return async () => {
         const tempDir = directory();
         const outputDir = path.join(tempDir, paths);
