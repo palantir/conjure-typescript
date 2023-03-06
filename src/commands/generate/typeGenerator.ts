@@ -126,7 +126,7 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
             type: doubleQuote(enumValue.value),
             docs: addDeprecatedToDocs(enumValue),
         }));
-        typeAliases.at(-1)!.trailingTrivia = `\n\n`;
+        typeAliases[typeAliases.length - 1].trailingTrivia = `\n\n`;
         const variableDeclarations = definition.values.map<VariableStatementStructure>(enumValue => ({
             kind: StructureKind.VariableStatement,
             isExported: true,
