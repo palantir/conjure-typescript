@@ -16,6 +16,7 @@
  */
 
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
+import { ImportDeclarationStructure, StructureKind } from "ts-morph";
 import { ImportsVisitor, sortImports } from "../imports";
 import { createHashableTypeName } from "../utils";
 import { FLAVORED_TYPE_GENERATION_FLAGS } from "./resources/constants";
@@ -59,8 +60,9 @@ describe("imports", () => {
         GENERATION_FLAGS_TO_USE_FOR_IMPORTS,
     );
 
-    function namedImport(moduleSpecifier: string, name: string) {
+    function namedImport(moduleSpecifier: string, name: string): ImportDeclarationStructure {
         return {
+            kind: StructureKind.ImportDeclaration,
             moduleSpecifier,
             namedImports: [{ name }],
         };
@@ -176,7 +178,7 @@ describe("imports", () => {
     it("adds both named and namespace imports", async () => {
         const imports = sortImports([
             namedImport("module", "name"),
-            { moduleSpecifier: "module", namespaceImport: "namespace" },
+            { kind: StructureKind.ImportDeclaration, moduleSpecifier: "module", namespaceImport: "namespace" },
         ]);
         expect(imports.length).toEqual(2);
     });
@@ -185,6 +187,7 @@ describe("imports", () => {
         const sort = () =>
             sortImports([
                 {
+                    kind: StructureKind.ImportDeclaration,
                     moduleSpecifier: "module",
                     namedImports: [{ name: "name" }],
                     namespaceImport: "namespace",
@@ -197,10 +200,12 @@ describe("imports", () => {
         const sort = () =>
             sortImports([
                 {
+                    kind: StructureKind.ImportDeclaration,
                     moduleSpecifier: "module",
                     namespaceImport: "namespace",
                 },
                 {
+                    kind: StructureKind.ImportDeclaration,
                     moduleSpecifier: "module",
                     namespaceImport: "anotherNamespace",
                 },
@@ -225,7 +230,11 @@ describe("imports", () => {
             GENERATION_FLAGS_TO_USE_FOR_IMPORTS,
         );
         expect(IType.visit(IType.reference(otherType), importVisistor)).toEqual([
-            { moduleSpecifier: "../foo-request/bar", namedImports: [{ name: "I" + otherType.name }] },
+            {
+                kind: StructureKind.ImportDeclaration,
+                moduleSpecifier: "../foo-request/bar",
+                namedImports: [{ name: "I" + otherType.name }],
+            },
         ]);
     });
 });

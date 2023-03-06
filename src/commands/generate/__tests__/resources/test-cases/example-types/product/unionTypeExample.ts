@@ -1,8 +1,6 @@
 import { IStringExample } from "./stringExample";
 
-/**
- * Docs for when UnionTypeExample is of type StringExample.
- */
+/** Docs for when UnionTypeExample is of type StringExample. */
 export interface IUnionTypeExample_StringExample {
     'stringExample': IStringExample;
     'type': "stringExample";
@@ -115,9 +113,7 @@ function interface_(obj: number): IUnionTypeExample_Interface {
     };
 }
 
-/**
- * A type which can either be a StringExample, a set of strings, or an integer.
- */
+/** A type which can either be a StringExample, a set of strings, or an integer. */
 export type IUnionTypeExample = IUnionTypeExample_StringExample | IUnionTypeExample_Set | IUnionTypeExample_ThisFieldIsAnInteger | IUnionTypeExample_AlsoAnInteger | IUnionTypeExample_If | IUnionTypeExample_New | IUnionTypeExample_Interface;
 
 export interface IUnionTypeExampleVisitor<T> {

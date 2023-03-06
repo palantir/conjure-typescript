@@ -1,13 +1,7 @@
-/**
- * my object
- */
+/** my object */
 export interface IObjectWithDocs {
-    /**
-     * docs
-     */
+    /** docs */
     'bar': number;
-    /**
-     * more docs
-     */
+    /** more docs */
     'foo': string;
 }

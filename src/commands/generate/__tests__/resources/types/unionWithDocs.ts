@@ -1,6 +1,4 @@
-/**
- * Some field documentation
- */
+/** Some field documentation */
 export interface IUnionWithDocs_Bar {
     'bar': number;
     'type': "bar";
@@ -33,9 +31,7 @@ function foo(obj: string): IUnionWithDocs_Foo {
     };
 }
 
-/**
- * Some documentation
- */
+/** Some documentation */
 export type IUnionWithDocs = IUnionWithDocs_Bar | IUnionWithDocs_Foo;
 
 export interface IUnionWithDocsVisitor<T> {

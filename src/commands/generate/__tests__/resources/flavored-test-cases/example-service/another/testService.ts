@@ -4,19 +4,17 @@ import { IAliasedString } from "../product/aliasedString";
 import { ICreateDatasetRequest } from "../product/createDatasetRequest";
 import { IHttpApiBridge } from "conjure-client";
 
-/**
- * Constant reference to `undefined` that we expect to get minified and therefore reduce total code size
- */
+/** Constant reference to `undefined` that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
 
 /**
  * A Markdown description of the service.
- * 
+ *
  */
 export interface ITestService {
     /**
      * Returns a mapping from file system id to backing file system configuration.
-     * 
+     *
      */
     getFileSystems(): Promise<{ [key: string]: IBackingFileSystem }>;
     createDataset(request: ICreateDatasetRequest, testHeaderArg: string): Promise<IDataset>;
@@ -30,7 +28,7 @@ export interface ITestService {
     getBranches(datasetRid: string): Promise<Array<string>>;
     /**
      * Gets all branches of this dataset.
-     * 
+     *
      * @deprecated use getBranches instead
      */
     getBranchesDeprecated(datasetRid: string): Promise<Array<string>>;
@@ -51,7 +49,7 @@ export class TestService {
 
     /**
      * Returns a mapping from file system id to backing file system configuration.
-     * 
+     *
      */
     public getFileSystems(): Promise<{ [key: string]: IBackingFileSystem }> {
         return this.bridge.call<{ [key: string]: IBackingFileSystem }>(
@@ -219,7 +217,7 @@ export class TestService {
 
     /**
      * Gets all branches of this dataset.
-     * 
+     *
      * @deprecated use getBranches instead
      */
     public getBranchesDeprecated(datasetRid: string): Promise<Array<string>> {

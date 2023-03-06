@@ -1,10 +1,6 @@
-/**
- * Some documentation
- */
+/** Some documentation */
 export namespace EnumWithDocs {
-    /**
-     * Some field documentation
-     */
+    /** Some field documentation */
     export type FOO = "FOO";
     export type BAR = "BAR";
 
