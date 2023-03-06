@@ -34,8 +34,8 @@
     "path": "^0.12.7",
     "semver": "^7.3.7",
     "sls-version": "^2.1.0",
-    "ts-simple-ast": "^11.3.0",
-    "tslib": "^1.9.3",
+    "ts-morph": "^17.0.1",
+    "tslib": "^2.5.0",
     "yargs": "^11.1.0"
   },
   "devDependencies": {
@@ -46,7 +46,7 @@
     "@types/lodash": "^4.14.117",
     "@types/mkdirp": "^1.0.2",
     "@types/nock": "^9.3.0",
-    "@types/node": "^16.11.7",
+    "@types/node": "^18.14.6",
     "@types/node-dir": "^0.0.30",
     "@types/semver": "^7.3.10",
     "@types/tempy": "^0.1.0",
@@ -68,7 +68,7 @@
     "ts-jest": "^27.0.7",
     "ts-loader": "^9.3.1",
     "tslint": "^6.0.0",
-    "typescript": "~4.4.4",
+    "typescript": "~4.9.5",
     "webpack": "^5.73.0",
     "webpack-cli": "^4.10.0"
   },

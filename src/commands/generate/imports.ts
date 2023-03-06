@@ -28,7 +28,7 @@ import {
     PrimitiveType,
 } from "conjure-api";
 import * as path from "path";
-import { ImportDeclarationStructure, ImportSpecifierStructure } from "ts-simple-ast";
+import { ImportDeclarationStructure, ImportSpecifierStructure, StructureKind } from "ts-morph";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
 import { createHashableTypeName, isFlavorizable } from "./utils";
@@ -75,6 +75,7 @@ export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]
         if (ITypeDefinition.isUnion(typeDefinition)) {
             return [
                 {
+                    kind: StructureKind.ImportDeclaration,
                     moduleSpecifier,
                     // assumes that union names are of the form IMyUnion.IMyUnion
                     namespaceImport: name.split(".")[0],
@@ -84,6 +85,7 @@ export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]
 
         return [
             {
+                kind: StructureKind.ImportDeclaration,
                 moduleSpecifier,
                 namedImports: [{ name }],
             },
@@ -129,7 +131,7 @@ export function sortImports(imports: ImportDeclarationStructure[]): ImportDeclar
         }
         if (isNamedImport) {
             const curImport = namedImports.get(i.moduleSpecifier);
-            if (curImport != null) {
+            if (curImport != null && Array.isArray(i.namedImports)) {
                 const newImports = i.namedImports!.filter(namedImport => {
                     const newName = typeof namedImport === "string" ? namedImport : namedImport.name;
                     return (

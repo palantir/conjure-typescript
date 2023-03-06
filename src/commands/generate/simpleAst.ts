@@ -17,26 +17,24 @@
 
 import { ITypeName } from "conjure-api";
 import * as path from "path";
-import Ast, { Options, SourceFile } from "ts-simple-ast";
+import { Project, SourceFile } from "ts-morph";
 import { dir, module } from "./imports";
 
 const TS_EXTENSION = ".ts";
 const dashRegex = /-(\w)/g;
 
 export class SimpleAst {
-    private ast: Ast;
+    private ast: Project;
     private outDir: string;
 
     public constructor(outDir: string) {
-        const options: Options = {
+        this.outDir = outDir;
+        this.ast = new Project({
             compilerOptions: {
                 declaration: true,
                 outDir,
             },
-        };
-
-        this.outDir = outDir;
-        this.ast = new Ast(options);
+        });
     }
 
     public createSourceFile(currType: ITypeName): SourceFile {
