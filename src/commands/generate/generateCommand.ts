@@ -63,6 +63,12 @@ export interface IGenerateCommandArgs {
      * Generated interfaces have readonly properties and collections
      */
     readonlyInterfaces?: boolean;
+
+    omitServiceMetadata?: boolean;
+
+    omitUnnecessaryArgs?: boolean;
+    
+    omitServiceClasses?: boolean;
 }
 
 interface ICleanedGenerateCommandArgs {
@@ -77,6 +83,10 @@ export interface ITsConfig {
         [option: string]: any;
     };
 }
+
+const omitUnnecessaryArgsDefault = false;
+const omitServiceMetadataDefault = false;
+const omitServiceClassesDefault = false;
 
 export class GenerateCommand implements CommandModule {
     public aliases = [];
@@ -128,6 +138,22 @@ export class GenerateCommand implements CommandModule {
                 describe: "Path to a file containing a list of product dependencies",
                 type: "string",
             })
+            .option("omitUnnecessaryArgs", {
+                default: omitUnnecessaryArgsDefault,
+                describe:
+                    "If true, generated service classes omit trailing 'undefined's. Does not apply to pure service functions.",
+                type: "boolean",
+            })
+            .option("omitServiceMetadata", {
+                default: omitServiceMetadataDefault,
+                describe: "Passes undefined to the serviceName, endpointName arguments of the bridge",
+                type: "boolean",
+            })
+            .option("omitServiceClasses", {
+                default: omitServiceClassesDefault,
+                describe: "Prevents generation of service classes and interfaces.",
+                type: "boolean",
+            })
             .demand(2);
     }
 
@@ -138,6 +164,9 @@ export class GenerateCommand implements CommandModule {
         const generatePromise = generate(conjureDefinition, output, {
             flavorizedAliases: args.flavorizedAliases ?? false,
             readonlyInterfaces: args.readonlyInterfaces ?? false,
+            omitServiceMetadata: args.omitServiceMetadata ?? omitServiceMetadataDefault,
+            omitUnnecessaryArgs: args.omitUnnecessaryArgs ?? omitUnnecessaryArgsDefault,
+            omitServiceClasses: args.omitServiceClasses ?? omitServiceClassesDefault,
         });
         if (rawSource) {
             return generatePromise;
