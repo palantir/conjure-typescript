@@ -302,9 +302,11 @@ export async function generateUnion(
     });
     const objectLiteralExpr = variableStatement.getDeclarations()[0].getInitializer() as ObjectLiteralExpression;
     sourceFile.getFunctions().forEach(f => {
+        const name = f.getName();
+        if (name == null) throw new Error("Name == null! We assign the name above. This should never happen.");
         objectLiteralExpr.addPropertyAssignment({
-            initializer: f.getName()!,
-            name: f.getName()!,
+            initializer: name,
+            name,
         });
     });
 

@@ -132,7 +132,7 @@ export function sortImports(imports: ImportDeclarationStructure[]): ImportDeclar
         if (isNamedImport) {
             const curImport = namedImports.get(i.moduleSpecifier);
             if (curImport != null && Array.isArray(i.namedImports)) {
-                const newImports = i.namedImports!.filter(namedImport => {
+                const newImports = i.namedImports.filter(namedImport => {
                     const newName = typeof namedImport === "string" ? namedImport : namedImport.name;
                     return (
                         curImport.namedImports.find(({ name }: ImportSpecifierStructure) => name === newName) == null
