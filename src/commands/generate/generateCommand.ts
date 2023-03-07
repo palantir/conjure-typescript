@@ -67,7 +67,7 @@ export interface IGenerateCommandArgs {
     omitServiceMetadata?: boolean;
 
     omitUnnecessaryArgs?: boolean;
-    
+
     omitServiceClasses?: boolean;
 }
 
