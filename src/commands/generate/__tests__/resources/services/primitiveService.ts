@@ -1,8 +1,6 @@
 import { IHttpApiBridge } from "conjure-client";
 
-/**
- * Constant reference to `undefined` that we expect to get minified and therefore reduce total code size
- */
+/** Constant reference to `undefined` that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
 
 export interface IPrimitiveService {

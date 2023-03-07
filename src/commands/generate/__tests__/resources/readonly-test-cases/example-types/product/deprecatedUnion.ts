@@ -3,9 +3,7 @@ export interface IDeprecatedUnion_Good {
     readonly 'type': "good";
 }
 
-/**
- * @deprecated use good
- */
+/** @deprecated use good */
 export interface IDeprecatedUnion_NoGood {
     readonly 'noGood': string;
     readonly 'type': "noGood";
@@ -35,9 +33,7 @@ function isNoGood(obj: IDeprecatedUnion): obj is IDeprecatedUnion_NoGood {
     return (obj.type === "noGood");
 }
 
-/**
- * @deprecated use good
- */
+/** @deprecated use good */
 function noGood(obj: string): IDeprecatedUnion_NoGood {
     return {
         noGood: obj,
@@ -49,9 +45,7 @@ function isNoGoodDoc(obj: IDeprecatedUnion): obj is IDeprecatedUnion_NoGoodDoc {
     return (obj.type === "noGoodDoc");
 }
 
-/**
- * @deprecated use good
- */
+/** @deprecated use good */
 function noGoodDoc(obj: string): IDeprecatedUnion_NoGoodDoc {
     return {
         noGoodDoc: obj,

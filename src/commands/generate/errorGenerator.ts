@@ -16,7 +16,7 @@
  */
 
 import { IErrorDefinition, IType, ITypeDefinition } from "conjure-api";
-import { ImportDeclarationStructure } from "ts-simple-ast";
+import { ImportDeclarationStructure } from "ts-morph";
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
@@ -74,7 +74,7 @@ export function generateError(
     });
 
     sourceFile.addFunction({
-        bodyText: `return arg && arg.errorName === "${errorName}";`,
+        statements: `return arg && arg.errorName === "${errorName}";`,
         isExported: true,
         name: "is" + definition.errorName.name,
         parameters: [

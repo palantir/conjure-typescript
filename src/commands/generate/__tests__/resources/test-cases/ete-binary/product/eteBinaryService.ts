@@ -4,9 +4,7 @@ export interface IEteBinaryService {
     postBinary(body: Blob): Promise<Blob>;
     getOptionalBinaryPresent(): Promise<Blob | null>;
     getOptionalBinaryEmpty(): Promise<Blob | null>;
-    /**
-     * Throws an exception after partially writing a binary response.
-     */
+    /** Throws an exception after partially writing a binary response. */
     getBinaryFailure(numBytes: number): Promise<any>;
 }
 

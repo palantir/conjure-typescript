@@ -1,20 +1,18 @@
 export namespace DeprecatedEnumExample {
     export type ONE = "ONE";
-    /**
-     * @deprecated use ONE
-     */
+    /** @deprecated use ONE */
     export type OLD_ONE = "OLD_ONE";
     /**
      * You should no longer use this
-     * 
+     *
      * @deprecated use ONE
      */
     export type OLD_DEPRECATED_ONE = "OLD_DEPRECATED_ONE";
     /**
      * You should no longer use this
-     * 
+     *
      * @deprecated should use ONE
-     * 
+     *
      */
     export type OLD_DOCUMENTED_ONE = "OLD_DOCUMENTED_ONE";
 

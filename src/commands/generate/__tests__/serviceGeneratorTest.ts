@@ -501,13 +501,9 @@ describe("serviceGenerator", () => {
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain(
-            `/**
- * service level docs
- */
+            `/** service level docs */
 export interface IMyService {
-    /**
-     * endpoint level docs
-     */
+    /** endpoint level docs */
     foo(): Promise<void>;
 }
 `,
@@ -515,9 +511,7 @@ export interface IMyService {
 
         expect(contents).not.toContain(
             `
-            /**
-             * endpoint level docs
-             */
+            /** endpoint level docs */
             foo(): Promise<void> {`,
         );
     });
@@ -546,9 +540,7 @@ export interface IMyService {
         expect(contents).toContain(
             `
 export interface IMyService {
-    /**
-     * @incubating
-     */
+    /** @incubating */
     foo(): Promise<void>;
 }
 `,

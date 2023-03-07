@@ -31,10 +31,12 @@ import {
     CodeBlockWriter,
     ImportDeclarationStructure,
     MethodDeclarationStructure,
+    MethodSignatureStructure,
     ParameterDeclarationStructure,
     Scope,
+    StructureKind,
     VariableDeclarationKind,
-} from "ts-simple-ast";
+} from "ts-morph";
 import { ImportsVisitor, sortImports } from "./imports";
 import { MediaTypeVisitor } from "./mediaTypeVisitor";
 import { SimpleAst } from "./simpleAst";
@@ -48,7 +50,8 @@ import { addDeprecatedToDocs, addIncubatingDocs, CONJURE_CLIENT } from "./utils"
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
 /** Variable name used in the generation of the service class. */
 const BRIDGE = "bridge";
-const HTTP_API_BRIDGE_IMPORT = {
+const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
+    kind: StructureKind.ImportDeclaration,
     moduleSpecifier: CONJURE_CLIENT,
     namedImports: [{ name: HTTP_API_BRIDGE_TYPE }],
 };
@@ -72,7 +75,7 @@ export function generateService(
     const importsVisitor = new ImportsVisitor(knownTypes, definition.serviceName, typeGenerationFlags);
     const mediaTypeVisitor = new MediaTypeVisitor(knownTypes);
 
-    const endpointSignatures: MethodDeclarationStructure[] = [];
+    const endpointSignatures: MethodSignatureStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
     const imports: ImportDeclarationStructure[] = [HTTP_API_BRIDGE_IMPORT];
     sourceFile.addVariableStatement({
@@ -92,6 +95,7 @@ export function generateService(
                 const argType = IType.visit(argDefinition.type, tsArgumentTypeVisitor);
                 imports.push(...IType.visit(argDefinition.type, importsVisitor));
                 return {
+                    kind: StructureKind.Parameter,
                     hasQuestionToken: IType.isOptional(argDefinition.type),
                     name: argDefinition.argName,
                     type: argType,
@@ -104,7 +108,8 @@ export function generateService(
             imports.push(...IType.visit(endpointDefinition.returns, importsVisitor));
         }
 
-        const signature: MethodDeclarationStructure = {
+        const signature: MethodSignatureStructure = {
+            kind: StructureKind.MethodSignature,
             name: endpointDefinition.endpointName,
             parameters,
             returnType: `Promise<${returnTsType}>`,
@@ -116,7 +121,8 @@ export function generateService(
         endpointSignatures.push(signature);
 
         endpointImplementations.push({
-            bodyText: generateEndpointBody(
+            kind: StructureKind.Method,
+            statements: generateEndpointBody(
                 definition.serviceName.name,
                 endpointDefinition,
                 returnTsType,

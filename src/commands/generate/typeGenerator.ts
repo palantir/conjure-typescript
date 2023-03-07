@@ -26,10 +26,14 @@ import {
     FunctionDeclarationStructure,
     ImportDeclarationStructure,
     InterfaceDeclarationStructure,
+    ModuleDeclarationKind,
     ObjectLiteralExpression,
     PropertySignatureStructure,
+    StructureKind,
+    TypeAliasDeclarationStructure,
     VariableDeclarationKind,
-} from "ts-simple-ast";
+    VariableStatementStructure,
+} from "ts-morph";
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
@@ -115,21 +119,32 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
 
     if (definition.values.length > 0) {
-        const namespaceDefinition = sourceFile.addNamespace({
+        const typeAliases = definition.values.map<TypeAliasDeclarationStructure>(enumValue => ({
+            kind: StructureKind.TypeAlias,
+            isExported: true,
+            name: enumValue.value,
+            type: doubleQuote(enumValue.value),
+            docs: addDeprecatedToDocs(enumValue),
+        }));
+        typeAliases[typeAliases.length - 1].trailingTrivia = `\n\n`;
+        const variableDeclarations = definition.values.map<VariableStatementStructure>(enumValue => ({
+            kind: StructureKind.VariableStatement,
+            isExported: true,
+            declarationKind: VariableDeclarationKind.Const,
+            declarations: [
+                {
+                    name: enumValue.value,
+                    initializer: `${doubleQuote(enumValue.value)} as ${doubleQuote(enumValue.value)}`,
+                },
+            ],
+        }));
+
+        const namespaceDefinition = sourceFile.addModule({
+            kind: StructureKind.Module,
+            declarationKind: ModuleDeclarationKind.Namespace,
             isExported: true,
             name: definition.typeName.name,
-            typeAliases: definition.values.map(enumValue => ({
-                isExported: true,
-                name: enumValue.value,
-                type: doubleQuote(enumValue.value),
-                docs: addDeprecatedToDocs(enumValue),
-            })),
-            bodyText: writer => {
-                definition.values.forEach(({ value }) => {
-                    const quotedValue = doubleQuote(value);
-                    writer.writeLine(`export const ${value} = ${quotedValue} as ${quotedValue};`);
-                });
-            },
+            statements: [...typeAliases, ...variableDeclarations],
         });
         if (definition.docs != null) {
             namespaceDefinition.addJsDoc(definition.docs);
@@ -165,7 +180,7 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
         });
     }
 
-    sourceFile.formatText();
+    sourceFile.formatText({ trimTrailingWhitespace: true });
     return sourceFile.save();
 }
 
@@ -193,6 +208,7 @@ export async function generateObject(
         const fieldType = IType.visit(fieldDefinition.type, tsTypeVisitor);
 
         const property: PropertySignatureStructure = {
+            kind: StructureKind.PropertySignature,
             hasQuestionToken: IType.isOptional(fieldDefinition.type),
             name: singleQuote(fieldDefinition.fieldName),
             type: fieldType,
@@ -258,7 +274,7 @@ export async function generateUnion(
     });
 
     sourceFile.addFunction({
-        bodyText: unionSourceFileInput.visitorStatements.join("\n"),
+        statements: unionSourceFileInput.visitorStatements.join("\n"),
         name: "visit",
         parameters: [
             {
@@ -286,9 +302,11 @@ export async function generateUnion(
     });
     const objectLiteralExpr = variableStatement.getDeclarations()[0].getInitializer() as ObjectLiteralExpression;
     sourceFile.getFunctions().forEach(f => {
+        const name = f.getName();
+        if (name == null) throw new Error("Name == null! We assign the name above. This should never happen.");
         objectLiteralExpr.addPropertyAssignment({
-            initializer: f.getName(),
-            name: f.getName(),
+            initializer: name,
+            name,
         });
     });
 
@@ -319,6 +337,7 @@ function processUnionMembers(
         const interfaceName = `${unionTsType}_${uppercase(memberName)}`;
 
         memberInterfaces.push({
+            kind: StructureKind.Interface,
             docs: addDeprecatedToDocs(fieldDefinition),
             isExported: true,
             name: interfaceName,
@@ -336,8 +355,9 @@ function processUnionMembers(
             ],
         });
 
-        const typeGuard = {
-            bodyText: `return (obj.type === "${memberName}");`,
+        const typeGuard: FunctionDeclarationStructure = {
+            kind: StructureKind.Function,
+            statements: `return (obj.type === "${memberName}");`,
             name: "is" + uppercase(memberName),
             parameters: [
                 {
@@ -352,7 +372,8 @@ function processUnionMembers(
         // factory
         const factoryName = isValidFunctionName(memberName) ? memberName + "_" : memberName;
         functions.push({
-            bodyText: `return {
+            kind: StructureKind.Function,
+            statements: `return {
                 ${memberName}: obj,
                 type: ${doubleQuote(memberName)},
             };`,
@@ -373,6 +394,7 @@ function processUnionMembers(
         });
 
         visitorProperties.push({
+            kind: StructureKind.PropertySignature,
             name: singleQuote(memberName),
             type: `(obj: ${fieldType}) => T`,
             isReadonly: typeGenerationFlags.readonlyInterfaces,
@@ -383,6 +405,7 @@ function processUnionMembers(
     });
 
     visitorProperties.push({
+        kind: StructureKind.PropertySignature,
         name: singleQuote("unknown"),
         type: `(obj: ${unionTsType}) => T`,
         isReadonly: typeGenerationFlags.readonlyInterfaces,

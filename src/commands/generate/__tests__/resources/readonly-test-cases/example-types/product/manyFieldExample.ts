@@ -1,34 +1,18 @@
 export interface IManyFieldExample {
-    /**
-     * docs for string field
-     */
+    /** docs for string field */
     readonly 'string': string;
-    /**
-     * docs for integer field
-     */
+    /** docs for integer field */
     readonly 'integer': number;
-    /**
-     * docs for doubleValue field
-     */
+    /** docs for doubleValue field */
     readonly 'doubleValue': number | "NaN";
-    /**
-     * docs for optionalItem field
-     */
+    /** docs for optionalItem field */
     readonly 'optionalItem'?: string | null;
-    /**
-     * docs for items field
-     */
+    /** docs for items field */
     readonly 'items': ReadonlyArray<string>;
-    /**
-     * docs for set field
-     */
+    /** docs for set field */
     readonly 'set': ReadonlyArray<string>;
-    /**
-     * docs for map field
-     */
+    /** docs for map field */
     readonly 'map': { readonly [key: string]: string };
-    /**
-     * docs for alias field
-     */
+    /** docs for alias field */
     readonly 'alias': string;
 }
