@@ -96,11 +96,6 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
         const withIPrefix = "I" + obj.name;
         if (typeDefinition == null) {
             throw new Error(`unknown reference type. package: '${obj.package}', name: '${obj.name}'`);
-        } else if (
-            ITypeDefinition.isAlias(typeDefinition) &&
-            !isFlavorizable(typeDefinition.alias.alias, this.typeGenerationFlags.flavorizedAliases)
-        ) {
-            return IType.visit(typeDefinition.alias.alias, this);
         } else if (ITypeDefinition.isEnum(typeDefinition)) {
             return obj.name;
         } else if (ITypeDefinition.isUnion(typeDefinition)) {

@@ -38,7 +38,14 @@ import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
-import { addDeprecatedToDocs, doubleQuote, isFlavorizable, isValidFunctionName, singleQuote } from "./utils";
+import {
+    addDeprecatedToDocs,
+    createHashableTypeName,
+    doubleQuote,
+    isFlavorizable,
+    isValidFunctionName,
+    singleQuote,
+} from "./utils";
 
 export function generateType(
     definition: ITypeDefinition,
@@ -77,13 +84,14 @@ export async function generateAlias(
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
+    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false, typeGenerationFlags);
+    const fieldType = IType.visit(definition.alias, tsTypeVisitor);
+    const sourceFile = simpleAst.createSourceFile(definition.typeName);
+    const typeName = "I" + definition.typeName.name;
     if (isFlavorizable(definition.alias, typeGenerationFlags.flavorizedAliases)) {
-        const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false, typeGenerationFlags);
-        const fieldType = IType.visit(definition.alias, tsTypeVisitor);
-        const sourceFile = simpleAst.createSourceFile(definition.typeName);
         const typeAlias = sourceFile.addTypeAlias({
             isExported: true,
-            name: "I" + definition.typeName.name,
+            name: typeName,
             type: [
                 `${fieldType} & {`,
                 `\t${FLAVOR_TYPE_FIELD}?: "${definition.typeName.name}",`,
@@ -94,9 +102,40 @@ export async function generateAlias(
         if (definition.docs) {
             typeAlias.addJsDoc(definition.docs);
         }
-        sourceFile.formatText();
-        return sourceFile.save();
+    } else {
+        // if we do a simple type alias like `type MyType = string`, VSCode intellisense will just show `string
+        // we can get around this by doing `type MyType = string & {}`. However, we cannot assign `null` to `{}`.
+        // So if the underlying type is optional, we will
+        const addOn = isOptional(definition.alias, knownTypes) ? " | null" : "& {}";
+        const typeAlias = sourceFile.addTypeAlias({
+            isExported: false,
+            name: typeName,
+            type: `${fieldType}` + addOn,
+        });
+
+        if (definition.docs) {
+            typeAlias.addJsDoc(definition.docs);
+        }
     }
+
+    sourceFile.formatText();
+    return sourceFile.save();
+}
+
+function isOptional(type: IType, knownTypes: Map<string, ITypeDefinition>): boolean {
+    if (IType.isOptional(type)) {
+        return true;
+    }
+    if (IType.isReference(type)) {
+        const referenceTypeDefinition = knownTypes.get(createHashableTypeName(type.reference));
+        if (referenceTypeDefinition == null) {
+            throw new Error("Unrecognized reference type");
+        }
+        if (ITypeDefinition.isAlias(referenceTypeDefinition)) {
+            return isOptional(referenceTypeDefinition.alias.alias, knownTypes);
+        }
+    }
+    return false;
 }
 
 /**
