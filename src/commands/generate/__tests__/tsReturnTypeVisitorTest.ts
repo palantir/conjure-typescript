@@ -121,10 +121,10 @@ describe("TsTypeVisitor", () => {
         });
 
         it("follows alias reference", () => {
-            expect(visitor.reference(aliasName)).toEqual("string");
-            expect(visitor.reference(binaryAliasName)).toEqual("string");
-            expect(topLevelVisitor.reference(aliasName)).toEqual("string");
-            expect(topLevelVisitor.reference(binaryAliasName)).toEqual("ReadableStream<Uint8Array>");
+            expect(visitor.reference(aliasName)).toEqual("IAlias");
+            expect(visitor.reference(binaryAliasName)).toEqual("IBinaryAlias");
+            expect(topLevelVisitor.reference(aliasName)).toEqual("IAlias");
+            expect(topLevelVisitor.reference(binaryAliasName)).toEqual("IBinaryAlias");
         });
 
         it("returns enum reference without I prefix", () => {
@@ -133,22 +133,20 @@ describe("TsTypeVisitor", () => {
 
         it("returns optional type", () => {
             expect(visitor.optional({ itemType: objectReference })).toEqual("IObject | null");
-            expect(visitor.optional({ itemType: binaryAliasReference })).toEqual("string | null");
-            expect(topLevelVisitor.optional({ itemType: binaryAliasReference })).toEqual(
-                "ReadableStream<Uint8Array> | null",
-            );
+            expect(visitor.optional({ itemType: binaryAliasReference })).toEqual("IBinaryAlias | null");
+            expect(topLevelVisitor.optional({ itemType: binaryAliasReference })).toEqual("IBinaryAlias | null");
         });
 
         it("returns list type", () => {
             expect(visitor.list({ itemType: objectReference })).toEqual("Array<IObject>");
-            expect(visitor.list({ itemType: binaryAliasReference })).toEqual("Array<string>");
-            expect(topLevelVisitor.list({ itemType: binaryAliasReference })).toEqual("Array<string>");
+            expect(visitor.list({ itemType: binaryAliasReference })).toEqual("Array<IBinaryAlias>");
+            expect(topLevelVisitor.list({ itemType: binaryAliasReference })).toEqual("Array<IBinaryAlias>");
         });
 
         it("returns set type", () => {
             expect(visitor.set({ itemType: objectReference })).toEqual("Array<IObject>");
-            expect(visitor.set({ itemType: binaryAliasReference })).toEqual("Array<string>");
-            expect(topLevelVisitor.set({ itemType: binaryAliasReference })).toEqual("Array<string>");
+            expect(visitor.set({ itemType: binaryAliasReference })).toEqual("Array<IBinaryAlias>");
+            expect(topLevelVisitor.set({ itemType: binaryAliasReference })).toEqual("Array<IBinaryAlias>");
         });
 
         it("returns map type", () => {
@@ -156,10 +154,10 @@ describe("TsTypeVisitor", () => {
                 "{ [key: string]: IObject }",
             );
             expect(visitor.map({ keyType: aliasReference, valueType: binaryAliasReference })).toEqual(
-                "{ [key: string]: string }",
+                "{ [key: string]: IBinaryAlias }",
             );
             expect(topLevelVisitor.map({ keyType: aliasReference, valueType: binaryAliasReference })).toEqual(
-                "{ [key: string]: string }",
+                "{ [key: string]: IBinaryAlias }",
             );
         });
 
@@ -214,9 +212,9 @@ describe("TsTypeVisitor", () => {
 
         it("follows alias reference", () => {
             expect(visitor.reference(aliasName)).toEqual("IAlias");
-            expect(visitor.reference(binaryAliasName)).toEqual("string");
+            expect(visitor.reference(binaryAliasName)).toEqual("IBinaryAlias");
             expect(topLevelVisitor.reference(aliasName)).toEqual("IAlias");
-            expect(topLevelVisitor.reference(binaryAliasName)).toEqual("ReadableStream<Uint8Array>");
+            expect(topLevelVisitor.reference(binaryAliasName)).toEqual("IBinaryAlias");
         });
     });
 
@@ -247,14 +245,14 @@ describe("TsTypeVisitor", () => {
 
         it("returns list type", () => {
             expect(visitor.list({ itemType: objectReference })).toEqual("ReadonlyArray<IObject>");
-            expect(visitor.list({ itemType: binaryAliasReference })).toEqual("ReadonlyArray<string>");
-            expect(topLevelVisitor.list({ itemType: binaryAliasReference })).toEqual("ReadonlyArray<string>");
+            expect(visitor.list({ itemType: binaryAliasReference })).toEqual("ReadonlyArray<IBinaryAlias>");
+            expect(topLevelVisitor.list({ itemType: binaryAliasReference })).toEqual("ReadonlyArray<IBinaryAlias>");
         });
 
         it("returns set type", () => {
             expect(visitor.set({ itemType: objectReference })).toEqual("ReadonlyArray<IObject>");
-            expect(visitor.set({ itemType: binaryAliasReference })).toEqual("ReadonlyArray<string>");
-            expect(topLevelVisitor.set({ itemType: binaryAliasReference })).toEqual("ReadonlyArray<string>");
+            expect(visitor.set({ itemType: binaryAliasReference })).toEqual("ReadonlyArray<IBinaryAlias>");
+            expect(topLevelVisitor.set({ itemType: binaryAliasReference })).toEqual("ReadonlyArray<IBinaryAlias>");
         });
 
         it("returns map type", () => {
@@ -262,10 +260,10 @@ describe("TsTypeVisitor", () => {
                 "{ readonly [key: string]: IObject }",
             );
             expect(visitor.map({ keyType: aliasReference, valueType: binaryAliasReference })).toEqual(
-                "{ readonly [key: string]: string }",
+                "{ readonly [key: string]: IBinaryAlias }",
             );
             expect(topLevelVisitor.map({ keyType: aliasReference, valueType: binaryAliasReference })).toEqual(
-                "{ readonly [key: string]: string }",
+                "{ readonly [key: string]: IBinaryAlias }",
             );
         });
 
