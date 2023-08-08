@@ -1,7 +1,23 @@
 import { IHttpApiBridge } from "conjure-client";
 
-/** Constant reference to `undefined` that we expect to get minified and therefore reduce total code size */
+/** Constant references that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
+
+export function OptionalService_foo(bridge: IHttpApiBridge['call'], header: string, name?: string | null): Promise<void> {
+    return bridge(...[
+        "OptionalService",
+        "foo",
+        "GET",
+        "/foo",
+        ,
+        {
+            "Header": header,
+        },
+        {
+            "Query": name,
+        },
+    ] as Parameters<typeof bridge>);
+}
 
 export interface IOptionalService {
     foo(header: string, name?: string | null): Promise<void>;

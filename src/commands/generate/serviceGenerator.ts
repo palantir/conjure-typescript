@@ -57,13 +57,14 @@ const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
 };
 
 const UNDEFINED_CONSTANT = "__undefined";
+const EMPTY_STRING_CONSTANT = "__emptyString";
 
 export function generateService(
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
-): Promise<void> {
+): Promise<unknown> {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
     const tsReturnTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.serviceName, true, typeGenerationFlags);
     const tsArgumentTypeVisitor = new TsArgumentTypeVisitor(
@@ -80,9 +81,17 @@ export function generateService(
     const imports: ImportDeclarationStructure[] = [HTTP_API_BRIDGE_IMPORT];
     sourceFile.addVariableStatement({
         declarationKind: VariableDeclarationKind.Const,
-        docs: ["Constant reference to `undefined` that we expect to get minified and therefore reduce total code size"],
-        declarations: [{ name: UNDEFINED_CONSTANT, type: "undefined", initializer: "undefined" }],
+        docs: ["Constant references that we expect to get minified and therefore reduce total code size"],
+        declarations: [
+            ...(!typeGenerationFlags.omitServiceClasses
+                ? [{ name: UNDEFINED_CONSTANT, type: "undefined", initializer: "undefined" }]
+                : []),
+            ...(typeGenerationFlags.omitServiceMetadata
+                ? [{ name: EMPTY_STRING_CONSTANT, type: "string", initializer: `""` }]
+                : []),
+        ],
     });
+
     definition.endpoints.forEach(endpointDefinition => {
         const parameters: ParameterDeclarationStructure[] = endpointDefinition.args
             .sort((a, b) => {
@@ -127,6 +136,8 @@ export function generateService(
                 endpointDefinition,
                 returnTsType,
                 mediaTypeVisitor,
+                typeGenerationFlags,
+                true,
             ),
             name: endpointDefinition.endpointName,
             parameters,
@@ -135,38 +146,64 @@ export function generateService(
             scope: Scope.Public,
             docs,
         });
+
+        sourceFile.addFunction({
+            name: `${definition.serviceName.name}_${endpointDefinition.endpointName}`,
+            parameters: [
+                {
+                    name: BRIDGE,
+                    type: `${HTTP_API_BRIDGE_TYPE}['call']`,
+                },
+                ...parameters,
+            ],
+            statements: generateEndpointBody(
+                definition.serviceName.name,
+                endpointDefinition,
+                returnTsType,
+                mediaTypeVisitor,
+                {
+                    ...typeGenerationFlags,
+                    omitUnnecessaryArgs: true, // We will always do this for functions
+                },
+                false,
+            ),
+            returnType: `Promise<${returnTsType}>`,
+            isExported: true,
+            docs,
+        });
     });
 
     if (imports.length !== 0) {
         sourceFile.addImportDeclarations(sortImports(imports));
     }
 
-    const iface = sourceFile.addInterface({
-        isExported: true,
-        methods: endpointSignatures,
-        name: "I" + definition.serviceName.name,
-    });
-    if (definition.docs != null) {
-        iface.addJsDoc({ description: definition.docs });
+    if (!typeGenerationFlags.omitServiceClasses) {
+        const iface = sourceFile.addInterface({
+            isExported: true,
+            methods: endpointSignatures,
+            name: "I" + definition.serviceName.name,
+        });
+        if (definition.docs != null) {
+            iface.addJsDoc({ description: definition.docs });
+        }
+
+        sourceFile.addClass({
+            ctors: [
+                {
+                    parameters: [
+                        {
+                            name: BRIDGE,
+                            scope: Scope.Private,
+                            type: HTTP_API_BRIDGE_TYPE,
+                        },
+                    ],
+                },
+            ],
+            isExported: true,
+            methods: endpointImplementations,
+            name: definition.serviceName.name,
+        });
     }
-
-    sourceFile.addClass({
-        ctors: [
-            {
-                parameters: [
-                    {
-                        name: BRIDGE,
-                        scope: Scope.Private,
-                        type: HTTP_API_BRIDGE_TYPE,
-                    },
-                ],
-            },
-        ],
-        isExported: true,
-        methods: endpointImplementations,
-        name: definition.serviceName.name,
-    });
-
     sourceFile.formatText();
     return sourceFile.save();
 }
@@ -176,6 +213,8 @@ function generateEndpointBody(
     endpointDefinition: IEndpointDefinition,
     returnTsType: string,
     mediaTypeVisitor: ITypeVisitor<string>,
+    typeGenerationFlags: ITypeGenerationFlags,
+    classFunction: boolean,
 ): (writer: CodeBlockWriter) => void {
     const bodyArgs: IArgumentDefinition[] = [];
     const headerArgs: IArgumentDefinition[] = [];
@@ -197,7 +236,6 @@ function generateEndpointBody(
         throw Error("endpoint cannot have more than one body arg, found: " + bodyArgs.length);
     }
 
-    const data = bodyArgs.length === 0 ? UNDEFINED_CONSTANT : bodyArgs[0].argName;
     // It's not quite correct to default to application/json for body less and return less requests.
     // We do this to preserve existing behaviour.
     const requestMediaType =
@@ -223,43 +261,78 @@ function generateEndpointBody(
     });
 
     return writer => {
-        writer
-            .write(`return this.${BRIDGE}.call<${returnTsType}>(`)
-            .writeLine(`"${serviceName}",`)
-            .writeLine(`"${endpointDefinition.endpointName}",`)
-            .writeLine(`"${endpointDefinition.httpMethod}",`)
-            .writeLine(`"${endpointDefinition.httpPath}",`)
-            .writeLine(`${data},`);
-
-        if (formattedHeaderArgs.length === 0) {
-            writer.writeLine(`${UNDEFINED_CONSTANT},`);
+        if (classFunction) {
+            writer.write(`return this.${BRIDGE}.call<${returnTsType}>(`);
         } else {
-            writer.write("{");
-            formattedHeaderArgs.forEach(formattedHeader => writer.indent().writeLine(formattedHeader));
-            writer.writeLine("},");
+            writer.write(`return ${BRIDGE}(...[`);
         }
 
-        if (formattedQueryArgs.length === 0) {
-            writer.writeLine(`${UNDEFINED_CONSTANT},`);
+        if (typeGenerationFlags.omitServiceMetadata) {
+            writer.write(`${EMPTY_STRING_CONSTANT},${EMPTY_STRING_CONSTANT},`);
         } else {
-            writer.write("{");
-            formattedQueryArgs.forEach(formattedQuery => writer.indent().writeLine(formattedQuery));
-            writer.writeLine("},");
+            writer.writeLine(`"${serviceName}",`).writeLine(`"${endpointDefinition.endpointName}",`);
         }
 
-        if (pathParamsFromPath.length === 0) {
-            writer.writeLine(`${UNDEFINED_CONSTANT},`);
-        } else {
-            writer.write("[");
-            pathParamsFromPath.forEach(pathArgName => writer.indent().writeLine(pathArgName + ","));
-            writer.writeLine("],");
+        writer.writeLine(`"${endpointDefinition.httpMethod}",`).writeLine(`"${endpointDefinition.httpPath}",`);
+
+        // In function syntax, we are using a spread to avoid extra arguments
+        const undefinedValue = !classFunction && typeGenerationFlags.omitUnnecessaryArgs ? "" : UNDEFINED_CONSTANT;
+
+        const skipResponseMediaType =
+            typeGenerationFlags.omitUnnecessaryArgs && responseMediaType === MediaType.APPLICATION_JSON;
+        const skipRequestMediaType = skipResponseMediaType && requestMediaType === MediaType.APPLICATION_JSON;
+        const skipPathArguments = skipRequestMediaType && pathParamsFromPath.length === 0;
+        const skipQueryArguments = skipPathArguments && formattedQueryArgs.length === 0;
+        const skipHeaderArguments = skipQueryArguments && formattedHeaderArgs.length === 0;
+        const skipDataArgument = skipHeaderArguments && bodyArgs.length === 0;
+
+        if (!skipDataArgument) {
+            const data = bodyArgs.length === 0 ? undefinedValue : bodyArgs[0].argName;
+            writer.writeLine(`${data},`);
         }
-        writer.writeLine(
-            `${requestMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${requestMediaType}"`},`,
-        );
-        writer.writeLine(
-            `${responseMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${responseMediaType}"`}`,
-        );
+
+        if (!skipHeaderArguments) {
+            if (formattedHeaderArgs.length === 0) {
+                writer.writeLine(`${undefinedValue},`);
+            } else {
+                writer.write("{");
+                formattedHeaderArgs.forEach(formattedHeader => writer.indent().writeLine(formattedHeader));
+                writer.writeLine("},");
+            }
+        }
+
+        if (!skipQueryArguments) {
+            if (formattedQueryArgs.length === 0) {
+                writer.writeLine(`${undefinedValue},`);
+            } else {
+                writer.write("{");
+                formattedQueryArgs.forEach(formattedQuery => writer.indent().writeLine(formattedQuery));
+                writer.writeLine("},");
+            }
+        }
+
+        if (!skipPathArguments) {
+            if (pathParamsFromPath.length === 0) {
+                writer.writeLine(`${undefinedValue},`);
+            } else {
+                writer.write("[");
+                pathParamsFromPath.forEach(pathArgName => writer.indent().writeLine(pathArgName + ","));
+                writer.writeLine("],");
+            }
+        }
+        if (!skipRequestMediaType) {
+            writer.writeLine(
+                `${requestMediaType === MediaType.APPLICATION_JSON ? undefinedValue : `"${requestMediaType}"`},`,
+            );
+        }
+        if (!skipResponseMediaType) {
+            writer.writeLine(
+                `${responseMediaType === MediaType.APPLICATION_JSON ? undefinedValue : `"${responseMediaType}"`}`,
+            );
+        }
+        if (!classFunction) {
+            writer.write(`] as Parameters<typeof ${BRIDGE}>`);
+        }
         writer.write(");");
     };
 }
