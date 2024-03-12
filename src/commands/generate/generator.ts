@@ -75,11 +75,13 @@ export async function generate(
         promises.push(generateError(errorDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
     );
 
+    await Promise.all(promises);
+
+    externalImports.forEach(externalImport => generateExternalReference(externalImport, simpleAst, typeGenerationFlags));
+
     promises.push(simpleAst.generateIndexFiles());
     return Promise.all(promises)
         .then(() => {
-            // if flavorizedImports, output them. Lazy hack, should move this earlier... eventually...
-            externalImports.forEach(externalImport => generateExternalReference(externalImport, simpleAst, typeGenerationFlags));
             return;
         })
         .catch(e => {
