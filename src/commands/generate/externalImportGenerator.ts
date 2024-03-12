@@ -20,7 +20,7 @@ import { SimpleAst } from "./simpleAst";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
 
 const FLAVOR_TYPE_FIELD = "__conjure_external_import_type";
-const FLAVOR_PACKAGE_FIELD = "__conjure__external_import_package";
+const FLAVOR_PACKAGE_FIELD = "__conjure_external_import_package";
 
 export function generateExternalReference(
     definition: IExternalReference,
@@ -61,7 +61,7 @@ function primitiveBaseType(obj: PrimitiveType) {
         case PrimitiveType.BINARY:
             return "string";
         case PrimitiveType.DOUBLE:
-            return 'number | "NaN"';
+            return '(number | "NaN")';
         case PrimitiveType.INTEGER:
         case PrimitiveType.SAFELONG:
             return "number";
