@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-import { IExternalReference } from "conjure-api";
+import { IExternalReference, IType, PrimitiveType } from "conjure-api";
 import { SimpleAst } from "./simpleAst";
+import { ITypeGenerationFlags } from "./typeGenerationFlags";
 
 const FLAVOR_TYPE_FIELD = "__conjure_external_import_type";
 const FLAVOR_PACKAGE_FIELD = "__conjure__external_import_package";
@@ -24,12 +25,21 @@ const FLAVOR_PACKAGE_FIELD = "__conjure__external_import_package";
 export function generateExternalReference(
     definition: IExternalReference,
     simpleAst: SimpleAst,
+    typeGenerationFlags: ITypeGenerationFlags,
 ) {
-    const fieldType = definition.fallback;
+    if (!typeGenerationFlags.flavorizedExternalImports) {
+        return;
+    }
+    
+    if (!IType.isPrimitive(definition.fallback)) {
+        throw new Error("fallback is always a primitive.");
+    }
+
+    const fieldType = primitiveBaseType(definition.fallback.primitive);
     const sourceFile = simpleAst.createExternalImportSourceFile(definition);
     sourceFile.addTypeAlias({
         isExported: true,
-        name: "I" + definition.externalReference.package.replace(".", "_") + "." + definition.externalReference.name,
+        name: "I" + definition.externalReference.package.replace(/\./g, '_') + "_" + definition.externalReference.name,
         type: [
             `${fieldType} & {`,
             `\t${FLAVOR_TYPE_FIELD}?: "${definition.externalReference.name}",`,
@@ -40,3 +50,26 @@ export function generateExternalReference(
     sourceFile.formatText();
     return sourceFile.saveSync();
 }
+
+function primitiveBaseType(obj: PrimitiveType) {
+    switch (obj) {
+        case PrimitiveType.STRING:
+        case PrimitiveType.DATETIME:
+        case PrimitiveType.RID:
+        case PrimitiveType.BEARERTOKEN:
+        case PrimitiveType.UUID:
+        case PrimitiveType.BINARY:
+            return "string";
+        case PrimitiveType.DOUBLE:
+            return 'number | "NaN"';
+        case PrimitiveType.INTEGER:
+        case PrimitiveType.SAFELONG:
+            return "number";
+        case PrimitiveType.ANY:
+            return "any";
+        case PrimitiveType.BOOLEAN:
+            return "boolean";
+        default:
+            throw new Error("unknown primitive type");
+    }
+};

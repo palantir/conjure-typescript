@@ -41,7 +41,7 @@ export class SimpleAst {
         // com.palantir.foo.Bar -> "$outDir/_external/com_palantir_foo_Bar.ts"
         //
         // The "_external" guarantees no collisions with actual Conjure types.
-        return this.ast.createSourceFile(path.join(this.outDir, "_external", currType.externalReference.package.replace(".", "_") + currType.externalReference.name + TS_EXTENSION));
+        return this.ast.createSourceFile(path.join(this.outDir, "_external", currType.externalReference.package.replace(/\./g, '_') + "_" + currType.externalReference.name + TS_EXTENSION));
     }
 
     public createSourceFile(currType: ITypeName): SourceFile {

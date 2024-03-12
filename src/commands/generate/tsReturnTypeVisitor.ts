@@ -114,9 +114,12 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
         return withIPrefix;
     };
     public external = (obj: IExternalReference): string => {
-        // if isFlavorizable, bla bla bla
         this.externalImports.set(createHashableTypeName(obj.externalReference), obj);
-        return "External_" + obj.externalReference.package.replace(".", "_") + "_" + obj.externalReference.name;
+        if (this.typeGenerationFlags.flavorizedExternalImports) {
+            return "External_" + obj.externalReference.package.replace(".", "_") + "_" + obj.externalReference.name;
+        } else {
+            return IType.visit(obj.fallback, this.nestedVisitor());
+        }
     };
     public unknown = (_: IType): string => {
         throw new Error("unknown");

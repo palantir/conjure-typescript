@@ -29,12 +29,12 @@ import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";
 import { generateError } from "./errorGenerator";
+import { generateExternalReference } from "./externalImportGenerator";
 import { dir } from "./imports";
 import { generateService } from "./serviceGenerator";
 import { SimpleAst } from "./simpleAst";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
 import { generateType } from "./typeGenerator";
-import { generateExternalReference } from "./externalImportGenerator";
 import { createHashableTypeName, dissasembleHashableTypeName } from "./utils";
 
 export async function generate(
@@ -79,7 +79,7 @@ export async function generate(
     return Promise.all(promises)
         .then(() => {
             // if flavorizedImports, output them. Lazy hack, should move this earlier... eventually...
-            externalImports.forEach(externalImport => generateExternalReference(externalImport, simpleAst));
+            externalImports.forEach(externalImport => generateExternalReference(externalImport, simpleAst, typeGenerationFlags));
             return;
         })
         .catch(e => {

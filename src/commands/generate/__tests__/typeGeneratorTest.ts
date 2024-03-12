@@ -21,8 +21,9 @@ import * as path from "path";
 import { directory } from "tempy";
 import { SimpleAst } from "../simpleAst";
 import { generateAlias, generateEnum, generateObject, generateUnion } from "../typeGenerator";
+import { generateExternalReference } from "../externalImportGenerator";
 import { createHashableTypeName } from "../utils";
-import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS } from "./resources/constants";
+import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_REFERENCE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import {
     assertDoesNotExist,
     assertOutputAndExpectedAreEqual,
@@ -173,6 +174,20 @@ describe("typeGenerator", () => {
                 DEFAULT_TYPE_GENERATION_FLAGS,
             );
             assertDoesNotExist(outDir, "types/customEntityRidWithFlagOff.ts");
+        });
+    });
+
+    describe("external reference for rids", () => {
+        it("emits flavored type for rid when flag is on", async () => {
+            generateExternalReference(
+                {
+                    externalReference: {package: "com.palantir.external", name: "Reference"},
+                    fallback: IType.primitive(PrimitiveType.RID),
+                },
+                simpleAst,
+                FLAVORED_REFERENCE_GENERATION_FLAGS,
+            );
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external/com_palantir_external_Reference.ts");
         });
     });
 

@@ -59,10 +59,10 @@ export interface IGenerateCommandArgs {
      */
     flavorizedAliases?: boolean;
 
-        /**
+    /**
      * Generates flavoured types for compatible external references (string, rids...)
      */
-        flavorizedExternalReferences?: boolean;
+    flavorizedExternalReferences?: boolean;
 
     /**
      * Generated interfaces have readonly properties and collections
