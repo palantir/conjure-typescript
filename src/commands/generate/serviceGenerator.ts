@@ -67,7 +67,13 @@ export function generateService(
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
-    const tsReturnTypeVisitor = new TsReturnTypeVisitor(knownTypes, externalImports, definition.serviceName, true, typeGenerationFlags);
+    const tsReturnTypeVisitor = new TsReturnTypeVisitor(
+        knownTypes,
+        externalImports,
+        definition.serviceName,
+        true,
+        typeGenerationFlags,
+    );
     const tsArgumentTypeVisitor = new TsArgumentTypeVisitor(
         knownTypes,
         externalImports,

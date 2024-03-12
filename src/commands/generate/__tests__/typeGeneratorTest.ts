@@ -23,7 +23,11 @@ import { generateExternalReference } from "../externalImportGenerator";
 import { SimpleAst } from "../simpleAst";
 import { generateAlias, generateEnum, generateObject, generateUnion } from "../typeGenerator";
 import { createHashableTypeName } from "../utils";
-import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_REFERENCE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS } from "./resources/constants";
+import {
+    DEFAULT_TYPE_GENERATION_FLAGS,
+    FLAVORED_REFERENCE_GENERATION_FLAGS,
+    FLAVORED_TYPE_GENERATION_FLAGS,
+} from "./resources/constants";
 import {
     assertDoesNotExist,
     assertOutputAndExpectedAreEqual,
@@ -181,7 +185,7 @@ describe("typeGenerator", () => {
         it("emits flavored external reference for rid when flag is on", async () => {
             await generateExternalReference(
                 {
-                    externalReference: {package: "com.palantir.external", name: "StringReference"},
+                    externalReference: { package: "com.palantir.external", name: "StringReference" },
                     fallback: IType.primitive(PrimitiveType.RID),
                 },
                 simpleAst,
@@ -193,7 +197,7 @@ describe("typeGenerator", () => {
         it("emits flavored external reference for uuid when flag is on", async () => {
             await generateExternalReference(
                 {
-                    externalReference: {package: "com.palantir.external", name: "StringReference"},
+                    externalReference: { package: "com.palantir.external", name: "StringReference" },
                     fallback: IType.primitive(PrimitiveType.UUID),
                 },
                 simpleAst,
@@ -205,7 +209,7 @@ describe("typeGenerator", () => {
         it("emits flavored external reference for string when flag is on", async () => {
             await generateExternalReference(
                 {
-                    externalReference: {package: "com.palantir.external", name: "StringReference"},
+                    externalReference: { package: "com.palantir.external", name: "StringReference" },
                     fallback: IType.primitive(PrimitiveType.STRING),
                 },
                 simpleAst,
@@ -217,7 +221,7 @@ describe("typeGenerator", () => {
         it("emits flavored external reference for datetime when flag is on", async () => {
             await generateExternalReference(
                 {
-                    externalReference: {package: "com.palantir.external", name: "StringReference"},
+                    externalReference: { package: "com.palantir.external", name: "StringReference" },
                     fallback: IType.primitive(PrimitiveType.DATETIME),
                 },
                 simpleAst,
@@ -229,7 +233,7 @@ describe("typeGenerator", () => {
         it("emits flavored external reference for bearer token when flag is on", async () => {
             await generateExternalReference(
                 {
-                    externalReference: {package: "com.palantir.external", name: "StringReference"},
+                    externalReference: { package: "com.palantir.external", name: "StringReference" },
                     fallback: IType.primitive(PrimitiveType.BEARERTOKEN),
                 },
                 simpleAst,
@@ -241,7 +245,7 @@ describe("typeGenerator", () => {
         it("emits flavored external reference for binary when flag is on", async () => {
             await generateExternalReference(
                 {
-                    externalReference: {package: "com.palantir.external", name: "StringReference"},
+                    externalReference: { package: "com.palantir.external", name: "StringReference" },
                     fallback: IType.primitive(PrimitiveType.BINARY),
                 },
                 simpleAst,
@@ -253,7 +257,7 @@ describe("typeGenerator", () => {
         it("emits flavored external reference for safelong when flag is on", async () => {
             await generateExternalReference(
                 {
-                    externalReference: {package: "com.palantir.external", name: "NumberReference"},
+                    externalReference: { package: "com.palantir.external", name: "NumberReference" },
                     fallback: IType.primitive(PrimitiveType.SAFELONG),
                 },
                 simpleAst,
@@ -265,7 +269,7 @@ describe("typeGenerator", () => {
         it("emits flavored external reference for integer when flag is on", async () => {
             await generateExternalReference(
                 {
-                    externalReference: {package: "com.palantir.external", name: "NumberReference"},
+                    externalReference: { package: "com.palantir.external", name: "NumberReference" },
                     fallback: IType.primitive(PrimitiveType.INTEGER),
                 },
                 simpleAst,
@@ -277,7 +281,7 @@ describe("typeGenerator", () => {
         it("emits flavored external reference for any when flag is on", async () => {
             await generateExternalReference(
                 {
-                    externalReference: {package: "com.palantir.external", name: "AnyReference"},
+                    externalReference: { package: "com.palantir.external", name: "AnyReference" },
                     fallback: IType.primitive(PrimitiveType.ANY),
                 },
                 simpleAst,
@@ -289,7 +293,7 @@ describe("typeGenerator", () => {
         it("emits flavored external reference for boolean when flag is on", async () => {
             await generateExternalReference(
                 {
-                    externalReference: {package: "com.palantir.external", name: "BooleanReference"},
+                    externalReference: { package: "com.palantir.external", name: "BooleanReference" },
                     fallback: IType.primitive(PrimitiveType.BOOLEAN),
                 },
                 simpleAst,
@@ -301,7 +305,7 @@ describe("typeGenerator", () => {
         it("emits flavored external reference for double when flag is on", async () => {
             await generateExternalReference(
                 {
-                    externalReference: {package: "com.palantir.external", name: "DoubleReference"},
+                    externalReference: { package: "com.palantir.external", name: "DoubleReference" },
                     fallback: IType.primitive(PrimitiveType.DOUBLE),
                 },
                 simpleAst,

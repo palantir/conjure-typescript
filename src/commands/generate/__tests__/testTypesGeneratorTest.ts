@@ -105,7 +105,13 @@ describe("testTypesGenerator", () => {
     });
 
     it("generates services local object", async () => {
-        await generateType(servicesLocalObject.definition, new Map(), new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
+        await generateType(
+            servicesLocalObject.definition,
+            new Map(),
+            new Map(),
+            simpleAst,
+            DEFAULT_TYPE_GENERATION_FLAGS,
+        );
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/someObject.ts");
     });
     it("generates foreign object", async () => {

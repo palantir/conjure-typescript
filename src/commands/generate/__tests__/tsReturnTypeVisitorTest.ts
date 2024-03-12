@@ -112,9 +112,13 @@ describe("TsTypeVisitor", () => {
 
         it("produces error for unknown reference", () => {
             const tsType = () =>
-                new TsReturnTypeVisitor(new Map(), new Map(), fakeTypeName, false, FLAVORED_TYPE_GENERATION_FLAGS).reference(
-                    objectName,
-                );
+                new TsReturnTypeVisitor(
+                    new Map(),
+                    new Map(),
+                    fakeTypeName,
+                    false,
+                    FLAVORED_TYPE_GENERATION_FLAGS,
+                ).reference(objectName);
             expect(tsType).toThrowError(/unknown reference type/);
         });
 

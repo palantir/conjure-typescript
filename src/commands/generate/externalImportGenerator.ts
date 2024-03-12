@@ -39,7 +39,7 @@ export async function generateExternalReference(
     const sourceFile = simpleAst.createExternalImportSourceFile(definition);
     sourceFile.addTypeAlias({
         isExported: true,
-        name: definition.externalReference.package.replace(/\./g, '_') + "_" + definition.externalReference.name,
+        name: definition.externalReference.package.replace(/\./g, "_") + "_" + definition.externalReference.name,
         type: [
             `${fieldType} & {`,
             `\t${FLAVOR_TYPE_FIELD}?: "${definition.externalReference.name}",`,
@@ -72,4 +72,4 @@ function primitiveBaseType(obj: PrimitiveType) {
         default:
             throw new Error("unknown primitive type");
     }
-};
+}

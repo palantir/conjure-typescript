@@ -56,6 +56,12 @@ export class TsArgumentTypeVisitor extends TsReturnTypeVisitor {
     };
 
     protected nestedVisitor = (): ITypeVisitor<string> => {
-        return new TsArgumentTypeVisitor(this.knownTypes, this.externalImports, this.currType, false, this.typeGenerationFlags);
+        return new TsArgumentTypeVisitor(
+            this.knownTypes,
+            this.externalImports,
+            this.currType,
+            false,
+            this.typeGenerationFlags,
+        );
     };
 }

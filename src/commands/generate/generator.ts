@@ -67,13 +67,19 @@ export async function generate(
     const simpleAst = new SimpleAst(outDir);
 
     definition.services.forEach(serviceDefinition =>
-        serviceTypeErrorPromises.push(generateService(serviceDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
+        serviceTypeErrorPromises.push(
+            generateService(serviceDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags),
+        ),
     );
     definition.types.forEach(typeDefinition =>
-        serviceTypeErrorPromises.push(generateType(typeDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
+        serviceTypeErrorPromises.push(
+            generateType(typeDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags),
+        ),
     );
     definition.errors.forEach(errorDefinition =>
-        serviceTypeErrorPromises.push(generateError(errorDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
+        serviceTypeErrorPromises.push(
+            generateError(errorDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags),
+        ),
     );
 
     // Generate all services, types, and errors.
@@ -86,7 +92,9 @@ export async function generate(
 
     // Generate all the external references that were collected during service, type, and error generation.
     const externalReferencePromises: Array<Promise<any>> = [];
-    externalImports.forEach(externalImport => externalReferencePromises.push(generateExternalReference(externalImport, simpleAst, typeGenerationFlags)));
+    externalImports.forEach(externalImport =>
+        externalReferencePromises.push(generateExternalReference(externalImport, simpleAst, typeGenerationFlags)),
+    );
     try {
         await Promise.all(externalReferencePromises);
     } catch (e) {

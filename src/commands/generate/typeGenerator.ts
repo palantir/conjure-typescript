@@ -81,7 +81,13 @@ export async function generateAlias(
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     if (isFlavorizable(definition.alias, typeGenerationFlags.flavorizedAliases)) {
-        const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, externalImports, definition.typeName, false, typeGenerationFlags);
+        const tsTypeVisitor = new TsReturnTypeVisitor(
+            knownTypes,
+            externalImports,
+            definition.typeName,
+            false,
+            typeGenerationFlags,
+        );
         const fieldType = IType.visit(definition.alias, tsTypeVisitor);
         const sourceFile = simpleAst.createSourceFile(definition.typeName);
         const typeAlias = sourceFile.addTypeAlias({
@@ -204,7 +210,13 @@ export async function generateObject(
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
-    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, externalImports, definition.typeName, false, typeGenerationFlags);
+    const tsTypeVisitor = new TsReturnTypeVisitor(
+        knownTypes,
+        externalImports,
+        definition.typeName,
+        false,
+        typeGenerationFlags,
+    );
     const importsVisitor = new ImportsVisitor(knownTypes, externalImports, definition.typeName, typeGenerationFlags);
     const properties: PropertySignatureStructure[] = [];
     const imports: ImportDeclarationStructure[] = [];
@@ -255,7 +267,13 @@ export async function generateUnion(
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
     const unionTsType = "I" + definition.typeName.name;
-    const unionSourceFileInput = processUnionMembers(unionTsType, definition, knownTypes, externalImports, typeGenerationFlags);
+    const unionSourceFileInput = processUnionMembers(
+        unionTsType,
+        definition,
+        knownTypes,
+        externalImports,
+        typeGenerationFlags,
+    );
 
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
     if (unionSourceFileInput.imports.length !== 0) {
@@ -326,7 +344,13 @@ function processUnionMembers(
     externalImports: Map<string, IExternalReference>,
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
-    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, externalImports, definition.typeName, false, typeGenerationFlags);
+    const tsTypeVisitor = new TsReturnTypeVisitor(
+        knownTypes,
+        externalImports,
+        definition.typeName,
+        false,
+        typeGenerationFlags,
+    );
     const importsVisitor = new ImportsVisitor(knownTypes, externalImports, definition.typeName, typeGenerationFlags);
 
     const imports: ImportDeclarationStructure[] = [];

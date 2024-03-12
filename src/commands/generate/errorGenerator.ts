@@ -33,7 +33,13 @@ export function generateError(
     const sourceFile = simpleAst.createSourceFile(definition.errorName);
     const interfaceName = "I" + definition.errorName.name;
     const errorName = `${definition.namespace}:${definition.errorName.name}`;
-    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, externalImports, definition.errorName, false, typeGenerationFlags);
+    const tsTypeVisitor = new TsReturnTypeVisitor(
+        knownTypes,
+        externalImports,
+        definition.errorName,
+        false,
+        typeGenerationFlags,
+    );
     const importsVisitor = new ImportsVisitor(knownTypes, externalImports, definition.errorName, typeGenerationFlags);
     const imports: ImportDeclarationStructure[] = [];
 

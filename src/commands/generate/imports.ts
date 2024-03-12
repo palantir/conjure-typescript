@@ -94,11 +94,13 @@ export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]
     };
     public external = (obj: IExternalReference): ImportDeclarationStructure[] => {
         if (this.typeGenerationFlags.flavorizedExternalImports) {
-            return [{
-                kind: StructureKind.ImportDeclaration,
-                moduleSpecifier: externalReferenceRelativePath(this.currType, obj),
-                namedImports: [{name: externalReferenceModule(obj)}],
-            }]
+            return [
+                {
+                    kind: StructureKind.ImportDeclaration,
+                    moduleSpecifier: externalReferenceRelativePath(this.currType, obj),
+                    namedImports: [{ name: externalReferenceModule(obj) }],
+                },
+            ];
         } else {
             return IType.visit(obj.fallback, this);
         }
@@ -144,7 +146,7 @@ export function externalReferenceModule(typeName: IExternalReference) {
     // collisions between identically named classes in different packages.
     //
     // For example: com.palantir.Foo and java.util.Foo can collide unless we preseve the package.
-    return typeName.externalReference.package.replace(/\./g, '_') + "_" + typeName.externalReference.name;
+    return typeName.externalReference.package.replace(/\./g, "_") + "_" + typeName.externalReference.name;
 }
 
 export function sortImports(imports: ImportDeclarationStructure[]): ImportDeclarationStructure[] {

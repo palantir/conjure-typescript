@@ -127,7 +127,13 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
     };
 
     protected nestedVisitor = (): ITypeVisitor<string> => {
-        return new TsReturnTypeVisitor(this.knownTypes, this.externalImports, this.currType, false, this.typeGenerationFlags);
+        return new TsReturnTypeVisitor(
+            this.knownTypes,
+            this.externalImports,
+            this.currType,
+            false,
+            this.typeGenerationFlags,
+        );
     };
     protected getArrayType(itemType: string) {
         return this.typeGenerationFlags.readonlyInterfaces ? `ReadonlyArray<${itemType}>` : `Array<${itemType}>`;
