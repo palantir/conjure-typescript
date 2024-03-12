@@ -24,6 +24,7 @@ import { generate } from "../generator";
 import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import {
     DEFAULT_TYPE_GENERATION_FLAGS,
+    FLAVORED_REFERENCE_GENERATION_FLAGS,
     FLAVORED_TYPE_GENERATION_FLAGS,
     READONLY_TYPE_GENERATION_FLAGS,
 } from "./resources/constants";
@@ -101,6 +102,7 @@ const irDir = path.join(__dirname, "../../../../build/ir-test-cases");
 const testCaseDir = path.join(__dirname, "resources/test-cases");
 const flavoredTestCaseDir = path.join(__dirname, "resources/flavored-test-cases");
 const readonlyTestCaseDir = path.join(__dirname, "resources/readonly-test-cases");
+const flavoredImportTestCaseDir = path.join(__dirname, "resources/flavored-import-test-cases");
 
 describe("definitionTests", () => {
     for (const fileName of fs.readdirSync(irDir)) {
@@ -109,6 +111,7 @@ describe("definitionTests", () => {
         const actualTestCaseDir = path.join(testCaseDir, paths);
         const actualFlavoredTestCaseDir = path.join(flavoredTestCaseDir, paths);
         const actualReadonlyTestCaseDir = path.join(readonlyTestCaseDir, paths);
+        const actualFlavoredImportTestCaseDir = path.join(flavoredImportTestCaseDir, paths);
 
         it(
             `${fileName} produces equivalent TypeScript`,
@@ -140,6 +143,19 @@ describe("definitionTests", () => {
                 ),
             );
         }
+
+        // Not every test has a flavored imports version
+        if (fs.existsSync(actualFlavoredImportTestCaseDir)) {
+            it(
+                `${fileName} produces equivalent flavored import TypeScript`,
+                testGenerateAllFilesAreTheSame(
+                    definitionFilePath,
+                    paths,
+                    actualFlavoredImportTestCaseDir,
+                    FLAVORED_REFERENCE_GENERATION_FLAGS,
+                ),
+            );
+        }
     }
 });
 
@@ -155,7 +171,7 @@ function testGenerateAllFilesAreTheSame(
         await fs.mkdirp(outputDir);
         const conjureDefinition = await loadConjureDefinition(definitionFilePath);
 
-        await generate(conjureDefinition, outputDir, typeGenerationFlags);
+        await generate(conjureDefinition, actualTestCaseDir, typeGenerationFlags);
 
         expectIdenticalDirectoryTrees(outputDir, actualTestCaseDir);
     };
