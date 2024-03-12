@@ -18,6 +18,7 @@
 import {
     IArgumentDefinition,
     IEndpointDefinition,
+    IExternalReference,
     IParameterType,
     IParameterType_Header,
     IParameterType_Query,
@@ -61,18 +62,20 @@ const UNDEFINED_CONSTANT = "__undefined";
 export function generateService(
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
+    externalImports: Map<string, IExternalReference>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
-    const tsReturnTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.serviceName, true, typeGenerationFlags);
+    const tsReturnTypeVisitor = new TsReturnTypeVisitor(knownTypes, externalImports, definition.serviceName, true, typeGenerationFlags);
     const tsArgumentTypeVisitor = new TsArgumentTypeVisitor(
         knownTypes,
+        externalImports,
         definition.serviceName,
         true,
         typeGenerationFlags,
     );
-    const importsVisitor = new ImportsVisitor(knownTypes, definition.serviceName, typeGenerationFlags);
+    const importsVisitor = new ImportsVisitor(knownTypes, externalImports, definition.serviceName, typeGenerationFlags);
     const mediaTypeVisitor = new MediaTypeVisitor(knownTypes);
 
     const endpointSignatures: MethodSignatureStructure[] = [];

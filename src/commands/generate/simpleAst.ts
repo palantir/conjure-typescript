@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { ITypeName } from "conjure-api";
+import { IExternalReference, ITypeName } from "conjure-api";
 import * as path from "path";
 import { Project, SourceFile } from "ts-morph";
 import { dir, module } from "./imports";
@@ -35,6 +35,13 @@ export class SimpleAst {
                 outDir,
             },
         });
+    }
+
+    public createExternalImportSourceFile(currType: IExternalReference): SourceFile {
+        // com.palantir.foo.Bar -> "$outDir/_external/com_palantir_foo_Bar.ts"
+        //
+        // The "_external" guarantees no collisions with actual Conjure types.
+        return this.ast.createSourceFile(path.join(this.outDir, "_external", currType.externalReference.package.replace(".", "_") + currType.externalReference.name + TS_EXTENSION));
     }
 
     public createSourceFile(currType: ITypeName): SourceFile {

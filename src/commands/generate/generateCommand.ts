@@ -59,6 +59,11 @@ export interface IGenerateCommandArgs {
      */
     flavorizedAliases?: boolean;
 
+        /**
+     * Generates flavoured types for compatible external references (string, rids...)
+     */
+        flavorizedExternalReferences?: boolean;
+
     /**
      * Generated interfaces have readonly properties and collections
      */
@@ -138,6 +143,7 @@ export class GenerateCommand implements CommandModule {
         const generatePromise = generate(conjureDefinition, output, {
             flavorizedAliases: args.flavorizedAliases ?? false,
             readonlyInterfaces: args.readonlyInterfaces ?? false,
+            flavorizedExternalImports: args.flavorizedExternalReferences ?? false,
         });
         if (rawSource) {
             return generatePromise;

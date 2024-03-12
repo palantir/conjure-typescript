@@ -38,10 +38,11 @@ export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]
 
     constructor(
         private knownTypes: Map<string, ITypeDefinition>,
+        externalImports: Map<string, IExternalReference>,
         private currType: ITypeName,
         private typeGenerationFlags: ITypeGenerationFlags,
     ) {
-        this.tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, currType, false, typeGenerationFlags);
+        this.tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, externalImports, currType, false, typeGenerationFlags);
     }
 
     public primitive = (_: PrimitiveType): ImportDeclarationStructure[] => [];

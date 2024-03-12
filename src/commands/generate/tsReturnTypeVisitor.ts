@@ -33,6 +33,7 @@ import { createHashableTypeName, isFlavorizable } from "./utils";
 export class TsReturnTypeVisitor implements ITypeVisitor<string> {
     constructor(
         protected knownTypes: Map<string, ITypeDefinition>,
+        protected externalImports: Map<string, IExternalReference>,
         protected currType: ITypeName,
         protected isTopLevelBinary: boolean,
         protected typeGenerationFlags: ITypeGenerationFlags,
@@ -113,14 +114,16 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
         return withIPrefix;
     };
     public external = (obj: IExternalReference): string => {
-        return IType.visit(obj.fallback, this.nestedVisitor());
+        // if isFlavorizable, bla bla bla
+        this.externalImports.set(createHashableTypeName(obj.externalReference), obj);
+        return "External_" + obj.externalReference.package.replace(".", "_") + "_" + obj.externalReference.name;
     };
     public unknown = (_: IType): string => {
         throw new Error("unknown");
     };
 
     protected nestedVisitor = (): ITypeVisitor<string> => {
-        return new TsReturnTypeVisitor(this.knownTypes, this.currType, false, this.typeGenerationFlags);
+        return new TsReturnTypeVisitor(this.knownTypes, this.externalImports, this.currType, false, this.typeGenerationFlags);
     };
     protected getArrayType(itemType: string) {
         return this.typeGenerationFlags.readonlyInterfaces ? `ReadonlyArray<${itemType}>` : `Array<${itemType}>`;

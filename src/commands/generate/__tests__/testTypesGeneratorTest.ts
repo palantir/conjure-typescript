@@ -92,6 +92,7 @@ describe("testTypesGenerator", () => {
                 ],
             }),
             new Map(),
+            new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
@@ -99,16 +100,16 @@ describe("testTypesGenerator", () => {
     });
 
     it("generates types local object", async () => {
-        await generateType(typesLocalObject.definition, new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
+        await generateType(typesLocalObject.definition, new Map(), new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/someObject.ts");
     });
 
     it("generates services local object", async () => {
-        await generateType(servicesLocalObject.definition, new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
+        await generateType(servicesLocalObject.definition, new Map(), new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/someObject.ts");
     });
     it("generates foreign object", async () => {
-        await generateType(foreignObject.definition, new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
+        await generateType(foreignObject.definition, new Map(), new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "other/otherObject.ts");
     });
 });

@@ -19,6 +19,7 @@ import {
     IAliasDefinition,
     IConjureDefinition,
     IEnumDefinition,
+    IExternalReference,
     IObjectDefinition,
     ITypeDefinition,
     ITypeDefinitionVisitor,
@@ -33,6 +34,7 @@ import { generateService } from "./serviceGenerator";
 import { SimpleAst } from "./simpleAst";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
 import { generateType } from "./typeGenerator";
+import { generateExternalReference } from "./externalImportGenerator";
 import { createHashableTypeName, dissasembleHashableTypeName } from "./utils";
 
 export async function generate(
@@ -41,7 +43,7 @@ export async function generate(
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
     // Create project structure
-    const knownTypes = new Map();
+    const knownTypes = new Map<string, ITypeDefinition>();
     const indexingVisitor = new IndexByTypeNameVisitor(knownTypes);
     definition.types.forEach(typeDefinition => ITypeDefinition.visit(typeDefinition, indexingVisitor));
     const knownDefinitions = Array.from(knownTypes.keys())
@@ -58,22 +60,26 @@ export async function generate(
         }),
     );
 
+    const externalImports = new Map<string, IExternalReference>();
+
     const promises: Array<Promise<any>> = [];
     const simpleAst = new SimpleAst(outDir);
 
     definition.services.forEach(serviceDefinition =>
-        promises.push(generateService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags)),
+        promises.push(generateService(serviceDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
     );
     definition.types.forEach(typeDefinition =>
-        promises.push(generateType(typeDefinition, knownTypes, simpleAst, typeGenerationFlags)),
+        promises.push(generateType(typeDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
     );
     definition.errors.forEach(errorDefinition =>
-        promises.push(generateError(errorDefinition, knownTypes, simpleAst, typeGenerationFlags)),
+        promises.push(generateError(errorDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
     );
 
     promises.push(simpleAst.generateIndexFiles());
     return Promise.all(promises)
         .then(() => {
+            // if flavorizedImports, output them. Lazy hack, should move this earlier... eventually...
+            externalImports.forEach(externalImport => generateExternalReference(externalImport, simpleAst));
             return;
         })
         .catch(e => {

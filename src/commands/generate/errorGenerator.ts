@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { IErrorDefinition, IType, ITypeDefinition } from "conjure-api";
+import { IErrorDefinition, IExternalReference, IType, ITypeDefinition } from "conjure-api";
 import { ImportDeclarationStructure } from "ts-morph";
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
@@ -26,14 +26,15 @@ import { doubleQuote, singleQuote } from "./utils";
 export function generateError(
     definition: IErrorDefinition,
     knownTypes: Map<string, ITypeDefinition>,
+    externalImports: Map<string, IExternalReference>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.errorName);
     const interfaceName = "I" + definition.errorName.name;
     const errorName = `${definition.namespace}:${definition.errorName.name}`;
-    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.errorName, false, typeGenerationFlags);
-    const importsVisitor = new ImportsVisitor(knownTypes, definition.errorName, typeGenerationFlags);
+    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, externalImports, definition.errorName, false, typeGenerationFlags);
+    const importsVisitor = new ImportsVisitor(knownTypes, externalImports, definition.errorName, typeGenerationFlags);
     const imports: ImportDeclarationStructure[] = [];
 
     const args = definition.safeArgs.concat(definition.unsafeArgs);

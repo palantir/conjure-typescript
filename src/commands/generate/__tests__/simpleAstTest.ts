@@ -44,6 +44,7 @@ describe("simpleAst", () => {
                 unsafeArgs: [],
             },
             new Map(),
+            new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
@@ -69,6 +70,7 @@ describe("simpleAst", () => {
                     package: "com.palantir.package2",
                 },
             },
+            new Map(),
             new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,

@@ -56,6 +56,7 @@ describe("imports", () => {
             [createHashableTypeName(listReferenceAliasName), listReferenceAlias],
             [createHashableTypeName(enumName), enumType],
         ]),
+        new Map(),
         currType,
         GENERATION_FLAGS_TO_USE_FOR_IMPORTS,
     );
@@ -82,7 +83,7 @@ describe("imports", () => {
     });
 
     it("produces error for unknown reference type", () => {
-        const noKnownTypesVisitor = new ImportsVisitor(new Map(), currType, GENERATION_FLAGS_TO_USE_FOR_IMPORTS);
+        const noKnownTypesVisitor = new ImportsVisitor(new Map(), new Map(), currType, GENERATION_FLAGS_TO_USE_FOR_IMPORTS);
         expect(() => noKnownTypesVisitor.reference(localObject.typeName)).toThrowError(/unknown reference type/);
     });
 
@@ -226,6 +227,7 @@ describe("imports", () => {
                     }),
                 ],
             ]),
+            new Map(),
             someType,
             GENERATION_FLAGS_TO_USE_FOR_IMPORTS,
         );

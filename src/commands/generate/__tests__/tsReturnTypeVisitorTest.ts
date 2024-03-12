@@ -63,6 +63,7 @@ describe("TsTypeVisitor", () => {
                 [createHashableTypeName(binaryAliasName), binaryAlias],
                 [createHashableTypeName(enumName), enumType],
             ]),
+            new Map(),
             fakeTypeName,
             false,
             DEFAULT_TYPE_GENERATION_FLAGS,
@@ -75,6 +76,7 @@ describe("TsTypeVisitor", () => {
                 [createHashableTypeName(binaryAliasName), binaryAlias],
                 [createHashableTypeName(enumName), enumType],
             ]),
+            new Map(),
             fakeTypeName,
             true,
             DEFAULT_TYPE_GENERATION_FLAGS,
@@ -110,7 +112,7 @@ describe("TsTypeVisitor", () => {
 
         it("produces error for unknown reference", () => {
             const tsType = () =>
-                new TsReturnTypeVisitor(new Map(), fakeTypeName, false, FLAVORED_TYPE_GENERATION_FLAGS).reference(
+                new TsReturnTypeVisitor(new Map(), new Map(), fakeTypeName, false, FLAVORED_TYPE_GENERATION_FLAGS).reference(
                     objectName,
                 );
             expect(tsType).toThrowError(/unknown reference type/);
@@ -195,6 +197,7 @@ describe("TsTypeVisitor", () => {
                 [createHashableTypeName(binaryAliasName), binaryAlias],
                 [createHashableTypeName(enumName), enumType],
             ]),
+            new Map(),
             fakeTypeName,
             false,
             FLAVORED_TYPE_GENERATION_FLAGS,
@@ -207,6 +210,7 @@ describe("TsTypeVisitor", () => {
                 [createHashableTypeName(binaryAliasName), binaryAlias],
                 [createHashableTypeName(enumName), enumType],
             ]),
+            new Map(),
             fakeTypeName,
             true,
             FLAVORED_TYPE_GENERATION_FLAGS,
@@ -228,6 +232,7 @@ describe("TsTypeVisitor", () => {
                 [createHashableTypeName(binaryAliasName), binaryAlias],
                 [createHashableTypeName(enumName), enumType],
             ]),
+            new Map(),
             fakeTypeName,
             false,
             READONLY_TYPE_GENERATION_FLAGS,
@@ -240,6 +245,7 @@ describe("TsTypeVisitor", () => {
                 [createHashableTypeName(binaryAliasName), binaryAlias],
                 [createHashableTypeName(enumName), enumType],
             ]),
+            new Map(),
             fakeTypeName,
             true,
             READONLY_TYPE_GENERATION_FLAGS,

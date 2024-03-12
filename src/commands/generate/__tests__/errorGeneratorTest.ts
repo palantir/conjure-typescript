@@ -44,6 +44,7 @@ describe("errorGenerator", () => {
                 unsafeArgs: [],
             },
             new Map(),
+            new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
@@ -77,6 +78,7 @@ describe("errorGenerator", () => {
                 ],
             },
             new Map(),
+            new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
@@ -98,6 +100,7 @@ describe("errorGenerator", () => {
                 ],
                 unsafeArgs: [],
             },
+            new Map(),
             new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,

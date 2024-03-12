@@ -120,6 +120,7 @@ describe("typeGenerator", () => {
                 typeName: { name: "PrimitiveObject", package: "com.palantir.types" },
             },
             new Map(),
+            new Map(),
             simpleAst,
             FLAVORED_TYPE_GENERATION_FLAGS,
         );
@@ -138,6 +139,7 @@ describe("typeGenerator", () => {
                 typeName: { name: "UuidObject", package: "com.palantir.types" },
             },
             new Map(),
+            new Map(),
             simpleAst,
             FLAVORED_TYPE_GENERATION_FLAGS,
         );
@@ -152,6 +154,7 @@ describe("typeGenerator", () => {
                     typeName: { name: "CustomEntityRid", package: "com.palantir.types" },
                 },
                 new Map(),
+                new Map(),
                 simpleAst,
                 FLAVORED_TYPE_GENERATION_FLAGS,
             );
@@ -164,6 +167,7 @@ describe("typeGenerator", () => {
                     alias: IType.primitive(PrimitiveType.RID),
                     typeName: { name: "CustomEntityRidWithFlagOff", package: "com.palantir.types" },
                 },
+                new Map(),
                 new Map(),
                 simpleAst,
                 DEFAULT_TYPE_GENERATION_FLAGS,
@@ -180,6 +184,7 @@ describe("typeGenerator", () => {
                     typeName: { name: "StringAlias", package: "com.palantir.types" },
                 },
                 new Map(),
+                new Map(),
                 simpleAst,
                 FLAVORED_TYPE_GENERATION_FLAGS,
             );
@@ -192,6 +197,7 @@ describe("typeGenerator", () => {
                     alias: IType.primitive(PrimitiveType.STRING),
                     typeName: { name: "StringAliasWhenFlagOff", package: "com.palantir.types" },
                 },
+                new Map(),
                 new Map(),
                 simpleAst,
                 DEFAULT_TYPE_GENERATION_FLAGS,
@@ -208,6 +214,7 @@ describe("typeGenerator", () => {
                     typeName: { name: "IntegerAlias", package: "com.palantir.types" },
                 },
                 new Map(),
+                new Map(),
                 simpleAst,
                 FLAVORED_TYPE_GENERATION_FLAGS,
             );
@@ -220,6 +227,7 @@ describe("typeGenerator", () => {
                     alias: IType.primitive(PrimitiveType.INTEGER),
                     typeName: { name: "IntegerAliasWithFlagOff", package: "com.palantir.types" },
                 },
+                new Map(),
                 new Map(),
                 simpleAst,
                 DEFAULT_TYPE_GENERATION_FLAGS,
@@ -236,6 +244,7 @@ describe("typeGenerator", () => {
                     typeName: { name: "SafeLongAlias", package: "com.palantir.types" },
                 },
                 new Map(),
+                new Map(),
                 simpleAst,
                 FLAVORED_TYPE_GENERATION_FLAGS,
             );
@@ -248,6 +257,7 @@ describe("typeGenerator", () => {
                     alias: IType.primitive(PrimitiveType.SAFELONG),
                     typeName: { name: "SafeLongAliasWithFlagOff", package: "com.palantir.types" },
                 },
+                new Map(),
                 new Map(),
                 simpleAst,
                 DEFAULT_TYPE_GENERATION_FLAGS,
@@ -264,6 +274,7 @@ describe("typeGenerator", () => {
                     typeName: { name: "BearerTokenAlias", package: "com.palantir.types" },
                 },
                 new Map(),
+                new Map(),
                 simpleAst,
                 FLAVORED_TYPE_GENERATION_FLAGS,
             );
@@ -276,6 +287,7 @@ describe("typeGenerator", () => {
                     alias: IType.primitive(PrimitiveType.BEARERTOKEN),
                     typeName: { name: "BearerTokenAliasWithFlagOff", package: "com.palantir.types" },
                 },
+                new Map(),
                 new Map(),
                 simpleAst,
                 DEFAULT_TYPE_GENERATION_FLAGS,
@@ -292,6 +304,7 @@ describe("typeGenerator", () => {
                     typeName: { name: "UuidAlias", package: "com.palantir.types" },
                 },
                 new Map(),
+                new Map(),
                 simpleAst,
                 FLAVORED_TYPE_GENERATION_FLAGS,
             );
@@ -304,6 +317,7 @@ describe("typeGenerator", () => {
                     alias: IType.primitive(PrimitiveType.UUID),
                     typeName: { name: "UuidAliasWithFlagOff", package: "com.palantir.types" },
                 },
+                new Map(),
                 new Map(),
                 simpleAst,
                 DEFAULT_TYPE_GENERATION_FLAGS,
@@ -332,6 +346,7 @@ describe("typeGenerator", () => {
                 typeName: { name: "EnumMapObject", package: "com.palantir.types" },
             },
             new Map([[createHashableTypeName(someEnum.typeName), ITypeDefinition.enum_(someEnum)]]),
+            new Map(),
             simpleAst,
             FLAVORED_TYPE_GENERATION_FLAGS,
         );
@@ -357,6 +372,7 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(foreignObject.typeName), foreignObject.definition],
                 [createHashableTypeName(localObject.typeName), localObject.definition],
             ]),
+            new Map(),
             simpleAst,
             FLAVORED_TYPE_GENERATION_FLAGS,
         );
@@ -382,6 +398,7 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(localObject.typeName), localObject.definition],
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
+            new Map(),
             simpleAst,
             FLAVORED_TYPE_GENERATION_FLAGS,
         );
@@ -408,6 +425,7 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(stringAliasAlias.alias.typeName), stringAliasAlias],
                 [createHashableTypeName(stringAlias.alias.typeName), stringAlias],
             ]),
+            new Map(),
             simpleAst,
             FLAVORED_TYPE_GENERATION_FLAGS,
         );
@@ -430,6 +448,7 @@ describe("typeGenerator", () => {
                 ],
                 typeName: { name: "OptionalObject", package: "com.palantir.types" },
             },
+            new Map(),
             new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
@@ -455,6 +474,7 @@ describe("typeGenerator", () => {
                 ],
                 typeName: { name: "ObjectWithDocs", package: "com.palantir.types" },
             },
+            new Map(),
             new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
@@ -482,6 +502,7 @@ describe("typeGenerator", () => {
                 ],
             },
             new Map(),
+            new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
@@ -497,6 +518,7 @@ describe("typeGenerator", () => {
                     { fieldName: "set", type: IType.set({ itemType: IType.primitive(PrimitiveType.STRING) }) },
                 ],
             },
+            new Map(),
             new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
@@ -522,6 +544,7 @@ describe("typeGenerator", () => {
                 ],
             },
             new Map(),
+            new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
@@ -543,6 +566,7 @@ describe("typeGenerator", () => {
                     },
                 ],
             },
+            new Map(),
             new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
@@ -588,6 +612,7 @@ describe("typeGenerator", () => {
                 [createHashableTypeName(localObject.typeName), localObject.definition],
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
+            new Map(),
             simpleAst,
             FLAVORED_TYPE_GENERATION_FLAGS,
         );
@@ -639,6 +664,7 @@ import { IStringAlias } from "./stringAlias";
                 [createHashableTypeName(binaryAliasName), binaryAlias],
                 [createHashableTypeName(dateAliasName), dateAlias],
             ]),
+            new Map(),
             simpleAst,
             FLAVORED_TYPE_GENERATION_FLAGS,
         );
@@ -683,7 +709,7 @@ export interface IMyUnion_DateAlias {
             typeName: littleTypeName,
             union: [{ fieldName: "double", type: IType.primitive(PrimitiveType.DOUBLE) }],
         };
-        await generateUnion(littleUnion, new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
+        await generateUnion(littleUnion, new Map(), new Map(), simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
         assertOutputAndExpectedAreEqual(outDir, expectedDir, "types/little.ts");
 
         await generateUnion(
@@ -692,6 +718,7 @@ export interface IMyUnion_DateAlias {
                 union: [{ fieldName: "little", type: IType.reference(littleTypeName) }],
             },
             new Map([[createHashableTypeName(littleTypeName), ITypeDefinition.union(littleUnion)]]),
+            new Map(),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
@@ -719,6 +746,7 @@ export interface IMyUnion_DateAlias {
                 [createHashableTypeName(recursiveObject.union.typeName), recursiveObject],
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
+            new Map(),
             simpleAst,
             FLAVORED_TYPE_GENERATION_FLAGS,
         );
@@ -746,6 +774,7 @@ export interface IMyUnion_DateAlias {
                 [createHashableTypeName(recursiveObject.object.typeName), recursiveObject],
                 [createHashableTypeName(stringAliasName), stringAlias],
             ]),
+            new Map(),
             simpleAst,
             FLAVORED_TYPE_GENERATION_FLAGS,
         );

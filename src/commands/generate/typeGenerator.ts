@@ -17,6 +17,7 @@
 import {
     IAliasDefinition,
     IEnumDefinition,
+    IExternalReference,
     IObjectDefinition,
     IType,
     ITypeDefinition,
@@ -43,17 +44,18 @@ import { addDeprecatedToDocs, doubleQuote, isFlavorizable, isValidFunctionName, 
 export function generateType(
     definition: ITypeDefinition,
     knownTypes: Map<string, ITypeDefinition>,
+    externalImports: Map<string, IExternalReference>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     if (ITypeDefinition.isAlias(definition)) {
-        return generateAlias(definition.alias, knownTypes, simpleAst, typeGenerationFlags);
+        return generateAlias(definition.alias, knownTypes, externalImports, simpleAst, typeGenerationFlags);
     } else if (ITypeDefinition.isEnum(definition)) {
         return generateEnum(definition.enum, simpleAst);
     } else if (ITypeDefinition.isObject(definition)) {
-        return generateObject(definition.object, knownTypes, simpleAst, typeGenerationFlags);
+        return generateObject(definition.object, knownTypes, externalImports, simpleAst, typeGenerationFlags);
     } else if (ITypeDefinition.isUnion(definition)) {
-        return generateUnion(definition.union, knownTypes, simpleAst, typeGenerationFlags);
+        return generateUnion(definition.union, knownTypes, externalImports, simpleAst, typeGenerationFlags);
     } else {
         throw Error("unsupported type: " + definition);
     }
@@ -74,11 +76,12 @@ const FLAVOR_PACKAGE_FIELD = "__conjure_package";
 export async function generateAlias(
     definition: IAliasDefinition,
     knownTypes: Map<string, ITypeDefinition>,
+    externalImports: Map<string, IExternalReference>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     if (isFlavorizable(definition.alias, typeGenerationFlags.flavorizedAliases)) {
-        const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false, typeGenerationFlags);
+        const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, externalImports, definition.typeName, false, typeGenerationFlags);
         const fieldType = IType.visit(definition.alias, tsTypeVisitor);
         const sourceFile = simpleAst.createSourceFile(definition.typeName);
         const typeAlias = sourceFile.addTypeAlias({
@@ -197,11 +200,12 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
 export async function generateObject(
     definition: IObjectDefinition,
     knownTypes: Map<string, ITypeDefinition>,
+    externalImports: Map<string, IExternalReference>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
-    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false, typeGenerationFlags);
-    const importsVisitor = new ImportsVisitor(knownTypes, definition.typeName, typeGenerationFlags);
+    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, externalImports, definition.typeName, false, typeGenerationFlags);
+    const importsVisitor = new ImportsVisitor(knownTypes, externalImports, definition.typeName, typeGenerationFlags);
     const properties: PropertySignatureStructure[] = [];
     const imports: ImportDeclarationStructure[] = [];
     definition.fields.forEach(fieldDefinition => {
@@ -246,11 +250,12 @@ const visitor = "visitor";
 export async function generateUnion(
     definition: IUnionDefinition,
     knownTypes: Map<string, ITypeDefinition>,
+    externalImports: Map<string, IExternalReference>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
     const unionTsType = "I" + definition.typeName.name;
-    const unionSourceFileInput = processUnionMembers(unionTsType, definition, knownTypes, typeGenerationFlags);
+    const unionSourceFileInput = processUnionMembers(unionTsType, definition, knownTypes, externalImports, typeGenerationFlags);
 
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
     if (unionSourceFileInput.imports.length !== 0) {
@@ -318,10 +323,11 @@ function processUnionMembers(
     unionTsType: string,
     definition: IUnionDefinition,
     knownTypes: Map<string, ITypeDefinition>,
+    externalImports: Map<string, IExternalReference>,
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
-    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false, typeGenerationFlags);
-    const importsVisitor = new ImportsVisitor(knownTypes, definition.typeName, typeGenerationFlags);
+    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, externalImports, definition.typeName, false, typeGenerationFlags);
+    const importsVisitor = new ImportsVisitor(knownTypes, externalImports, definition.typeName, typeGenerationFlags);
 
     const imports: ImportDeclarationStructure[] = [];
     const visitorProperties: PropertySignatureStructure[] = [];
