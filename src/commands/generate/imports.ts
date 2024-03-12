@@ -93,7 +93,15 @@ export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]
         ];
     };
     public external = (obj: IExternalReference): ImportDeclarationStructure[] => {
-        return IType.visit(obj.fallback, this);
+        if (this.typeGenerationFlags.flavorizedExternalImports) {
+            return [{
+                kind: StructureKind.ImportDeclaration,
+                moduleSpecifier: externalReferenceRelativePath(this.currType, obj),
+                namedImports: [externalReferenceModule(obj)],
+            }]
+        } else {
+            return IType.visit(obj.fallback, this);
+        }
     };
     public unknown = (_obj: IType): ImportDeclarationStructure[] => {
         throw new Error("unknown");
@@ -108,6 +116,10 @@ function relativePath(currType: ITypeName, toType: ITypeName) {
     return relativeImport.startsWith("../") ? relativeImport : "./" + relativeImport;
 }
 
+function externalReferenceRelativePath(currType: ITypeName, toType: IExternalReference) {
+    return path.relative(dir(currType), path.join(externalReferenceDir(toType), externalReferenceModule(toType)));
+}
+
 export function dir(typeName: ITypeName) {
     const parts = typeName.package.split(".");
     if (parts.length < 3) {
@@ -116,9 +128,23 @@ export function dir(typeName: ITypeName) {
     return parts.slice(2).join("-");
 }
 
+export function externalReferenceDir(_externalReference: IExternalReference) {
+    // Prevent collisions with real packages by prefixing the directory name with undescore,
+    // which is illegal in Conjure package names.
+    return "_external";
+}
+
 /** Lowercases the name. */
 export function module(typeName: ITypeName) {
     return typeName.name.charAt(0).toLowerCase() + typeName.name.slice(1);
+}
+
+export function externalReferenceModule(typeName: IExternalReference) {
+    // External imports go from 'com.palantir.Foo' to 'com_palantir_Foo'. We have to preserve the FQN to prevent
+    // collisions between identically named classes in different packages.
+    //
+    // For example: com.palantir.Foo and java.util.Foo can collide unless we preseve the package.
+    return typeName.externalReference.package.replace(/\./g, '_') + "_" + typeName.externalReference.name;
 }
 
 export function sortImports(imports: ImportDeclarationStructure[]): ImportDeclarationStructure[] {

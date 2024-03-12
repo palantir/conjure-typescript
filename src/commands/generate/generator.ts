@@ -60,34 +60,47 @@ export async function generate(
         }),
     );
 
+    // Cllects external references that are used in services, types, and errors.
     const externalImports = new Map<string, IExternalReference>();
 
-    const promises: Array<Promise<any>> = [];
+    const serviceTypeErrorPromises: Array<Promise<any>> = [];
     const simpleAst = new SimpleAst(outDir);
 
     definition.services.forEach(serviceDefinition =>
-        promises.push(generateService(serviceDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
+        serviceTypeErrorPromises.push(generateService(serviceDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
     );
     definition.types.forEach(typeDefinition =>
-        promises.push(generateType(typeDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
+        serviceTypeErrorPromises.push(generateType(typeDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
     );
     definition.errors.forEach(errorDefinition =>
-        promises.push(generateError(errorDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
+        serviceTypeErrorPromises.push(generateError(errorDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags)),
     );
 
-    await Promise.all(promises);
+    // Generate all services, types, and errors.
+    try {
+        await Promise.all(serviceTypeErrorPromises);
+    } catch (e) {
+        fs.removeSync(outDir);
+        throw e;
+    }
 
-    externalImports.forEach(externalImport => generateExternalReference(externalImport, simpleAst, typeGenerationFlags));
+    // Generate all the external references that were collected during service, type, and error generation.
+    const externalReferencePromises: Array<Promise<any>> = [];
+    externalImports.forEach(externalImport => externalReferencePromises.push(generateExternalReference(externalImport, simpleAst, typeGenerationFlags)));
+    try {
+        await Promise.all(externalReferencePromises);
+    } catch (e) {
+        fs.removeSync(outDir);
+        throw e;
+    }
 
-    promises.push(simpleAst.generateIndexFiles());
-    return Promise.all(promises)
-        .then(() => {
-            return;
-        })
-        .catch(e => {
-            fs.removeSync(outDir);
-            throw e;
-        });
+    // Generate index files. This can only happen after all TS files have been generated.
+    try {
+        await simpleAst.generateIndexFiles();
+    } catch (e) {
+        fs.removeSync(outDir);
+        throw e;
+    }
 }
 
 class IndexByTypeNameVisitor implements ITypeDefinitionVisitor<void> {

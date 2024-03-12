@@ -29,6 +29,7 @@ import {
 } from "conjure-api";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
 import { createHashableTypeName, isFlavorizable } from "./utils";
+import { externalReferenceModule } from "./imports";
 
 export class TsReturnTypeVisitor implements ITypeVisitor<string> {
     constructor(
@@ -116,7 +117,7 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
     public external = (obj: IExternalReference): string => {
         this.externalImports.set(createHashableTypeName(obj.externalReference), obj);
         if (this.typeGenerationFlags.flavorizedExternalImports) {
-            return "External_" + obj.externalReference.package.replace(".", "_") + "_" + obj.externalReference.name;
+            return externalReferenceModule(obj);
         } else {
             return IType.visit(obj.fallback, this.nestedVisitor());
         }

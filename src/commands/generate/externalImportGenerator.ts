@@ -22,7 +22,7 @@ import { ITypeGenerationFlags } from "./typeGenerationFlags";
 const FLAVOR_TYPE_FIELD = "__conjure_external_import_type";
 const FLAVOR_PACKAGE_FIELD = "__conjure_external_import_package";
 
-export function generateExternalReference(
+export async function generateExternalReference(
     definition: IExternalReference,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
@@ -48,7 +48,7 @@ export function generateExternalReference(
         ].join("\n"),
     });
     sourceFile.formatText();
-    return sourceFile.saveSync();
+    return sourceFile.save();
 }
 
 function primitiveBaseType(obj: PrimitiveType) {
