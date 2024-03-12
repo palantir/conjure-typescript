@@ -171,7 +171,7 @@ function testGenerateAllFilesAreTheSame(
         await fs.mkdirp(outputDir);
         const conjureDefinition = await loadConjureDefinition(definitionFilePath);
 
-        await generate(conjureDefinition, actualTestCaseDir, typeGenerationFlags);
+        await generate(conjureDefinition, outputDir, typeGenerationFlags);
 
         expectIdenticalDirectoryTrees(outputDir, actualTestCaseDir);
     };
