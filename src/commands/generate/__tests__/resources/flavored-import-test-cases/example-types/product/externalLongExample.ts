@@ -1,4 +1,4 @@
-import { java_lang_Long, java_lang_Long, java_lang_Long } from "../_external/java_lang_Long";
+import { java_lang_Long } from "../_external/java_lang_Long";
 
 export interface IExternalLongExample {
     'externalLong': java_lang_Long;

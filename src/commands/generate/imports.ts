@@ -97,7 +97,7 @@ export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]
             return [{
                 kind: StructureKind.ImportDeclaration,
                 moduleSpecifier: externalReferenceRelativePath(this.currType, obj),
-                namedImports: [externalReferenceModule(obj)],
+                namedImports: [{name: externalReferenceModule(obj)}],
             }]
         } else {
             return IType.visit(obj.fallback, this);
