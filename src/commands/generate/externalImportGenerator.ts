@@ -30,7 +30,7 @@ export async function generateExternalReference(
     if (!typeGenerationFlags.flavorizedExternalImports) {
         return;
     }
-    
+
     if (!IType.isPrimitive(definition.fallback)) {
         throw new Error("fallback is always a primitive.");
     }
