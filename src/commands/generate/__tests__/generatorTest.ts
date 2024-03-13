@@ -15,24 +15,13 @@
  * limitations under the License.
  */
 
-import {
-    IAliasDefinition,
-    IConjureDefinition,
-    IEnumDefinition,
-    IObjectDefinition,
-    ITypeDefinition,
-    ITypeDefinitionVisitor,
-    ITypeName,
-    IUnionDefinition,
-} from "conjure-api";
+import { ITypeDefinition } from "conjure-api";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
 import { loadConjureDefinition } from "../generateCommand";
 import { generate } from "../generator";
-import { typeNameToFilePath } from "../simpleAst";
 import { ITypeGenerationFlags } from "../typeGenerationFlags";
-import { isFlavorizable } from "../utils";
 import {
     DEFAULT_TYPE_GENERATION_FLAGS,
     FLAVORED_TYPE_GENERATION_FLAGS,
@@ -112,6 +101,7 @@ const irDir = path.join(__dirname, "../../../../build/ir-test-cases");
 const testCaseDir = path.join(__dirname, "resources/test-cases");
 const flavoredTestCaseDir = path.join(__dirname, "resources/flavored-test-cases");
 const readonlyTestCaseDir = path.join(__dirname, "resources/readonly-test-cases");
+const flavoredImportTestCaseDir = path.join(__dirname, "resources/flavored-import-test-cases");
 
 describe("definitionTests", () => {
     for (const fileName of fs.readdirSync(irDir)) {
@@ -120,6 +110,7 @@ describe("definitionTests", () => {
         const actualTestCaseDir = path.join(testCaseDir, paths);
         const actualFlavoredTestCaseDir = path.join(flavoredTestCaseDir, paths);
         const actualReadonlyTestCaseDir = path.join(readonlyTestCaseDir, paths);
+        const actualFlavoredImportTestCaseDir = path.join(flavoredImportTestCaseDir, paths);
 
         it(
             `${fileName} produces equivalent TypeScript`,
@@ -168,37 +159,29 @@ function testGenerateAllFilesAreTheSame(
 
         await generate(conjureDefinition, outputDir, typeGenerationFlags);
 
-        expectAllFilesAreTheSame(conjureDefinition, outputDir, actualTestCaseDir, typeGenerationFlags);
+        expectIdenticalDirectoryTrees(outputDir, actualTestCaseDir);
     };
 }
 
-function expectAllFilesAreTheSame(
-    definition: IConjureDefinition,
-    actualDir: string,
-    expectedDir: string,
-    typeGenerationFlags: ITypeGenerationFlags,
-) {
-    for (const type of definition.types) {
-        // We do not generate flavoured types for all aliases
-        if (type.type === "alias" && !isFlavorizable(type.alias.alias, typeGenerationFlags.flavorizedAliases)) {
-            continue;
-        }
-        const relativeFilePath = typeNameToFilePath(ITypeDefinition.visit(type, typeNameVisitor));
-        assertOutputAndExpectedAreEqual(actualDir, expectedDir, relativeFilePath);
+function expectIdenticalDirectoryTrees(actualDir: string, expectedDir: string) {
+    const [actualFiles, expectedFiles] = [fs.readdirSync(actualDir), fs.readdirSync(expectedDir)];
+
+    if (actualFiles.length !== expectedFiles.length) {
+        expect(actualFiles).toEqual(expectedFiles);
     }
 
-    for (const service of definition.services) {
-        const relativeFilePath = typeNameToFilePath(service.serviceName);
-        assertOutputAndExpectedAreEqual(actualDir, expectedDir, relativeFilePath);
+    for (const file of actualFiles) {
+        const [actualFile, expectedFile] = [
+            fs.statSync(path.join(actualDir, file)),
+            fs.statSync(path.join(expectedDir, file)),
+        ];
+
+        expect(actualFile.isDirectory()).toEqual(expectedFile.isDirectory());
+
+        if (actualFile.isDirectory()) {
+            expectIdenticalDirectoryTrees(path.join(actualDir, file), path.join(expectedDir, file));
+        } else {
+            assertOutputAndExpectedAreEqual(actualDir, expectedDir, file);
+        }
     }
 }
-
-const typeNameVisitor: ITypeDefinitionVisitor<ITypeName> = {
-    alias: (p1: IAliasDefinition) => p1.typeName,
-    enum: (p1: IEnumDefinition) => p1.typeName,
-    object: (p1: IObjectDefinition) => p1.typeName,
-    union: (p1: IUnionDefinition) => p1.typeName,
-    unknown: (p1: ITypeDefinition) => {
-        throw new Error(`unknown type ${p1}`);
-    },
-};
