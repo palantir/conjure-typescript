@@ -17,9 +17,9 @@
 
 import { IExternalReference, IType } from "conjure-api";
 import { SimpleAst } from "./simpleAst";
+import { primitiveToReturnType } from "./tsReturnTypeVisitor";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
 import { isFlavorizable } from "./utils";
-import { primitiveToReturnType } from "./tsReturnTypeVisitor";
 
 const FLAVOR_TYPE_FIELD = "__conjure_external_import_type";
 const FLAVOR_PACKAGE_FIELD = "__conjure_external_import_package";
