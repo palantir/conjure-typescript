@@ -38,7 +38,7 @@ export async function generateExternalReference(
     }
 
     const fieldType = primitiveToReturnType(definition.fallback.primitive, false);
-    const sourceFile = simpleAst.createExternalImportSourceFile(definition);
+    const sourceFile = simpleAst.createExternalReferenceSourceFile(definition);
     sourceFile.addTypeAlias({
         isExported: true,
         name: definition.externalReference.name,

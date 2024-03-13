@@ -37,7 +37,7 @@ export class SimpleAst {
         });
     }
 
-    public createExternalImportSourceFile(currType: IExternalReference): SourceFile {
+    public createExternalReferenceSourceFile(currType: IExternalReference): SourceFile {
         return this.ast.createSourceFile(path.join(this.outDir, typeNameToExternalReferenceFilePath(currType)));
     }
 
