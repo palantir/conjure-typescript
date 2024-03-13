@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
+import { IExternalReference, IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { TsReturnTypeVisitor } from "../tsReturnTypeVisitor";
 import { createHashableTypeName } from "../utils";
 import {
     DEFAULT_TYPE_GENERATION_FLAGS,
+    FLAVORED_REFERENCE_GENERATION_FLAGS,
     FLAVORED_TYPE_GENERATION_FLAGS,
     READONLY_TYPE_GENERATION_FLAGS,
 } from "./resources/constants";
@@ -51,6 +52,15 @@ const enumType = ITypeDefinition.enum_({
     typeName: enumName,
     values: [{ value: "FOO" }],
 });
+
+const stringExternalRefName: IExternalReference = {
+    externalReference: { name: "JavaType", package: "com.palantir.conjure" },
+    fallback: IType.primitive(PrimitiveType.STRING),
+};
+const binaryExternalRefName: IExternalReference = {
+    externalReference: { name: "JavaType", package: "com.palantir.conjure" },
+    fallback: IType.primitive(PrimitiveType.BINARY),
+};
 
 const fakeTypeName = { name: "someObject", package: "com.palantir.example" };
 
@@ -183,13 +193,13 @@ describe("TsTypeVisitor", () => {
             expect(visitor.external(externalType)).toEqual("any");
         });
 
-        it("follows complex external fallback", () => {
+        it("non-primitive fallbacks are banned", () => {
             const unusedTypeName = { name: "Unused", package: "" };
             const externalType = {
                 externalReference: unusedTypeName,
                 fallback: IType.list({ itemType: objectReference }),
             };
-            expect(visitor.external(externalType)).toEqual("Array<IObject>");
+            expect(() => visitor.external(externalType)).toThrow();
         });
     });
 
@@ -225,6 +235,41 @@ describe("TsTypeVisitor", () => {
             expect(visitor.reference(binaryAliasName)).toEqual("string");
             expect(topLevelVisitor.reference(aliasName)).toEqual("IAlias");
             expect(topLevelVisitor.reference(binaryAliasName)).toEqual("ReadableStream<Uint8Array>");
+        });
+    });
+
+    describe("with flavored reference generation flags", () => {
+        const visitor = new TsReturnTypeVisitor(
+            new Map<string, ITypeDefinition>([
+                [createHashableTypeName(objectName), object],
+                [createHashableTypeName(aliasName), alias],
+                [createHashableTypeName(binaryAliasName), binaryAlias],
+                [createHashableTypeName(enumName), enumType],
+            ]),
+            new Map(),
+            fakeTypeName,
+            false,
+            FLAVORED_REFERENCE_GENERATION_FLAGS,
+        );
+
+        const topLevelVisitor = new TsReturnTypeVisitor(
+            new Map<string, ITypeDefinition>([
+                [createHashableTypeName(objectName), object],
+                [createHashableTypeName(aliasName), alias],
+                [createHashableTypeName(binaryAliasName), binaryAlias],
+                [createHashableTypeName(enumName), enumType],
+            ]),
+            new Map(),
+            fakeTypeName,
+            true,
+            FLAVORED_REFERENCE_GENERATION_FLAGS,
+        );
+
+        it("follows alias reference", () => {
+            expect(visitor.external(stringExternalRefName)).toEqual("JavaType");
+            expect(visitor.external(binaryExternalRefName)).toEqual("string");
+            expect(topLevelVisitor.external(stringExternalRefName)).toEqual("JavaType");
+            expect(topLevelVisitor.external(binaryExternalRefName)).toEqual("ReadableStream<Uint8Array>");
         });
     });
 
@@ -284,13 +329,13 @@ describe("TsTypeVisitor", () => {
             expect(tsType).toEqual(`{ readonly [key in ${enumName.name}]?: IObject }`);
         });
 
-        it("follows complex external fallback", () => {
+        it("non-primitive fallbacks are banned", () => {
             const unusedTypeName = { name: "Unused", package: "" };
             const externalType = {
                 externalReference: unusedTypeName,
                 fallback: IType.list({ itemType: objectReference }),
             };
-            expect(visitor.external(externalType)).toEqual("ReadonlyArray<IObject>");
+            expect(() => visitor.external(externalType)).toThrow();
         });
     });
 });

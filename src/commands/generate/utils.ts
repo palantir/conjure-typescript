@@ -136,6 +136,6 @@ const NON_FLAVORIZABLE_TYPES = new Set<PrimitiveType>([
     PrimitiveType.DATETIME,
 ]);
 
-export function isFlavorizable(type: IType, flavorizedAliases: boolean): boolean {
-    return flavorizedAliases && IType.isPrimitive(type) && !NON_FLAVORIZABLE_TYPES.has(type.primitive);
+export function isFlavorizable(type: IType, flavorized: boolean): boolean {
+    return flavorized && IType.isPrimitive(type) && !NON_FLAVORIZABLE_TYPES.has(type.primitive);
 }

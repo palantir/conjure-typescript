@@ -131,8 +131,8 @@ export function dir(typeName: ITypeName) {
 }
 
 export function externalReferenceDir(externalReference: IExternalReference) {
-    // Prevent collisions with real packages by prefixing the directory name with undescore,
-    // which is illegal in Conjure package names.
+    // Prefix the package with "_external" to prevent collisions with actual Conjure packages. The
+    // leading underscore is illegal in Conjure packages.
     return "_external-" + externalReference.externalReference.package.split(".").join("-");
 }
 
@@ -142,10 +142,9 @@ export function module(typeName: ITypeName) {
 }
 
 export function externalReferenceModule(typeName: IExternalReference) {
-    // External imports go from 'com.palantir.Foo' to 'com_palantir_Foo'. We have to preserve the FQN to prevent
-    // collisions between identically named classes in different packages.
-    //
-    // For example: com.palantir.Foo and java.util.Foo can collide unless we preseve the package.
+    // Don't mutate the name of the external reference's name. Java classes will almost always have an
+    // initial capital letter, but it's not a language requirement, and if classes 'Foo' and 'foo' exist as
+    // imports from the same package, lower-casing the first letter here will lead to a collision.
     return typeName.externalReference.name;
 }
 

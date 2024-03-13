@@ -218,35 +218,11 @@ describe("typeGenerator", () => {
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/StringReference.ts");
         });
 
-        it("emits flavored external reference for datetime when flag is on", async () => {
-            await generateExternalReference(
-                {
-                    externalReference: { package: "com.palantir.external", name: "StringReference" },
-                    fallback: IType.primitive(PrimitiveType.DATETIME),
-                },
-                simpleAst,
-                FLAVORED_REFERENCE_GENERATION_FLAGS,
-            );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/StringReference.ts");
-        });
-
         it("emits flavored external reference for bearer token when flag is on", async () => {
             await generateExternalReference(
                 {
                     externalReference: { package: "com.palantir.external", name: "StringReference" },
                     fallback: IType.primitive(PrimitiveType.BEARERTOKEN),
-                },
-                simpleAst,
-                FLAVORED_REFERENCE_GENERATION_FLAGS,
-            );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/StringReference.ts");
-        });
-
-        it("emits flavored external reference for binary when flag is on", async () => {
-            await generateExternalReference(
-                {
-                    externalReference: { package: "com.palantir.external", name: "StringReference" },
-                    fallback: IType.primitive(PrimitiveType.BINARY),
                 },
                 simpleAst,
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
@@ -276,30 +252,6 @@ describe("typeGenerator", () => {
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
             );
             assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/NumberReference.ts");
-        });
-
-        it("emits flavored external reference for any when flag is on", async () => {
-            await generateExternalReference(
-                {
-                    externalReference: { package: "com.palantir.external", name: "AnyReference" },
-                    fallback: IType.primitive(PrimitiveType.ANY),
-                },
-                simpleAst,
-                FLAVORED_REFERENCE_GENERATION_FLAGS,
-            );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/AnyReference.ts");
-        });
-
-        it("emits flavored external reference for boolean when flag is on", async () => {
-            await generateExternalReference(
-                {
-                    externalReference: { package: "com.palantir.external", name: "BooleanReference" },
-                    fallback: IType.primitive(PrimitiveType.BOOLEAN),
-                },
-                simpleAst,
-                FLAVORED_REFERENCE_GENERATION_FLAGS,
-            );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/BooleanReference.ts");
         });
 
         it("emits flavored external reference for double when flag is on", async () => {

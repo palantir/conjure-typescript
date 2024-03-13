@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-import { IExternalReference, IType, PrimitiveType } from "conjure-api";
+import { IExternalReference, IType } from "conjure-api";
 import { SimpleAst } from "./simpleAst";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
+import { isFlavorizable } from "./utils";
+import { primitiveToReturnType } from "./tsReturnTypeVisitor";
 
 const FLAVOR_TYPE_FIELD = "__conjure_external_import_type";
 const FLAVOR_PACKAGE_FIELD = "__conjure_external_import_package";
@@ -27,15 +29,15 @@ export async function generateExternalReference(
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
-    if (!typeGenerationFlags.flavorizedExternalImports) {
-        return;
-    }
-
     if (!IType.isPrimitive(definition.fallback)) {
         throw new Error("fallback is always a primitive.");
     }
 
-    const fieldType = primitiveBaseType(definition.fallback.primitive);
+    if (!isFlavorizable(definition.fallback, typeGenerationFlags.flavorizedExternalImports)) {
+        return;
+    }
+
+    const fieldType = primitiveToReturnType(definition.fallback.primitive, false);
     const sourceFile = simpleAst.createExternalImportSourceFile(definition);
     sourceFile.addTypeAlias({
         isExported: true,
@@ -49,27 +51,4 @@ export async function generateExternalReference(
     });
     sourceFile.formatText();
     return sourceFile.save();
-}
-
-function primitiveBaseType(obj: PrimitiveType) {
-    switch (obj) {
-        case PrimitiveType.STRING:
-        case PrimitiveType.DATETIME:
-        case PrimitiveType.RID:
-        case PrimitiveType.BEARERTOKEN:
-        case PrimitiveType.UUID:
-        case PrimitiveType.BINARY:
-            return "string";
-        case PrimitiveType.DOUBLE:
-            return '(number | "NaN")';
-        case PrimitiveType.INTEGER:
-        case PrimitiveType.SAFELONG:
-            return "number";
-        case PrimitiveType.ANY:
-            return "any";
-        case PrimitiveType.BOOLEAN:
-            return "boolean";
-        default:
-            throw new Error("unknown primitive type");
-    }
 }

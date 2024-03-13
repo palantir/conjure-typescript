@@ -31,6 +31,31 @@ import { externalReferenceModule } from "./imports";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
 import { createHashableTypeName, isFlavorizable } from "./utils";
 
+export function primitiveToReturnType(obj: PrimitiveType, isTopLevelBinary: boolean) {
+    switch (obj) {
+        case PrimitiveType.STRING:
+        case PrimitiveType.DATETIME:
+        case PrimitiveType.RID:
+        case PrimitiveType.BEARERTOKEN:
+            return "string";
+        case PrimitiveType.DOUBLE:
+            return 'number | "NaN"';
+        case PrimitiveType.INTEGER:
+        case PrimitiveType.SAFELONG:
+            return "number";
+        case PrimitiveType.BINARY:
+            return isTopLevelBinary ? "ReadableStream<Uint8Array>" : "string";
+        case PrimitiveType.ANY:
+            return "any";
+        case PrimitiveType.BOOLEAN:
+            return "boolean";
+        case PrimitiveType.UUID:
+            return "string";
+        default:
+            throw new Error("unknown primitive type");
+    }
+}
+
 export class TsReturnTypeVisitor implements ITypeVisitor<string> {
     constructor(
         protected knownTypes: Map<string, ITypeDefinition>,
@@ -41,28 +66,7 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
     ) {}
 
     public primitive = (obj: PrimitiveType): string => {
-        switch (obj) {
-            case PrimitiveType.STRING:
-            case PrimitiveType.DATETIME:
-            case PrimitiveType.RID:
-            case PrimitiveType.BEARERTOKEN:
-                return "string";
-            case PrimitiveType.DOUBLE:
-                return 'number | "NaN"';
-            case PrimitiveType.INTEGER:
-            case PrimitiveType.SAFELONG:
-                return "number";
-            case PrimitiveType.BINARY:
-                return this.isTopLevelBinary ? "ReadableStream<Uint8Array>" : "string";
-            case PrimitiveType.ANY:
-                return "any";
-            case PrimitiveType.BOOLEAN:
-                return "boolean";
-            case PrimitiveType.UUID:
-                return "string";
-            default:
-                throw new Error("unknown primitive type");
-        }
+        return primitiveToReturnType(obj, this.isTopLevelBinary);
     };
     public map = (obj: IMapType): string => {
         const valueTsType = IType.visit(obj.valueType, this.nestedVisitor());
@@ -79,6 +83,15 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
                     return `{ ${maybeReadonly}[key: I${obj.keyType.reference.name}]: ${valueTsType} }`;
                 }
             }
+        } else if (
+            IType.isExternal(obj.keyType) &&
+            isFlavorizable(obj.keyType.external.fallback, this.typeGenerationFlags.flavorizedExternalImports)
+        ) {
+            this.externalImports.set(
+                createHashableTypeName(obj.keyType.external.externalReference),
+                obj.keyType.external,
+            );
+            return `{ ${maybeReadonly}[key: ${externalReferenceModule(obj.keyType.external)}]: ${valueTsType} }`;
         }
         return `{ ${maybeReadonly}[key: string]: ${valueTsType} }`;
     };
@@ -115,11 +128,14 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
         return withIPrefix;
     };
     public external = (obj: IExternalReference): string => {
-        this.externalImports.set(createHashableTypeName(obj.externalReference), obj);
-        if (this.typeGenerationFlags.flavorizedExternalImports) {
+        if (isFlavorizable(obj.fallback, this.typeGenerationFlags.flavorizedExternalImports)) {
+            this.externalImports.set(createHashableTypeName(obj.externalReference), obj);
             return externalReferenceModule(obj);
         } else {
-            return IType.visit(obj.fallback, this.nestedVisitor());
+            if (!IType.isPrimitive(obj.fallback)) {
+                throw new Error("Fallback must be a primitive.");
+            }
+            return this.primitive(obj.fallback.primitive);
         }
     };
     public unknown = (_: IType): string => {

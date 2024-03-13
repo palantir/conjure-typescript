@@ -60,7 +60,7 @@ export async function generate(
         }),
     );
 
-    // Cllects external references that are used in services, types, and errors.
+    // Collects external references that are used in services, types, and errors.
     const externalImports = new Map<string, IExternalReference>();
 
     const serviceTypeErrorPromises: Array<Promise<any>> = [];
