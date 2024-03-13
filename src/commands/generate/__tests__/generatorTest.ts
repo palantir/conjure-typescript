@@ -101,7 +101,6 @@ const irDir = path.join(__dirname, "../../../../build/ir-test-cases");
 const testCaseDir = path.join(__dirname, "resources/test-cases");
 const flavoredTestCaseDir = path.join(__dirname, "resources/flavored-test-cases");
 const readonlyTestCaseDir = path.join(__dirname, "resources/readonly-test-cases");
-const flavoredImportTestCaseDir = path.join(__dirname, "resources/flavored-import-test-cases");
 
 describe("definitionTests", () => {
     for (const fileName of fs.readdirSync(irDir)) {
@@ -110,7 +109,6 @@ describe("definitionTests", () => {
         const actualTestCaseDir = path.join(testCaseDir, paths);
         const actualFlavoredTestCaseDir = path.join(flavoredTestCaseDir, paths);
         const actualReadonlyTestCaseDir = path.join(readonlyTestCaseDir, paths);
-        const actualFlavoredImportTestCaseDir = path.join(flavoredImportTestCaseDir, paths);
 
         it(
             `${fileName} produces equivalent TypeScript`,
