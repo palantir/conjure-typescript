@@ -191,7 +191,7 @@ describe("typeGenerator", () => {
                 simpleAst,
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
             );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external/com_palantir_external_StringReference.ts");
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/StringReference.ts");
         });
 
         it("emits flavored external reference for uuid when flag is on", async () => {
@@ -203,7 +203,7 @@ describe("typeGenerator", () => {
                 simpleAst,
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
             );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external/com_palantir_external_StringReference.ts");
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/StringReference.ts");
         });
 
         it("emits flavored external reference for string when flag is on", async () => {
@@ -215,7 +215,7 @@ describe("typeGenerator", () => {
                 simpleAst,
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
             );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external/com_palantir_external_StringReference.ts");
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/StringReference.ts");
         });
 
         it("emits flavored external reference for datetime when flag is on", async () => {
@@ -227,7 +227,7 @@ describe("typeGenerator", () => {
                 simpleAst,
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
             );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external/com_palantir_external_StringReference.ts");
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/StringReference.ts");
         });
 
         it("emits flavored external reference for bearer token when flag is on", async () => {
@@ -239,7 +239,7 @@ describe("typeGenerator", () => {
                 simpleAst,
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
             );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external/com_palantir_external_StringReference.ts");
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/StringReference.ts");
         });
 
         it("emits flavored external reference for binary when flag is on", async () => {
@@ -251,7 +251,7 @@ describe("typeGenerator", () => {
                 simpleAst,
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
             );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external/com_palantir_external_StringReference.ts");
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/StringReference.ts");
         });
 
         it("emits flavored external reference for safelong when flag is on", async () => {
@@ -263,7 +263,7 @@ describe("typeGenerator", () => {
                 simpleAst,
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
             );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external/com_palantir_external_NumberReference.ts");
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/NumberReference.ts");
         });
 
         it("emits flavored external reference for integer when flag is on", async () => {
@@ -275,7 +275,7 @@ describe("typeGenerator", () => {
                 simpleAst,
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
             );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external/com_palantir_external_NumberReference.ts");
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/NumberReference.ts");
         });
 
         it("emits flavored external reference for any when flag is on", async () => {
@@ -287,7 +287,7 @@ describe("typeGenerator", () => {
                 simpleAst,
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
             );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external/com_palantir_external_AnyReference.ts");
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/AnyReference.ts");
         });
 
         it("emits flavored external reference for boolean when flag is on", async () => {
@@ -299,7 +299,7 @@ describe("typeGenerator", () => {
                 simpleAst,
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
             );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external/com_palantir_external_BooleanReference.ts");
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/BooleanReference.ts");
         });
 
         it("emits flavored external reference for double when flag is on", async () => {
@@ -311,7 +311,7 @@ describe("typeGenerator", () => {
                 simpleAst,
                 FLAVORED_REFERENCE_GENERATION_FLAGS,
             );
-            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external/com_palantir_external_DoubleReference.ts");
+            assertOutputAndExpectedAreEqual(outDir, expectedDir, "_external-com-palantir-external/DoubleReference.ts");
         });
     });
 

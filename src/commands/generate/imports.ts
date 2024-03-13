@@ -130,10 +130,10 @@ export function dir(typeName: ITypeName) {
     return parts.slice(2).join("-");
 }
 
-export function externalReferenceDir(_externalReference: IExternalReference) {
+export function externalReferenceDir(externalReference: IExternalReference) {
     // Prevent collisions with real packages by prefixing the directory name with undescore,
     // which is illegal in Conjure package names.
-    return "_external";
+    return "_external-" + externalReference.externalReference.package.split(".").join("-");
 }
 
 /** Lowercases the name. */
@@ -146,7 +146,7 @@ export function externalReferenceModule(typeName: IExternalReference) {
     // collisions between identically named classes in different packages.
     //
     // For example: com.palantir.Foo and java.util.Foo can collide unless we preseve the package.
-    return typeName.externalReference.package.replace(/\./g, "_") + "_" + typeName.externalReference.name;
+    return typeName.externalReference.name;
 }
 
 export function sortImports(imports: ImportDeclarationStructure[]): ImportDeclarationStructure[] {
