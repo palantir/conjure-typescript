@@ -40,7 +40,12 @@ export function generateError(
         false,
         typeGenerationFlags,
     );
-    const importsVisitor = new ImportsVisitor(knownTypes, externalReferences, definition.errorName, typeGenerationFlags);
+    const importsVisitor = new ImportsVisitor(
+        knownTypes,
+        externalReferences,
+        definition.errorName,
+        typeGenerationFlags,
+    );
     const imports: ImportDeclarationStructure[] = [];
 
     const args = definition.safeArgs.concat(definition.unsafeArgs);

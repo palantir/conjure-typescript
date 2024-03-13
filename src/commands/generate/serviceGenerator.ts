@@ -81,7 +81,12 @@ export function generateService(
         true,
         typeGenerationFlags,
     );
-    const importsVisitor = new ImportsVisitor(knownTypes, externalReferences, definition.serviceName, typeGenerationFlags);
+    const importsVisitor = new ImportsVisitor(
+        knownTypes,
+        externalReferences,
+        definition.serviceName,
+        typeGenerationFlags,
+    );
     const mediaTypeVisitor = new MediaTypeVisitor(knownTypes);
 
     const endpointSignatures: MethodSignatureStructure[] = [];
