@@ -61,24 +61,24 @@ export async function generate(
     );
 
     // Collects external references that are used in services, types, and errors.
-    const externalImports = new Map<string, IExternalReference>();
+    const externalReferences = new Map<string, IExternalReference>();
 
     const serviceTypeErrorPromises: Array<Promise<any>> = [];
     const simpleAst = new SimpleAst(outDir);
 
     definition.services.forEach(serviceDefinition =>
         serviceTypeErrorPromises.push(
-            generateService(serviceDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags),
+            generateService(serviceDefinition, knownTypes, externalReferences, simpleAst, typeGenerationFlags),
         ),
     );
     definition.types.forEach(typeDefinition =>
         serviceTypeErrorPromises.push(
-            generateType(typeDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags),
+            generateType(typeDefinition, knownTypes, externalReferences, simpleAst, typeGenerationFlags),
         ),
     );
     definition.errors.forEach(errorDefinition =>
         serviceTypeErrorPromises.push(
-            generateError(errorDefinition, knownTypes, externalImports, simpleAst, typeGenerationFlags),
+            generateError(errorDefinition, knownTypes, externalReferences, simpleAst, typeGenerationFlags),
         ),
     );
 
@@ -92,7 +92,7 @@ export async function generate(
 
     // Generate all the external references that were collected during service, type, and error generation.
     const externalReferencePromises: Array<Promise<any>> = [];
-    externalImports.forEach(externalImport =>
+    externalReferences.forEach(externalImport =>
         externalReferencePromises.push(generateExternalReference(externalImport, simpleAst, typeGenerationFlags)),
     );
     try {

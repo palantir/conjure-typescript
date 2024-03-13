@@ -44,18 +44,18 @@ import { addDeprecatedToDocs, doubleQuote, isFlavorizable, isValidFunctionName, 
 export function generateType(
     definition: ITypeDefinition,
     knownTypes: Map<string, ITypeDefinition>,
-    externalImports: Map<string, IExternalReference>,
+    externalReferences: Map<string, IExternalReference>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     if (ITypeDefinition.isAlias(definition)) {
-        return generateAlias(definition.alias, knownTypes, externalImports, simpleAst, typeGenerationFlags);
+        return generateAlias(definition.alias, knownTypes, externalReferences, simpleAst, typeGenerationFlags);
     } else if (ITypeDefinition.isEnum(definition)) {
         return generateEnum(definition.enum, simpleAst);
     } else if (ITypeDefinition.isObject(definition)) {
-        return generateObject(definition.object, knownTypes, externalImports, simpleAst, typeGenerationFlags);
+        return generateObject(definition.object, knownTypes, externalReferences, simpleAst, typeGenerationFlags);
     } else if (ITypeDefinition.isUnion(definition)) {
-        return generateUnion(definition.union, knownTypes, externalImports, simpleAst, typeGenerationFlags);
+        return generateUnion(definition.union, knownTypes, externalReferences, simpleAst, typeGenerationFlags);
     } else {
         throw Error("unsupported type: " + definition);
     }

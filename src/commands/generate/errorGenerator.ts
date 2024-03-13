@@ -26,7 +26,7 @@ import { doubleQuote, singleQuote } from "./utils";
 export function generateError(
     definition: IErrorDefinition,
     knownTypes: Map<string, ITypeDefinition>,
-    externalImports: Map<string, IExternalReference>,
+    externalReferences: Map<string, IExternalReference>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
@@ -35,12 +35,12 @@ export function generateError(
     const errorName = `${definition.namespace}:${definition.errorName.name}`;
     const tsTypeVisitor = new TsReturnTypeVisitor(
         knownTypes,
-        externalImports,
+        externalReferences,
         definition.errorName,
         false,
         typeGenerationFlags,
     );
-    const importsVisitor = new ImportsVisitor(knownTypes, externalImports, definition.errorName, typeGenerationFlags);
+    const importsVisitor = new ImportsVisitor(knownTypes, externalReferences, definition.errorName, typeGenerationFlags);
     const imports: ImportDeclarationStructure[] = [];
 
     const args = definition.safeArgs.concat(definition.unsafeArgs);

@@ -62,26 +62,26 @@ const UNDEFINED_CONSTANT = "__undefined";
 export function generateService(
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
-    externalImports: Map<string, IExternalReference>,
+    externalReferences: Map<string, IExternalReference>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
     const tsReturnTypeVisitor = new TsReturnTypeVisitor(
         knownTypes,
-        externalImports,
+        externalReferences,
         definition.serviceName,
         true,
         typeGenerationFlags,
     );
     const tsArgumentTypeVisitor = new TsArgumentTypeVisitor(
         knownTypes,
-        externalImports,
+        externalReferences,
         definition.serviceName,
         true,
         typeGenerationFlags,
     );
-    const importsVisitor = new ImportsVisitor(knownTypes, externalImports, definition.serviceName, typeGenerationFlags);
+    const importsVisitor = new ImportsVisitor(knownTypes, externalReferences, definition.serviceName, typeGenerationFlags);
     const mediaTypeVisitor = new MediaTypeVisitor(knownTypes);
 
     const endpointSignatures: MethodSignatureStructure[] = [];
