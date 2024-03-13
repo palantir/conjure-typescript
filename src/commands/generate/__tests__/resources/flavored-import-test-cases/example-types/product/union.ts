@@ -1,4 +1,4 @@
-import { java_lang_Long } from "../_external/java_lang_Long";
+import { Long } from "../_external-java-lang/Long";
 
 export interface IUnion_Foo {
     'foo': string;
@@ -11,7 +11,7 @@ export interface IUnion_Bar {
 }
 
 export interface IUnion_Baz {
-    'baz': java_lang_Long;
+    'baz': Long;
     'type': "baz";
 }
 
@@ -41,7 +41,7 @@ function isBaz(obj: IUnion): obj is IUnion_Baz {
     return (obj.type === "baz");
 }
 
-function baz(obj: java_lang_Long): IUnion_Baz {
+function baz(obj: Long): IUnion_Baz {
     return {
         baz: obj,
         type: "baz",
@@ -53,7 +53,7 @@ export type IUnion = IUnion_Foo | IUnion_Bar | IUnion_Baz;
 export interface IUnionVisitor<T> {
     'foo': (obj: string) => T;
     'bar': (obj: number) => T;
-    'baz': (obj: java_lang_Long) => T;
+    'baz': (obj: Long) => T;
     'unknown': (obj: IUnion) => T;
 }
 

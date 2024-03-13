@@ -1,6 +1,6 @@
-import { test_api_ExampleExternalReference } from "../_external/test_api_ExampleExternalReference";
+import { ExampleExternalReference } from "../_external-test-api/ExampleExternalReference";
 
 export interface ICovariantListExample {
     'items': Array<any>;
-    'externalItems': Array<test_api_ExampleExternalReference>;
+    'externalItems': Array<ExampleExternalReference>;
 }
