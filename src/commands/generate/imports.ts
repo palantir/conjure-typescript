@@ -93,7 +93,7 @@ export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]
         ];
     };
     public external = (obj: IExternalReference): ImportDeclarationStructure[] => {
-        if (this.typeGenerationFlags.flavorizedExternalImports) {
+        if (this.typeGenerationFlags.flavorizedExternalReferences) {
             return [
                 {
                     kind: StructureKind.ImportDeclaration,

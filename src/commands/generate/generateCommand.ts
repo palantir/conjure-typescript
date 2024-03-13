@@ -143,7 +143,7 @@ export class GenerateCommand implements CommandModule {
         const generatePromise = generate(conjureDefinition, output, {
             flavorizedAliases: args.flavorizedAliases ?? false,
             readonlyInterfaces: args.readonlyInterfaces ?? false,
-            flavorizedExternalImports: args.flavorizedExternalReferences ?? false,
+            flavorizedExternalReferences: args.flavorizedExternalReferences ?? false,
         });
         if (rawSource) {
             return generatePromise;

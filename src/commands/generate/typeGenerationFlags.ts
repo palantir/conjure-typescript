@@ -27,7 +27,7 @@ export interface ITypeGenerationFlags {
     /**
      * When set to true compatible external imports will be generated as flavoured strings.
      */
-    readonly flavorizedExternalImports: boolean;
+    readonly flavorizedExternalReferences: boolean;
 
     /**
      * Generated interfaces have readonly properties and use ReadonlyArray instead of Array.

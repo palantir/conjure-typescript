@@ -33,7 +33,7 @@ export async function generateExternalReference(
         throw new Error("fallback is always a primitive.");
     }
 
-    if (!isFlavorizable(definition.fallback, typeGenerationFlags.flavorizedExternalImports)) {
+    if (!isFlavorizable(definition.fallback, typeGenerationFlags.flavorizedExternalReferences)) {
         return;
     }
 

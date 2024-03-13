@@ -85,7 +85,7 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
             }
         } else if (
             IType.isExternal(obj.keyType) &&
-            isFlavorizable(obj.keyType.external.fallback, this.typeGenerationFlags.flavorizedExternalImports)
+            isFlavorizable(obj.keyType.external.fallback, this.typeGenerationFlags.flavorizedExternalReferences)
         ) {
             this.externalImports.set(
                 createHashableTypeName(obj.keyType.external.externalReference),
@@ -128,7 +128,7 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
         return withIPrefix;
     };
     public external = (obj: IExternalReference): string => {
-        if (isFlavorizable(obj.fallback, this.typeGenerationFlags.flavorizedExternalImports)) {
+        if (isFlavorizable(obj.fallback, this.typeGenerationFlags.flavorizedExternalReferences)) {
             this.externalImports.set(createHashableTypeName(obj.externalReference), obj);
             return externalReferenceModule(obj);
         } else {
