@@ -3,8 +3,307 @@ import { IDataset } from "../product-datasets/dataset";
 import { ICreateDatasetRequest } from "../product/createDatasetRequest";
 import { IHttpApiBridge } from "conjure-client";
 
-/** Constant reference to `undefined` that we expect to get minified and therefore reduce total code size */
+/** Constant references that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
+
+/**
+ * Returns a mapping from file system id to backing file system configuration.
+ *
+ */
+export function TestService_getFileSystems(bridge: IHttpApiBridge['call']): Promise<{ readonly [key: string]: IBackingFileSystem }> {
+    return bridge(...[
+        "TestService",
+        "getFileSystems",
+        "GET",
+        "/catalog/fileSystems",
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_createDataset(bridge: IHttpApiBridge['call'], request: ICreateDatasetRequest, testHeaderArg: string): Promise<IDataset> {
+    return bridge(...[
+        "TestService",
+        "createDataset",
+        "POST",
+        "/catalog/datasets",
+        request,
+        {
+            "Test-Header": testHeaderArg,
+        },
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_getDataset(bridge: IHttpApiBridge['call'], datasetRid: string): Promise<IDataset | null> {
+    return bridge(...[
+        "TestService",
+        "getDataset",
+        "GET",
+        "/catalog/datasets/{datasetRid}",
+        ,
+        ,
+        ,
+        [
+            datasetRid,
+        ],
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_getRawData(bridge: IHttpApiBridge['call'], datasetRid: string): Promise<ReadableStream<Uint8Array>> {
+    return bridge(...[
+        "TestService",
+        "getRawData",
+        "GET",
+        "/catalog/datasets/{datasetRid}/raw",
+        ,
+        ,
+        ,
+        [
+            datasetRid,
+        ],
+        ,
+        "application/octet-stream"
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_getAliasedRawData(bridge: IHttpApiBridge['call'], datasetRid: string): Promise<ReadableStream<Uint8Array>> {
+    return bridge(...[
+        "TestService",
+        "getAliasedRawData",
+        "GET",
+        "/catalog/datasets/{datasetRid}/raw-aliased",
+        ,
+        ,
+        ,
+        [
+            datasetRid,
+        ],
+        ,
+        "application/octet-stream"
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_maybeGetRawData(bridge: IHttpApiBridge['call'], datasetRid: string): Promise<ReadableStream<Uint8Array> | null> {
+    return bridge(...[
+        "TestService",
+        "maybeGetRawData",
+        "GET",
+        "/catalog/datasets/{datasetRid}/raw-maybe",
+        ,
+        ,
+        ,
+        [
+            datasetRid,
+        ],
+        ,
+        "application/octet-stream"
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_getAliasedString(bridge: IHttpApiBridge['call'], datasetRid: string): Promise<string> {
+    return bridge(...[
+        "TestService",
+        "getAliasedString",
+        "GET",
+        "/catalog/datasets/{datasetRid}/string-aliased",
+        ,
+        ,
+        ,
+        [
+            datasetRid,
+        ],
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_uploadRawData(bridge: IHttpApiBridge['call'], input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<void> {
+    return bridge(...[
+        "TestService",
+        "uploadRawData",
+        "POST",
+        "/catalog/datasets/upload-raw",
+        input,
+        ,
+        ,
+        ,
+        "application/octet-stream",
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_uploadAliasedRawData(bridge: IHttpApiBridge['call'], input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<void> {
+    return bridge(...[
+        "TestService",
+        "uploadAliasedRawData",
+        "POST",
+        "/catalog/datasets/upload-raw-aliased",
+        input,
+        ,
+        ,
+        ,
+        "application/octet-stream",
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_getBranches(bridge: IHttpApiBridge['call'], datasetRid: string): Promise<ReadonlyArray<string>> {
+    return bridge(...[
+        "TestService",
+        "getBranches",
+        "GET",
+        "/catalog/datasets/{datasetRid}/branches",
+        ,
+        ,
+        ,
+        [
+            datasetRid,
+        ],
+    ] as Parameters<typeof bridge>);
+}
+
+/**
+ * Gets all branches of this dataset.
+ *
+ * @deprecated use getBranches instead
+ */
+export function TestService_getBranchesDeprecated(bridge: IHttpApiBridge['call'], datasetRid: string): Promise<ReadonlyArray<string>> {
+    return bridge(...[
+        "TestService",
+        "getBranchesDeprecated",
+        "GET",
+        "/catalog/datasets/{datasetRid}/branchesDeprecated",
+        ,
+        ,
+        ,
+        [
+            datasetRid,
+        ],
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_resolveBranch(bridge: IHttpApiBridge['call'], datasetRid: string, branch: string): Promise<string | null> {
+    return bridge(...[
+        "TestService",
+        "resolveBranch",
+        "GET",
+        "/catalog/datasets/{datasetRid}/branches/{branch:.+}/resolve",
+        ,
+        ,
+        ,
+        [
+            datasetRid,
+
+            branch,
+        ],
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_testParam(bridge: IHttpApiBridge['call'], datasetRid: string): Promise<string | null> {
+    return bridge(...[
+        "TestService",
+        "testParam",
+        "GET",
+        "/catalog/datasets/{datasetRid}/testParam",
+        ,
+        ,
+        ,
+        [
+            datasetRid,
+        ],
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_testQueryParams(bridge: IHttpApiBridge['call'], query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<number> {
+    return bridge(...[
+        "TestService",
+        "testQueryParams",
+        "POST",
+        "/catalog/test-query-params",
+        query,
+        ,
+        {
+            "different": something,
+
+            "implicit": implicit,
+
+            "setEnd": setEnd,
+
+            "optionalMiddle": optionalMiddle,
+
+            "optionalEnd": optionalEnd,
+        },
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_testNoResponseQueryParams(bridge: IHttpApiBridge['call'], query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<void> {
+    return bridge(...[
+        "TestService",
+        "testNoResponseQueryParams",
+        "POST",
+        "/catalog/test-no-response-query-params",
+        query,
+        ,
+        {
+            "different": something,
+
+            "implicit": implicit,
+
+            "setEnd": setEnd,
+
+            "optionalMiddle": optionalMiddle,
+
+            "optionalEnd": optionalEnd,
+        },
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_testBoolean(bridge: IHttpApiBridge['call']): Promise<boolean> {
+    return bridge(...[
+        "TestService",
+        "testBoolean",
+        "GET",
+        "/catalog/boolean",
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_testDouble(bridge: IHttpApiBridge['call']): Promise<number | "NaN"> {
+    return bridge(...[
+        "TestService",
+        "testDouble",
+        "GET",
+        "/catalog/double",
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_testInteger(bridge: IHttpApiBridge['call']): Promise<number> {
+    return bridge(...[
+        "TestService",
+        "testInteger",
+        "GET",
+        "/catalog/integer",
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_testPostOptional(bridge: IHttpApiBridge['call'], maybeString?: string | null): Promise<string | null> {
+    return bridge(...[
+        "TestService",
+        "testPostOptional",
+        "POST",
+        "/catalog/optional",
+        maybeString,
+    ] as Parameters<typeof bridge>);
+}
+
+export function TestService_testOptionalIntegerAndDouble(bridge: IHttpApiBridge['call'], maybeInteger?: number | null, maybeDouble?: number | "NaN" | null): Promise<void> {
+    return bridge(...[
+        "TestService",
+        "testOptionalIntegerAndDouble",
+        "GET",
+        "/catalog/optional-integer-double",
+        ,
+        ,
+        {
+            "maybeInteger": maybeInteger,
+
+            "maybeDouble": maybeDouble,
+        },
+    ] as Parameters<typeof bridge>);
+}
 
 /**
  * A Markdown description of the service.
