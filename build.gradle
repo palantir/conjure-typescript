@@ -66,5 +66,5 @@ task distTar(type: Tar) {
 tasks.distTar.dependsOn(tasks.verifyBinariesExist)
 
 jdks {
-    daemonTarget = 21
+    daemonTarget = 17
 }
