@@ -62,6 +62,7 @@ describe("simpleAst", () => {
                             type: "primitive",
                         },
                         tags: [],
+                        errors: [],
                     },
                 ],
                 serviceName: {

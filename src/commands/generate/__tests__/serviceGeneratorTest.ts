@@ -53,6 +53,7 @@ describe("serviceGenerator", () => {
                         markers: [],
                         returns: { primitive: PrimitiveType.INTEGER, type: "primitive" },
                         tags: [],
+                        errors: [],
                     },
                 ],
                 serviceName: { name: "PrimitiveService", package: "com.palantir.services" },
@@ -83,6 +84,7 @@ describe("serviceGenerator", () => {
                         httpPath: "/foo",
                         markers: [],
                         tags: [],
+                        errors: [],
                     },
                 ],
                 serviceName: { name: "ServiceWithSafelongHeader", package: "com.palantir.services" },
@@ -105,6 +107,7 @@ describe("serviceGenerator", () => {
                         httpPath: "/bar",
                         markers: [],
                         tags: [],
+                        errors: [],
                     },
                 ],
                 serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -132,6 +135,7 @@ describe("serviceGenerator", () => {
                         markers: [],
                         returns: { primitive: PrimitiveType.BINARY, type: "primitive" },
                         tags: [],
+                        errors: [],
                     },
                 ],
                 serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -166,6 +170,7 @@ describe("serviceGenerator", () => {
                         markers: [],
                         returns: { primitive: PrimitiveType.BINARY, type: "primitive" },
                         tags: [],
+                        errors: [],
                     },
                 ],
                 serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -203,6 +208,7 @@ describe("serviceGenerator", () => {
                         markers: [],
                         returns: foreignObject.reference,
                         tags: [],
+                        errors: [],
                     },
                 ],
                 serviceName: {
@@ -273,6 +279,7 @@ describe("serviceGenerator", () => {
                         httpPath: "/foo/{path}",
                         markers: [],
                         tags: [],
+                        errors: [],
                     },
                 ],
                 serviceName: { name: "ParamTypeService", package: "com.palantir.services" },
@@ -316,6 +323,7 @@ describe("serviceGenerator", () => {
                         httpPath: "/{param2}/{param1}",
                         markers: [],
                         tags: [],
+                        errors: [],
                     },
                 ],
                 serviceName: { name: "OutOfOrderPathService", package: "com.palantir.services" },
@@ -350,6 +358,7 @@ describe("serviceGenerator", () => {
                         httpPath: "/foo",
                         markers: [],
                         tags: [],
+                        errors: [],
                     },
                 ],
                 serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -396,6 +405,7 @@ describe("serviceGenerator", () => {
                             httpPath: "/foo",
                             markers: [],
                             tags: [],
+                            errors: [],
                         },
                     ],
                     serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -430,6 +440,7 @@ describe("serviceGenerator", () => {
                             httpPath: "/foo",
                             markers: [],
                             tags: [],
+                            errors: [],
                         },
                     ],
                     serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -464,6 +475,7 @@ describe("serviceGenerator", () => {
                             httpPath: "/foo",
                             markers: [],
                             tags: [],
+                            errors: [],
                         },
                     ],
                     serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -490,6 +502,12 @@ describe("serviceGenerator", () => {
                         httpPath: "/foo",
                         markers: [],
                         tags: [],
+                        errors: [
+                            {
+                                error: { name: "MyError", namespace: "MyNamespace", package: "com.palantir.services" },
+                                docs: "MyError documentation",
+                            },
+                        ],
                     },
                 ],
                 serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -503,7 +521,10 @@ describe("serviceGenerator", () => {
         expect(contents).toContain(
             `/** service level docs */
 export interface IMyService {
-    /** endpoint level docs */
+    /**
+     * endpoint level docs
+     * @throws {MyError} MyError documentation
+     */
     foo(): Promise<void>;
 }
 `,
@@ -527,6 +548,12 @@ export interface IMyService {
                         httpMethod: HttpMethod.GET,
                         httpPath: "/foo",
                         markers: [],
+                        errors: [
+                            {
+                                error: { name: "MyError", namespace: "MyNamespace", package: "com.palantir.services" },
+                                docs: "MyError documentation",
+                            },
+                        ],
                     },
                 ],
                 serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -540,7 +567,10 @@ export interface IMyService {
         expect(contents).toContain(
             `
 export interface IMyService {
-    /** @incubating */
+    /**
+     * @incubating
+     * @throws {MyError} MyError documentation
+     */
     foo(): Promise<void>;
 }
 `,
@@ -559,6 +589,7 @@ export interface IMyService {
                         httpMethod: HttpMethod.GET,
                         httpPath: "/foo",
                         markers: [],
+                        errors: [],
                     },
                 ],
                 serviceName: { name: "MyService", package: "com.palantir.services" },
@@ -612,6 +643,7 @@ export interface IMyService {
                         httpPath: "/foo",
                         markers: [],
                         tags: [],
+                        errors: [],
                     },
                 ],
                 serviceName: { name: "OptionalService", package: "com.palantir.services" },

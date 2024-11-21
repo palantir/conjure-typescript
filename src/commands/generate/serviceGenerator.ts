@@ -44,7 +44,7 @@ import { StringConversionTypeVisitor } from "./stringConversionTypeVisitor";
 import { TsArgumentTypeVisitor } from "./tsArgumentTypeVisitor";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
 import { ITypeGenerationFlags } from "./typeGenerationFlags";
-import { addDeprecatedToDocs, addIncubatingDocs, CONJURE_CLIENT } from "./utils";
+import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingDocs, CONJURE_CLIENT } from "./utils";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
@@ -114,9 +114,11 @@ export function generateService(
             parameters,
             returnType: `Promise<${returnTsType}>`,
         };
-        const docs = addIncubatingDocs(endpointDefinition, addDeprecatedToDocs(endpointDefinition));
+        let docs = addDeprecatedToDocs(endpointDefinition);
+        docs = addIncubatingDocs(endpointDefinition, docs);
+        docs = addErrorsToDocs(endpointDefinition, docs);
         if (docs != null) {
-            signature.docs = docs;
+            signature.docs = [docs];
         }
         endpointSignatures.push(signature);
 
@@ -133,7 +135,7 @@ export function generateService(
             returnType: `Promise<${returnTsType}>`,
             // this appears to be a no-op by ts-simple-ast, since default in typescript is public
             scope: Scope.Public,
-            docs,
+            docs: docs !== undefined ? [docs] : undefined,
         });
     });
 
