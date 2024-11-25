@@ -117,6 +117,20 @@ export function addDeprecatedToDocs<T extends DeprecatableDefinitions>(typeDefin
     return typeDefintion.docs != null ? typeDefintion.docs : undefined;
 }
 
+export function addIncubatingToDocs(
+    endpointDefinition: IEndpointDefinition,
+    existingDocs: string | undefined,
+): string | undefined {
+    if (endpointDefinition.tags != null && endpointDefinition.tags.indexOf("incubating") >= 0) {
+        if (existingDocs == null) {
+            return "@incubating";
+        } else {
+            return `${existingDocs}\n@incubating`;
+        }
+    }
+    return existingDocs;
+}
+
 export function addErrorsToDocs(
     endpointDefinition: IEndpointDefinition,
     existingDocs: string | undefined,
@@ -129,20 +143,6 @@ export function addErrorsToDocs(
             return `${existingDocs}\n${formattedErrors}`;
         } else {
             return endpointDefinition.errors.map(error => `@throws ${formattedEndpointError(error)}`).join("\n");
-        }
-    }
-    return existingDocs;
-}
-
-export function addIncubatingToDocs(
-    endpointDefinition: IEndpointDefinition,
-    existingDocs: string | undefined,
-): string | undefined {
-    if (endpointDefinition.tags != null && endpointDefinition.tags.indexOf("incubating") >= 0) {
-        if (existingDocs == null) {
-            return "@incubating";
-        } else {
-            return `${existingDocs}\n@incubating`;
         }
     }
     return existingDocs;
