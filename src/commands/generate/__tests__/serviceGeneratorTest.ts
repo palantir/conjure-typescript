@@ -524,8 +524,8 @@ export interface IMyService {
 
         expect(contents).not.toContain(
             `
-        /** endpoint level docs */
-        foo(): Promise<void> {`,
+            /** endpoint level docs */
+            foo(): Promise<void> {`,
         );
     });
 
