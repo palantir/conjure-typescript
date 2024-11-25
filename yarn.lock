@@ -1614,7 +1614,7 @@ concat-map@0.0.1:
 
 conjure-api@^4.50.0:
   version "4.50.0"
-  resolved "https://artifactory.palantir.build/artifactory/api/npm/all-npm/conjure-api/-/conjure-api-4.50.0.tgz#351795ccca6ab5598e630748a81ba8f8713b8cd2"
+  resolved "https://registry.yarnpkg.com/conjure-api/-/conjure-api-4.50.0.tgz#351795ccca6ab5598e630748a81ba8f8713b8cd2"
   integrity sha512-YGqhW21t/Z/n/SKdyr5fNu8zqWYpnN+tp10+5ZEQw5f7heUv5sX84OuJc5Xq6G6J/4egbwRmS9R11ICvcLm9vA==
   dependencies:
     conjure-client "^2.4.1"
