@@ -108,7 +108,7 @@ export function addDeprecatedToDocs<T extends DeprecatableDefinitions>(typeDefin
         if (typeDefintion.docs != null && typeDefintion.docs != null) {
             // Do not add deprecated JSDoc if already exists
             if (typeDefintion.docs.indexOf("@deprecated") === -1) {
-                return typeDefintion.docs + "\n" + `@deprecated ${typeDefintion.deprecated}`;
+                return `${typeDefintion.docs}\n@deprecated ${typeDefintion.deprecated}`;
             }
         } else {
             return `@deprecated ${typeDefintion.deprecated}`;
@@ -123,11 +123,10 @@ export function addErrorsToDocs(
 ): string | undefined {
     if (endpointDefinition.errors != null && endpointDefinition.errors.length > 0) {
         if (existingDocs != null) {
-            return (
-                existingDocs +
-                "\n" +
-                endpointDefinition.errors.map(error => `@throws ${formattedEndpointError(error)}`).join("\n")
-            );
+            const formattedErrors = endpointDefinition.errors
+                .map(error => `@throws ${formattedEndpointError(error)}`)
+                .join("\n");
+            return `${existingDocs}\n${formattedErrors}`;
         } else {
             return endpointDefinition.errors.map(error => `@throws ${formattedEndpointError(error)}`).join("\n");
         }
@@ -143,7 +142,7 @@ export function addIncubatingDocs(
         if (existingDocs == null) {
             return "@incubating";
         } else {
-            return existingDocs + "\n" + "@incubating";
+            return `${existingDocs}\n@incubating`;
         }
     }
     return existingDocs;

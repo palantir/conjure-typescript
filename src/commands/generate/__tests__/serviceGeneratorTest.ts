@@ -489,7 +489,47 @@ describe("serviceGenerator", () => {
         }
     });
 
-    it("emits service interfaces with error and incubating docs", async () => {
+    it("emits service interfaces with docs", async () => {
+        await generateService(
+            {
+                docs: "service level docs",
+                endpoints: [
+                    {
+                        args: [],
+                        docs: "endpoint level docs",
+                        endpointName: "foo",
+                        httpMethod: HttpMethod.GET,
+                        httpPath: "/foo",
+                        markers: [],
+                        tags: [],
+                        errors: [],
+                    },
+                ],
+                serviceName: { name: "MyService", package: "com.palantir.services" },
+            },
+            new Map(),
+            simpleAst,
+            DEFAULT_TYPE_GENERATION_FLAGS,
+        );
+        const outFile = path.join(outDir, "services/myService.ts");
+        const contents = fs.readFileSync(outFile, "utf8");
+        expect(contents).toContain(
+            `/** service level docs */
+export interface IMyService {
+/** endpoint level docs */
+foo(): Promise<void>;
+}
+`,
+        );
+
+        expect(contents).not.toContain(
+            `
+        /** endpoint level docs */
+        foo(): Promise<void> {`,
+        );
+    });
+
+    it("emits service interfaces with error, incubating, and docs", async () => {
         await generateService(
             {
                 docs: "service level docs",
@@ -538,7 +578,7 @@ export interface IMyService {
         );
     });
 
-    it("emits endpoint with incubating doc", async () => {
+    it("emits endpoint with incubating", async () => {
         await generateService(
             {
                 endpoints: [
@@ -573,6 +613,7 @@ export interface IMyService {
     it("emits endpoint with error docs", async () => {
         await generateService(
             {
+                docs: "service level docs",
                 endpoints: [
                     {
                         docs: "endpoint level docs",
@@ -603,7 +644,7 @@ export interface IMyService {
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain(
-            `
+            `/** service level docs */
 export interface IMyService {
     /**
      * endpoint level docs

@@ -379,9 +379,9 @@ function processUnionMembers(
         functions.push({
             kind: StructureKind.Function,
             statements: `return {
-              ${memberName}: obj,
-              type: ${doubleQuote(memberName)},
-          };`,
+                ${memberName}: obj,
+                type: ${doubleQuote(memberName)},
+            };`,
             // TODO(gracew): ensure that memberName is lowercase?
             name: factoryName,
             parameters: [
@@ -405,8 +405,8 @@ function processUnionMembers(
             isReadonly: typeGenerationFlags.readonlyInterfaces,
         });
         visitorStatements.push(`if (${typeGuard.name}(${obj})) {
-          return ${visitor}.${memberName}(${obj}.${memberName});
-      }`);
+            return ${visitor}.${memberName}(${obj}.${memberName});
+        }`);
     });
 
     visitorProperties.push({
