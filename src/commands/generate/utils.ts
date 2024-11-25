@@ -134,7 +134,7 @@ export function addErrorsToDocs(
     return existingDocs;
 }
 
-export function addIncubatingDocs(
+export function addIncubatingToDocs(
     endpointDefinition: IEndpointDefinition,
     existingDocs: string | undefined,
 ): string | undefined {
