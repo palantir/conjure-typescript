@@ -516,8 +516,8 @@ describe("serviceGenerator", () => {
         expect(contents).toContain(
             `/** service level docs */
 export interface IMyService {
-/** endpoint level docs */
-foo(): Promise<void>;
+    /** endpoint level docs */
+    foo(): Promise<void>;
 }
 `,
         );
@@ -529,56 +529,7 @@ foo(): Promise<void>;
         );
     });
 
-    it("emits service interfaces with error, incubating, and docs", async () => {
-        await generateService(
-            {
-                docs: "service level docs",
-                endpoints: [
-                    {
-                        args: [],
-                        docs: "endpoint level docs",
-                        endpointName: "foo",
-                        httpMethod: HttpMethod.GET,
-                        httpPath: "/foo",
-                        markers: [],
-                        tags: ["incubating"],
-                        errors: [
-                            {
-                                error: { name: "MyError", namespace: "MyNamespace", package: "com.palantir.services" },
-                                docs: "MyError documentation",
-                            },
-                        ],
-                    },
-                ],
-                serviceName: { name: "MyService", package: "com.palantir.services" },
-            },
-            new Map(),
-            simpleAst,
-            DEFAULT_TYPE_GENERATION_FLAGS,
-        );
-        const outFile = path.join(outDir, "services/myService.ts");
-        const contents = fs.readFileSync(outFile, "utf8");
-        expect(contents).toContain(
-            `/** service level docs */
-export interface IMyService {
-    /**
-     * endpoint level docs
-     * @incubating
-     * @throws {MyError} MyError documentation
-     */
-    foo(): Promise<void>;
-}
-`,
-        );
-
-        expect(contents).not.toContain(
-            `
-            /** endpoint level docs */
-            foo(): Promise<void> {`,
-        );
-    });
-
-    it("emits endpoint with incubating", async () => {
+    it("emits endpoint with incubating docs", async () => {
         await generateService(
             {
                 endpoints: [
@@ -654,6 +605,55 @@ export interface IMyService {
     foo(): Promise<void>;
 }
 `,
+        );
+    });
+
+    it("emits service interfaces with error incubating docs", async () => {
+        await generateService(
+            {
+                docs: "service level docs",
+                endpoints: [
+                    {
+                        args: [],
+                        docs: "endpoint level docs",
+                        endpointName: "foo",
+                        httpMethod: HttpMethod.GET,
+                        httpPath: "/foo",
+                        markers: [],
+                        tags: ["incubating"],
+                        errors: [
+                            {
+                                error: { name: "MyError", namespace: "MyNamespace", package: "com.palantir.services" },
+                                docs: "MyError documentation",
+                            },
+                        ],
+                    },
+                ],
+                serviceName: { name: "MyService", package: "com.palantir.services" },
+            },
+            new Map(),
+            simpleAst,
+            DEFAULT_TYPE_GENERATION_FLAGS,
+        );
+        const outFile = path.join(outDir, "services/myService.ts");
+        const contents = fs.readFileSync(outFile, "utf8");
+        expect(contents).toContain(
+            `/** service level docs */
+export interface IMyService {
+    /**
+     * endpoint level docs
+     * @incubating
+     * @throws {MyError} MyError documentation
+     */
+    foo(): Promise<void>;
+}
+`,
+        );
+
+        expect(contents).not.toContain(
+            `
+          /** endpoint level docs */
+          foo(): Promise<void> {`,
         );
     });
 
