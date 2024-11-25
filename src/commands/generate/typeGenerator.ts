@@ -392,10 +392,7 @@ function processUnionMembers(
             ],
             returnType: interfaceName,
             // deprecate creation of deprecated types
-            docs:
-                fieldDefinition.deprecated != null && fieldDefinition.deprecated != null
-                    ? [`@deprecated ${fieldDefinition.deprecated}`]
-                    : undefined,
+            docs: fieldDefinition.deprecated != null ? [`@deprecated ${fieldDefinition.deprecated}`] : undefined,
         });
 
         visitorProperties.push({
