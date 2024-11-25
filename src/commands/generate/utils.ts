@@ -104,8 +104,8 @@ const strictModeReservedKeywords = new Set([
 type DeprecatableDefinitions = IFieldDefinition | IEnumValueDefinition | IEndpointDefinition;
 
 export function addDeprecatedToDocs<T extends DeprecatableDefinitions>(typeDefintion: T): string | undefined {
-    if (typeDefintion.deprecated !== undefined && typeDefintion.deprecated !== null) {
-        if (typeDefintion.docs !== undefined && typeDefintion.docs !== null) {
+    if (typeDefintion.deprecated != null && typeDefintion.deprecated != null) {
+        if (typeDefintion.docs != null && typeDefintion.docs != null) {
             // Do not add deprecated JSDoc if already exists
             if (typeDefintion.docs.indexOf("@deprecated") === -1) {
                 return typeDefintion.docs + "\n" + `@deprecated ${typeDefintion.deprecated}`;
@@ -121,16 +121,13 @@ export function addErrorsToDocs(
     endpointDefinition: IEndpointDefinition,
     existingDocs: string | undefined,
 ): string | undefined {
-    if (endpointDefinition.errors !== undefined && endpointDefinition.errors.length > 0) {
-        if (existingDocs !== undefined) {
-            // Do not add @throws if documentation already includes information about thrown errors
-            if (existingDocs.indexOf("@throws") === -1) {
-                return (
-                    existingDocs +
-                    "\n" +
-                    endpointDefinition.errors.map(error => `@throws ${formattedEndpointError(error)}`).join("\n")
-                );
-            }
+    if (endpointDefinition.errors != null && endpointDefinition.errors.length > 0) {
+        if (existingDocs != null) {
+            return (
+                existingDocs +
+                "\n" +
+                endpointDefinition.errors.map(error => `@throws ${formattedEndpointError(error)}`).join("\n")
+            );
         } else {
             return endpointDefinition.errors.map(error => `@throws ${formattedEndpointError(error)}`).join("\n");
         }
@@ -142,8 +139,8 @@ export function addIncubatingDocs(
     endpointDefinition: IEndpointDefinition,
     existingDocs: string | undefined,
 ): string | undefined {
-    if (endpointDefinition.tags !== undefined && endpointDefinition.tags.indexOf("incubating") >= 0) {
-        if (existingDocs === undefined) {
+    if (endpointDefinition.tags != null && endpointDefinition.tags.indexOf("incubating") >= 0) {
+        if (existingDocs == null) {
             return "@incubating";
         } else {
             return existingDocs + "\n" + "@incubating";
@@ -165,7 +162,7 @@ export function isFlavorizable(type: IType, flavorizedAliases: boolean): boolean
 
 function formattedEndpointError(errorDefinition: IEndpointError): string {
     let formattedString = `{${errorDefinition.error.name}}`;
-    if (errorDefinition.docs !== null && errorDefinition.docs !== undefined) {
+    if (errorDefinition.docs != null && errorDefinition.docs != null) {
         formattedString += ` ${errorDefinition.docs}`;
     }
     return formattedString;

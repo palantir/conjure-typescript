@@ -126,7 +126,7 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
                 isExported: true,
                 name: enumValue.value,
                 type: doubleQuote(enumValue.value),
-                docs: docs !== undefined ? [docs] : undefined,
+                docs: docs != null ? [docs] : undefined,
             };
         });
         typeAliases[typeAliases.length - 1].trailingTrivia = `\n\n`;
@@ -216,7 +216,7 @@ export async function generateObject(
             hasQuestionToken: IType.isOptional(fieldDefinition.type),
             name: singleQuote(fieldDefinition.fieldName),
             type: fieldType,
-            docs: docs !== undefined ? [docs] : undefined,
+            docs: docs != null ? [docs] : undefined,
             isReadonly: typeGenerationFlags.readonlyInterfaces,
         };
 
@@ -234,7 +234,7 @@ export async function generateObject(
         name: "I" + definition.typeName.name,
         properties,
     });
-    if (definition.docs !== undefined && definition.docs !== null) {
+    if (definition.docs != null && definition.docs != null) {
         iface.addJsDoc({ description: definition.docs });
     }
 
@@ -343,7 +343,7 @@ function processUnionMembers(
 
         memberInterfaces.push({
             kind: StructureKind.Interface,
-            docs: docs !== undefined ? [docs] : undefined,
+            docs: docs != null ? [docs] : undefined,
             isExported: true,
             name: interfaceName,
             properties: [
@@ -393,7 +393,7 @@ function processUnionMembers(
             returnType: interfaceName,
             // deprecate creation of deprecated types
             docs:
-                fieldDefinition.deprecated !== null && fieldDefinition.deprecated !== undefined
+                fieldDefinition.deprecated != null && fieldDefinition.deprecated != null
                     ? [`@deprecated ${fieldDefinition.deprecated}`]
                     : undefined,
         });

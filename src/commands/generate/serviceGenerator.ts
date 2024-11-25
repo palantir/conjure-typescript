@@ -135,7 +135,7 @@ export function generateService(
             returnType: `Promise<${returnTsType}>`,
             // this appears to be a no-op by ts-simple-ast, since default in typescript is public
             scope: Scope.Public,
-            docs: docs !== undefined ? [docs] : undefined,
+            docs: docs != null ? [docs] : undefined,
         });
     });
 
@@ -205,7 +205,7 @@ function generateEndpointBody(
     const requestMediaType =
         bodyArgs.length === 0 ? MediaType.APPLICATION_JSON : IType.visit(bodyArgs[0].type, mediaTypeVisitor);
     const responseMediaType =
-        endpointDefinition.returns !== undefined && endpointDefinition.returns !== null
+        endpointDefinition.returns != null && endpointDefinition.returns != null
             ? IType.visit(endpointDefinition.returns, mediaTypeVisitor)
             : MediaType.APPLICATION_JSON;
     const formattedHeaderArgs = headerArgs.map(argDefinition => {

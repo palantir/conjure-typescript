@@ -501,7 +501,7 @@ describe("serviceGenerator", () => {
                         httpMethod: HttpMethod.GET,
                         httpPath: "/foo",
                         markers: [],
-                        tags: [],
+                        tags: ["incubating"],
                         errors: [
                             {
                                 error: { name: "MyError", namespace: "MyNamespace", package: "com.palantir.services" },
@@ -523,6 +523,7 @@ describe("serviceGenerator", () => {
 export interface IMyService {
     /**
      * endpoint level docs
+     * @incubating
      * @throws {MyError} MyError documentation
      */
     foo(): Promise<void>;
@@ -538,6 +539,38 @@ export interface IMyService {
     });
 
     it("emits endpoint with incubating doc", async () => {
+        await generateService(
+            {
+                endpoints: [
+                    {
+                        args: [],
+                        tags: ["incubating"],
+                        endpointName: "foo",
+                        httpMethod: HttpMethod.GET,
+                        httpPath: "/foo",
+                        markers: [],
+                        errors: [],
+                    },
+                ],
+                serviceName: { name: "MyService", package: "com.palantir.services" },
+            },
+            new Map(),
+            simpleAst,
+            DEFAULT_TYPE_GENERATION_FLAGS,
+        );
+        const outFile = path.join(outDir, "services/myService.ts");
+        const contents = fs.readFileSync(outFile, "utf8");
+        expect(contents).toContain(
+            `
+export interface IMyService {
+    /** @incubating */
+    foo(): Promise<void>;
+}
+`,
+        );
+    });
+
+    it("emits endpoint with incubating and error doc", async () => {
         await generateService(
             {
                 endpoints: [
