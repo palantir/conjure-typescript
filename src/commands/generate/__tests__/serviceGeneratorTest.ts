@@ -489,7 +489,7 @@ describe("serviceGenerator", () => {
         }
     });
 
-    it("emits service interfaces with docs", async () => {
+    it("emits service interfaces with error and incubating docs", async () => {
         await generateService(
             {
                 docs: "service level docs",
@@ -570,21 +570,26 @@ export interface IMyService {
         );
     });
 
-    it("emits endpoint with incubating and error doc", async () => {
+    it("emits endpoint with error docs", async () => {
         await generateService(
             {
                 endpoints: [
                     {
+                        docs: "endpoint level docs",
                         args: [],
-                        tags: ["incubating"],
+                        tags: [],
                         endpointName: "foo",
                         httpMethod: HttpMethod.GET,
                         httpPath: "/foo",
                         markers: [],
                         errors: [
                             {
-                                error: { name: "MyError", namespace: "MyNamespace", package: "com.palantir.services" },
-                                docs: "MyError documentation",
+                                error: { name: "MyError1", namespace: "MyNamespace", package: "com.palantir.services" },
+                                docs: "MyError1 documentation",
+                            },
+                            {
+                                error: { name: "MyError2", namespace: "MyNamespace", package: "com.palantir.services" },
+                                docs: "MyError2 documentation",
                             },
                         ],
                     },
@@ -601,8 +606,9 @@ export interface IMyService {
             `
 export interface IMyService {
     /**
-     * @incubating
-     * @throws {MyError} MyError documentation
+     * endpoint level docs
+     * @throws {MyError1} MyError1 documentation
+     * @throws {MyError2} MyError2 documentation
      */
     foo(): Promise<void>;
 }
