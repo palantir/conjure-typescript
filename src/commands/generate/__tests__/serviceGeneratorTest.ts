@@ -806,7 +806,7 @@ export interface IMyService {
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
 
-        expect(contents).toContain(`import { IMyError } from "../errors/myError";
+        expect(contents).toContain(`import type { IMyError } from "../errors/myError";
 import { IHttpApiBridge } from "conjure-client";
 
 /** Constant reference to \`undefined\` that we expect to get minified and therefore reduce total code size */
