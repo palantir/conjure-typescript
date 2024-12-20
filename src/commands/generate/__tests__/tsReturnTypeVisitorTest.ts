@@ -192,20 +192,18 @@ describe("TsTypeVisitor", () => {
             const unionName = { name: fakeTypeName.name, package: "" };
             const union = ITypeDefinition.union({
                 typeName: unionName,
-                union: []
+                union: [],
             });
 
             const unionVisitor = new TsReturnTypeVisitor(
-                new Map<string, ITypeDefinition>([
-                    [createHashableTypeName(unionName), union],
-                ]),
+                new Map<string, ITypeDefinition>([[createHashableTypeName(unionName), union]]),
                 fakeTypeName,
                 false,
                 DEFAULT_TYPE_GENERATION_FLAGS,
             );
 
             expect(unionVisitor.reference(unionName)).toEqual(`I${unionName.name}.I${unionName.name}`);
-        })
+        });
     });
 
     describe("with flavored generation flags", () => {
