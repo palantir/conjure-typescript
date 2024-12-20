@@ -105,7 +105,7 @@ export class TsReturnTypeVisitor implements ITypeVisitor<string> {
             return obj.name;
         } else if (ITypeDefinition.isUnion(typeDefinition)) {
             // If the type reference is recursive, use a direct reference rather than a namespaced one
-            if (obj.name === this.currType.name && obj.package === obj.package) {
+            if (obj.name === this.currType.name && obj.package === this.currType.package) {
                 return withIPrefix;
             }
             return `${withIPrefix}.${withIPrefix}`;
