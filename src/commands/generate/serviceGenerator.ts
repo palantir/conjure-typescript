@@ -143,7 +143,7 @@ export function generateService(
             const errorImports: ImportDeclarationStructure[] = IType.visit(
                 {
                     reference: {
-                        name: `${error.error.name}`,
+                        name: error.error.name,
                         package: error.error.package,
                     },
                     type: "reference",

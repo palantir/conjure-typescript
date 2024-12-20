@@ -41,9 +41,20 @@ export async function generate(
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
     // Create project structure
-    const knownTypes = new Map();
+    const knownTypes: Map<string, ITypeDefinition> = new Map();
     const indexingVisitor = new IndexByTypeNameVisitor(knownTypes);
     definition.types.forEach(typeDefinition => ITypeDefinition.visit(typeDefinition, indexingVisitor));
+    // Add the errors to knownTypes so they can be imported by services
+    definition.errors.forEach(errorDefinition =>
+        knownTypes.set(
+            createHashableTypeName(errorDefinition.errorName),
+            ITypeDefinition.object({
+                typeName: errorDefinition.errorName,
+                docs: errorDefinition.docs,
+                fields: [], // We don't need to know an error's fields to import an error
+            }),
+        ),
+    );
     const knownDefinitions = Array.from(knownTypes.keys())
         .map(dissasembleHashableTypeName)
         .concat(definition.services.map(serviceDefinition => serviceDefinition.serviceName))
