@@ -185,6 +185,27 @@ describe("TsTypeVisitor", () => {
             };
             expect(visitor.external(externalType)).toEqual("Array<IObject>");
         });
+
+        it("handles references to a union in another package with the same name", () => {
+            // unionName shares a name with fakeTypeName, but crucially it is a different package
+            // when we generate a reference to the other type, it needs to be namespaced instead of trying to use the local version
+            const unionName = { name: fakeTypeName.name, package: "" };
+            const union = ITypeDefinition.union({
+                typeName: unionName,
+                union: []
+            });
+
+            const unionVisitor = new TsReturnTypeVisitor(
+                new Map<string, ITypeDefinition>([
+                    [createHashableTypeName(unionName), union],
+                ]),
+                fakeTypeName,
+                false,
+                DEFAULT_TYPE_GENERATION_FLAGS,
+            );
+
+            expect(unionVisitor.reference(unionName)).toEqual(`I${unionName.name}.I${unionName.name}`);
+        })
     });
 
     describe("with flavored generation flags", () => {
