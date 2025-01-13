@@ -269,7 +269,7 @@ export async function generateUnion(
         name: unionTsType,
         type:
             unionSourceFileInput.memberInterfaces.length === 0
-                ? "any"
+                ? "unknown"
                 : unionSourceFileInput.memberInterfaces.map(iface => iface.name).join(" | "),
     });
 

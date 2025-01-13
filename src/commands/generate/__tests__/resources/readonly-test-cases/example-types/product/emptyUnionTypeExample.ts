@@ -1,4 +1,4 @@
-export type IEmptyUnionTypeExample = any;
+export type IEmptyUnionTypeExample = unknown;
 
 export interface IEmptyUnionTypeExampleVisitor<T> {
     readonly 'unknown': (obj: IEmptyUnionTypeExample) => T;
