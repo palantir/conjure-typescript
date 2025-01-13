@@ -267,7 +267,10 @@ export async function generateUnion(
         docs: definition.docs != null ? [{ description: definition.docs }] : undefined,
         isExported: true,
         name: unionTsType,
-        type: unionSourceFileInput.memberInterfaces.map(iface => iface.name).join(" | "),
+        type:
+            unionSourceFileInput.memberInterfaces.length === 0
+                ? "any"
+                : unionSourceFileInput.memberInterfaces.map(iface => iface.name).join(" | "),
     });
 
     const visitorInterface = sourceFile.addInterface({
