@@ -126,7 +126,7 @@ export function sortImports(imports: ImportDeclarationStructure[]): ImportDeclar
     imports.forEach(i => {
         const isNamedImport = i.namedImports != null;
         const isNamespaceImport = i.namespaceImport != null;
-        if (isNamedImport !== !isNamespaceImport) {
+        if (isNamedImport === isNamespaceImport) {
             throw new Error("expected only one of the fields 'namedImports' and 'namespaceImport' to be defined");
         }
         if (isNamedImport) {

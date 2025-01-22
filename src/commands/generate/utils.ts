@@ -45,7 +45,7 @@ export function dissasembleHashableTypeName(hashTypeName: string) {
 }
 
 export function isValidFunctionName(value: string) {
-    return strictModeReservedKeywords.has(value) || reservedKeywords.has(value);
+    return !strictModeReservedKeywords.has(value) && !reservedKeywords.has(value);
 }
 
 // Keywords taken from https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md#221-reserved-words

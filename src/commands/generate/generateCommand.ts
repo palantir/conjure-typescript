@@ -172,7 +172,7 @@ export class GenerateCommand implements CommandModule {
                 packageVersion!,
                 productDependencies,
             ),
-            tsConfig: await createTsconfigJson(args.nodeCompatibleModules),
+            tsConfig: createTsconfigJson(args.nodeCompatibleModules),
             gitIgnore: ["*.ts", "!*.d.ts", "tsconfig.json"].join("\n"),
         };
     }

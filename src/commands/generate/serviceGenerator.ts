@@ -139,17 +139,12 @@ export function generateService(
         });
 
         endpointDefinition.errors?.forEach(error => {
-            // TODO: Get rid of the visitor, because the type (reference) is already known
-            const errorImports: ImportDeclarationStructure[] = IType.visit(
-                {
-                    reference: {
-                        name: error.error.name,
-                        package: error.error.package,
-                    },
-                    type: "reference",
-                },
-                importsVisitor,
-            ).map(i => ({ ...i, isTypeOnly: true }));
+            const errorImports: ImportDeclarationStructure[] = importsVisitor
+                .reference({
+                    name: error.error.name,
+                    package: error.error.package,
+                })
+                .map(i => ({ ...i, isTypeOnly: true }));
             imports.push(...errorImports);
         });
     });
