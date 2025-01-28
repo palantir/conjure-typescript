@@ -30,7 +30,7 @@ import * as path from "path";
 import { directory } from "tempy";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
 import { isFlavorizable } from "../../../utils/flavorizingUtils";
-import { loadConjureDefinition } from "../generateCommand";
+import { loadConjureDefinition } from "../command";
 import { generate } from "../generator";
 import { typeNameToFilePath } from "../simpleAst";
 import {
