@@ -16,5 +16,5 @@
  */
 
 export * from "./packageUtils";
-export * from "./slslDependencies";
+export * from "./slsDependencies";
 export * from "./typeGenerationFlags";

@@ -24,4 +24,3 @@ The team welcomes contributions!  To make code changes to one of the Conjure rep
 - User `yarn verify` to lint and test
 - Use `yarn build` to quickly lint, compile and test the package.
 - When modifying the generated code run `RECREATE=true yarn test` to automatically regenerate the test cases
-
