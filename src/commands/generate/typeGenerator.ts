@@ -34,11 +34,14 @@ import {
     VariableDeclarationKind,
     VariableStatementStructure,
 } from "ts-morph";
+import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
+import { addDeprecatedToDocs } from "../../utils/docsUtils";
+import { isFlavorizable } from "../../utils/flavorizingUtils";
+import { isValidFunctionName } from "../../utils/functionUtils";
+import { doubleQuote, singleQuote } from "../../utils/quotesUtils";
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
-import { ITypeGenerationFlags } from "./typeGenerationFlags";
-import { addDeprecatedToDocs, doubleQuote, isFlavorizable, isValidFunctionName, singleQuote } from "./utils";
 
 export function generateType(
     definition: ITypeDefinition,

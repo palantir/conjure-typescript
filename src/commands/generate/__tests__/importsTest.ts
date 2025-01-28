@@ -17,8 +17,8 @@
 
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { ImportDeclarationStructure, StructureKind } from "ts-morph";
+import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { ImportsVisitor, sortImports } from "../imports";
-import { createHashableTypeName } from "../utils";
 import { FLAVORED_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import { foreignObject, importsLocalObject as localObject } from "./testTypesGeneratorTest";
 

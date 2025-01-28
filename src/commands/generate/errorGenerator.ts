@@ -17,11 +17,11 @@
 
 import { IErrorDefinition, IType, ITypeDefinition } from "conjure-api";
 import { ImportDeclarationStructure } from "ts-morph";
+import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
+import { doubleQuote, singleQuote } from "../../utils/quotesUtils";
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
-import { ITypeGenerationFlags } from "./typeGenerationFlags";
-import { doubleQuote, singleQuote } from "./utils";
 
 export function generateError(
     definition: IErrorDefinition,

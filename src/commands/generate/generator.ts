@@ -27,13 +27,13 @@ import {
 import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";
+import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
+import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
 import { generateError } from "./errorGenerator";
 import { dir } from "./imports";
 import { generateService } from "./serviceGenerator";
 import { SimpleAst } from "./simpleAst";
-import { ITypeGenerationFlags } from "./typeGenerationFlags";
 import { generateType } from "./typeGenerator";
-import { createHashableTypeName, dissasembleHashableTypeName } from "./utils";
 
 export async function generate(
     definition: IConjureDefinition,
@@ -56,7 +56,7 @@ export async function generate(
         ),
     );
     const knownDefinitions = Array.from(knownTypes.keys())
-        .map(dissasembleHashableTypeName)
+        .map(disassembleHashableTypeName)
         .concat(definition.services.map(serviceDefinition => serviceDefinition.serviceName))
         .concat(definition.errors.map(errorDefinition => errorDefinition.errorName));
     await Promise.all(
