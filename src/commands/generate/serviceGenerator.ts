@@ -36,14 +36,14 @@ import {
     StructureKind,
     VariableDeclarationKind,
 } from "ts-morph";
-import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../utils/resolveImports";
-import { SimpleAst } from "./simpleAst";
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
-import { resolveTsType } from "../../utils/resolveTsType";
-import { resolveStringConversion } from "../../utils/resolveStringConversion";
-import { resolveMediaType } from "../../utils/resolveMediaType";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../utils/docsUtils";
+import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../utils/resolveImports";
+import { resolveMediaType } from "../../utils/resolveMediaType";
+import { resolveStringConversion } from "../../utils/resolveStringConversion";
+import { resolveTsType } from "../../utils/resolveTsType";
+import { SimpleAst } from "./simpleAst";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";

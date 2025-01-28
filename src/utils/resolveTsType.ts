@@ -27,8 +27,8 @@ import {
     PrimitiveType,
 } from "conjure-api";
 import { ITypeGenerationFlags } from "../types/typeGenerationFlags";
-import { createHashableTypeName } from "./hashingUtils";
 import { isFlavorizable } from "./flavorizingUtils";
+import { createHashableTypeName } from "./hashingUtils";
 
 export const resolveTsType = (
     conjureType: IType,

@@ -27,13 +27,13 @@ import {
 import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";
-import { generateError } from "./errorGenerator";
+import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
+import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
 import { directoryNameForType } from "../../utils/resolveImports";
+import { generateError } from "./errorGenerator";
 import { generateService } from "./serviceGenerator";
 import { SimpleAst } from "./simpleAst";
-import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { generateType } from "./typeGenerator";
-import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
 
 export async function generate(
     definition: IConjureDefinition,

@@ -29,9 +29,9 @@ import {
 import * as path from "path";
 import { ImportDeclarationStructure, ImportSpecifierStructure, StructureKind } from "ts-morph";
 import { ITypeGenerationFlags } from "../types/typeGenerationFlags";
-import { resolveTsTypeForReferenceType } from "./resolveTsType";
-import { createHashableTypeName } from "./hashingUtils";
 import { isFlavorizable } from "./flavorizingUtils";
+import { createHashableTypeName } from "./hashingUtils";
+import { resolveTsTypeForReferenceType } from "./resolveTsType";
 
 export const resolveImports = (
     conjureType: IType,

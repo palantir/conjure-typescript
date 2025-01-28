@@ -17,12 +17,11 @@
 
 import { IErrorDefinition, ITypeDefinition } from "conjure-api";
 import { ImportDeclarationStructure } from "ts-morph";
-import { sortImports } from "../../utils/resolveImports";
-import { SimpleAst } from "./simpleAst";
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { doubleQuote, singleQuote } from "../../utils/quotesUtils";
+import { resolveImports, sortImports } from "../../utils/resolveImports";
 import { resolveTsType } from "../../utils/resolveTsType";
-import { resolveImports } from "../../utils/resolveImports";
+import { SimpleAst } from "./simpleAst";
 
 export function generateError(
     definition: IErrorDefinition,
