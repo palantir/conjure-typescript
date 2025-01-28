@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { IProductDependency } from "../types/slsDependencies";
+import { IProductDependency } from "./slsDependencies";
 
 export interface IPackageJson {
     author?: string;
