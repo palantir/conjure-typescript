@@ -20,7 +20,8 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import { SlsVersion, SlsVersionMatcher } from "sls-version";
 import { Argv, CommandModule } from "yargs";
-import { IPackageJson, IProductDependency, ISlsManifestDependency, writeJson } from "../../utils";
+import { IPackageJson, IProductDependency, ISlsManifestDependency } from "../../types";
+import { writeJson } from "../../utils/writeJson";
 import { generate } from "./generator";
 
 export interface IGenerateCommandArgs {

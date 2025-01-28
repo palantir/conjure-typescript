@@ -18,7 +18,7 @@
 import { ITypeName } from "conjure-api";
 import * as path from "path";
 import { Project, SourceFile } from "ts-morph";
-import { dir, module } from "./imports";
+import { directoryNameForType, moduleNameForType } from "../../utils/resolveImports";
 
 const TS_EXTENSION = ".ts";
 const dashRegex = /-(\w)/g;
@@ -76,5 +76,5 @@ export class SimpleAst {
 }
 
 export function typeNameToFilePath(type: ITypeName): string {
-    return path.join(dir(type), module(type) + TS_EXTENSION);
+    return path.join(directoryNameForType(type), moduleNameForType(type) + TS_EXTENSION);
 }

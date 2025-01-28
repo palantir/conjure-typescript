@@ -1,4 +1,4 @@
-import { ITypeGenerationFlags } from "../../typeGenerationFlags";
+import { ITypeGenerationFlags } from "../../../../types/typeGenerationFlags";
 
 export const DEFAULT_TYPE_GENERATION_FLAGS: ITypeGenerationFlags = { flavorizedAliases: false, readonlyInterfaces: false };
 
