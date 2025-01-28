@@ -108,23 +108,23 @@ export const resolveTsTypeForPrimitiveType = (
             return "string";
         case PrimitiveType.BEARERTOKEN:
             return "string";
-        case PrimitiveType.DOUBLE:
-            return 'number | "NaN"';
+        case PrimitiveType.UUID:
+            return "string";
+        case PrimitiveType.BINARY:
+            if (isParameterType) {
+                return isTopLevelBinary ? "ReadableStream<Uint8Array> | BufferSource | Blob" : "string";
+            }
+            return isTopLevelBinary ? "ReadableStream<Uint8Array>" : "string";
         case PrimitiveType.INTEGER:
             return "number";
         case PrimitiveType.SAFELONG:
             return "number";
-        case PrimitiveType.BINARY:
-            if (isParameterType) {
-                return isTopLevelBinary ? "ReadableStream<Uint8Array> | BufferSource | Blob | string" : "string";
-            }
-            return isTopLevelBinary ? "ReadableStream<Uint8Array>" : "string";
-        case PrimitiveType.ANY:
-            return "any";
+        case PrimitiveType.DOUBLE:
+            return 'number | "NaN"';
         case PrimitiveType.BOOLEAN:
             return "boolean";
-        case PrimitiveType.UUID:
-            return "string";
+        case PrimitiveType.ANY:
+            return "any";
         default:
             throw new Error("Unknown primitive type");
     }
@@ -208,20 +208,18 @@ export const resolveTsTypeForMapType = (
 
         if (keyTypeDefinition == null) {
             throw new Error(
-                `unknown reference type. package: '${mapType.keyType.reference.package}', name: '${mapType.keyType.reference.name}'`,
+                `Unknown reference type. package: '${mapType.keyType.reference.package}', name: '${mapType.keyType.reference.name}'`,
             );
         }
 
-        const resolvedKeyType = resolveTsTypeForReferenceType(
-            mapType.keyType.reference,
-            baseType,
-            knownConjureTypes,
-            typeGenerationFlags,
-            isParameterType,
-            false,
-        );
-        const maybeOptional = ITypeDefinition.isEnum(keyTypeDefinition) ? "?" : "";
-        return `{ ${maybeReadonly}[key: ${resolvedKeyType}]${maybeOptional}: ${resolvedValueType} }`;
+        if (ITypeDefinition.isEnum(keyTypeDefinition)) {
+            return `{ ${maybeReadonly}[key in ${mapType.keyType.reference.name}]?: ${resolvedValueType} }`;
+        } else if (
+            ITypeDefinition.isAlias(keyTypeDefinition) &&
+            isFlavorizable(keyTypeDefinition.alias.alias, typeGenerationFlags.flavorizedAliases)
+        ) {
+            return `{ ${maybeReadonly}[key: I${mapType.keyType.reference.name}]: ${resolvedValueType} }`;
+        }
     }
 
     return `{ ${maybeReadonly}[key: string]: ${resolvedValueType} }`;
