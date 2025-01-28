@@ -28,4 +28,10 @@ export interface ITypeGenerationFlags {
      * Generated interfaces have readonly properties and use ReadonlyArray instead of Array.
      */
     readonly readonlyInterfaces: boolean;
+
+    readonly omitServiceMetadata: boolean;
+
+    readonly omitUnnecessaryArgs: boolean;
+
+    readonly omitServiceClasses: boolean;
 }

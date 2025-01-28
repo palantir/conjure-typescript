@@ -33,11 +33,7 @@ import { generate } from "../generator";
 import { typeNameToFilePath } from "../simpleAst";
 import { ITypeGenerationFlags } from "../typeGenerationFlags";
 import { isFlavorizable } from "../utils";
-import {
-    DEFAULT_TYPE_GENERATION_FLAGS,
-    FLAVORED_TYPE_GENERATION_FLAGS,
-    READONLY_TYPE_GENERATION_FLAGS,
-} from "./resources/constants";
+import { DEFAULT_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
 describe("generator", () => {
@@ -109,55 +105,87 @@ export { integrationSecond };
 });
 
 const irDir = path.join(__dirname, "../../../../build/ir-test-cases");
-const testCaseDir = path.join(__dirname, "resources/test-cases");
-const flavoredTestCaseDir = path.join(__dirname, "resources/flavored-test-cases");
-const readonlyTestCaseDir = path.join(__dirname, "resources/readonly-test-cases");
 
-describe("definitionTests", () => {
+const testMatrix: Array<{ name: string; flags: ITypeGenerationFlags }> = [
+    {
+        name: "test-cases",
+        flags: {
+            flavorizedAliases: false,
+            readonlyInterfaces: false,
+            omitServiceMetadata: false,
+            omitUnnecessaryArgs: false,
+            omitServiceClasses: false,
+        },
+    },
+    {
+        name: "flavored-test-cases",
+        flags: {
+            flavorizedAliases: true,
+            readonlyInterfaces: false,
+            omitServiceMetadata: false,
+            omitUnnecessaryArgs: false,
+            omitServiceClasses: false,
+        },
+    },
+    {
+        name: "readonly-test-cases",
+        flags: {
+            flavorizedAliases: false,
+            readonlyInterfaces: true,
+            omitServiceMetadata: false,
+            omitUnnecessaryArgs: false,
+            omitServiceClasses: false,
+        },
+    },
+    {
+        name: "flavored-slim",
+        flags: {
+            flavorizedAliases: true,
+            readonlyInterfaces: false,
+            omitServiceMetadata: true,
+            omitUnnecessaryArgs: true,
+            omitServiceClasses: false,
+        },
+    },
+    {
+        name: "readonly-slim",
+        flags: {
+            flavorizedAliases: true,
+            readonlyInterfaces: false,
+            omitServiceMetadata: true,
+            omitUnnecessaryArgs: true,
+            omitServiceClasses: false,
+        },
+    },
+    {
+        name: "slim-no-classes",
+        flags: {
+            flavorizedAliases: true,
+            readonlyInterfaces: false,
+            omitServiceMetadata: true,
+            omitUnnecessaryArgs: true,
+            omitServiceClasses: true,
+        },
+    },
+];
+
+describe.each(testMatrix)("definitionTests($name)", ({ name, flags }) => {
     for (const fileName of fs.readdirSync(irDir)) {
         const definitionFilePath = path.join(irDir, fileName);
         const paths = fileName.substring(0, fileName.lastIndexOf("."));
-        const actualTestCaseDir = path.join(testCaseDir, paths);
-        const actualFlavoredTestCaseDir = path.join(flavoredTestCaseDir, paths);
-        const actualReadonlyTestCaseDir = path.join(readonlyTestCaseDir, paths);
+        const expectedDir = path.join(__dirname, "resources", name, paths);
 
         it(
             `${fileName} produces equivalent TypeScript`,
-            testGenerateAllFilesAreTheSame(definitionFilePath, paths, actualTestCaseDir, DEFAULT_TYPE_GENERATION_FLAGS),
+            testGenerateAllFilesAreTheSame(definitionFilePath, paths, expectedDir, flags),
         );
-
-        // Not every test has a flavored version
-        if (fs.existsSync(actualFlavoredTestCaseDir)) {
-            it(
-                `${fileName} produces equivalent flavored TypeScript`,
-                testGenerateAllFilesAreTheSame(
-                    definitionFilePath,
-                    paths,
-                    actualFlavoredTestCaseDir,
-                    FLAVORED_TYPE_GENERATION_FLAGS,
-                ),
-            );
-        }
-
-        // Not every test has a readonly version
-        if (fs.existsSync(actualReadonlyTestCaseDir)) {
-            it(
-                `${fileName} produces equivalent readonly TypeScript`,
-                testGenerateAllFilesAreTheSame(
-                    definitionFilePath,
-                    paths,
-                    actualReadonlyTestCaseDir,
-                    READONLY_TYPE_GENERATION_FLAGS,
-                ),
-            );
-        }
     }
 });
 
 function testGenerateAllFilesAreTheSame(
     definitionFilePath: string,
     paths: string,
-    actualTestCaseDir: string,
+    expectedTestCaseDir: string,
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
     return async () => {
@@ -168,7 +196,7 @@ function testGenerateAllFilesAreTheSame(
 
         await generate(conjureDefinition, outputDir, typeGenerationFlags);
 
-        expectAllFilesAreTheSame(conjureDefinition, outputDir, actualTestCaseDir, typeGenerationFlags);
+        expectAllFilesAreTheSame(conjureDefinition, outputDir, expectedTestCaseDir, typeGenerationFlags);
     };
 }
 
