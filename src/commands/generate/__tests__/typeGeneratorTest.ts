@@ -19,9 +19,9 @@ import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";
+import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { SimpleAst } from "../simpleAst";
 import { generateAlias, generateEnum, generateObject, generateUnion } from "../typeGenerator";
-import { createHashableTypeName } from "../utils";
 import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import {
     assertDoesNotExist,

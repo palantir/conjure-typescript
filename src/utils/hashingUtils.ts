@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018 Palantir Technologies, Inc.
+ * Copyright 2025 Palantir Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,5 +15,15 @@
  * limitations under the License.
  */
 
-export * from "./packageUtils";
-export * from "./slslDependencies";
+import { ITypeName } from "conjure-api";
+
+const FIELD_SEPARATOR = "|-|";
+
+export const createHashableTypeName = (typeName: ITypeName): string => {
+    return `${typeName.package}${FIELD_SEPARATOR}${typeName.name}`;
+};
+
+export const disassembleHashableTypeName = (hash: string): ITypeName => {
+    const [packageName, name] = hash.split(FIELD_SEPARATOR);
+    return { package: packageName, name };
+};

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018 Palantir Technologies, Inc.
+ * Copyright 2025 Palantir Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,4 +15,15 @@
  * limitations under the License.
  */
 
-export * from "./command";
+import { IType, PrimitiveType } from "conjure-api";
+
+const NON_FLAVORIZABLE_TYPES = new Set<PrimitiveType>([
+    PrimitiveType.ANY,
+    PrimitiveType.BOOLEAN,
+    PrimitiveType.BINARY,
+    PrimitiveType.DATETIME,
+]);
+
+export function isFlavorizable(type: IType, flavorizedAliases: boolean): boolean {
+    return flavorizedAliases && IType.isPrimitive(type) && !NON_FLAVORIZABLE_TYPES.has(type.primitive);
+}

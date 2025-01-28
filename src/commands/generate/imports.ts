@@ -29,9 +29,10 @@ import {
 } from "conjure-api";
 import * as path from "path";
 import { ImportDeclarationStructure, ImportSpecifierStructure, StructureKind } from "ts-morph";
+import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
+import { isFlavorizable } from "../../utils/flavorizingUtils";
+import { createHashableTypeName } from "../../utils/hashingUtils";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
-import { ITypeGenerationFlags } from "./typeGenerationFlags";
-import { createHashableTypeName, isFlavorizable } from "./utils";
 
 export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]> {
     private tsTypeVisitor: TsReturnTypeVisitor;

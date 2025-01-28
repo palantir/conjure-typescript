@@ -37,14 +37,15 @@ import {
     StructureKind,
     VariableDeclarationKind,
 } from "ts-morph";
+import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
+import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../utils/constants";
+import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../utils/docsUtils";
 import { ImportsVisitor, sortImports } from "./imports";
 import { MediaTypeVisitor } from "./mediaTypeVisitor";
 import { SimpleAst } from "./simpleAst";
 import { StringConversionTypeVisitor } from "./stringConversionTypeVisitor";
 import { TsArgumentTypeVisitor } from "./tsArgumentTypeVisitor";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
-import { ITypeGenerationFlags } from "./typeGenerationFlags";
-import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs, CONJURE_CLIENT } from "./utils";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
@@ -52,7 +53,7 @@ const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
 const BRIDGE = "bridge";
 const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
     kind: StructureKind.ImportDeclaration,
-    moduleSpecifier: CONJURE_CLIENT,
+    moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
     namedImports: [{ name: HTTP_API_BRIDGE_TYPE }],
 };
 

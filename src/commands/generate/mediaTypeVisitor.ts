@@ -27,7 +27,7 @@ import {
     PrimitiveType,
 } from "conjure-api";
 import { MediaType } from "conjure-client";
-import { createHashableTypeName } from "./utils";
+import { createHashableTypeName } from "../../utils/hashingUtils";
 
 export class MediaTypeVisitor implements ITypeVisitor<MediaType> {
     constructor(private knownTypes: Map<string, ITypeDefinition>) {}

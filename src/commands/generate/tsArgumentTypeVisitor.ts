@@ -16,8 +16,8 @@
  */
 
 import { ITypeDefinition, ITypeName, ITypeVisitor, PrimitiveType } from "conjure-api";
+import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
-import { ITypeGenerationFlags } from "./typeGenerationFlags";
 
 export class TsArgumentTypeVisitor extends TsReturnTypeVisitor {
     constructor(

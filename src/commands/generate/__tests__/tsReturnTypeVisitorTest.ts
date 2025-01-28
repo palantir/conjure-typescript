@@ -16,8 +16,8 @@
  */
 
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
+import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { TsReturnTypeVisitor } from "../tsReturnTypeVisitor";
-import { createHashableTypeName } from "../utils";
 import {
     DEFAULT_TYPE_GENERATION_FLAGS,
     FLAVORED_TYPE_GENERATION_FLAGS,

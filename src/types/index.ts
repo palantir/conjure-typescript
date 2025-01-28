@@ -15,4 +15,6 @@
  * limitations under the License.
  */
 
-export * from "./command";
+export * from "./packageUtils";
+export * from "./slsDependencies";
+export * from "./typeGenerationFlags";

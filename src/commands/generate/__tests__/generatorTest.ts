@@ -28,11 +28,11 @@ import {
 import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
-import { loadConjureDefinition } from "../generateCommand";
+import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
+import { isFlavorizable } from "../../../utils/flavorizingUtils";
+import { loadConjureDefinition } from "../command";
 import { generate } from "../generator";
 import { typeNameToFilePath } from "../simpleAst";
-import { ITypeGenerationFlags } from "../typeGenerationFlags";
-import { isFlavorizable } from "../utils";
 import {
     DEFAULT_TYPE_GENERATION_FLAGS,
     FLAVORED_TYPE_GENERATION_FLAGS,

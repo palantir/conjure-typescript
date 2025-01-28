@@ -17,8 +17,8 @@
 
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { MediaType } from "conjure-client";
+import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { MediaTypeVisitor } from "../mediaTypeVisitor";
-import { createHashableTypeName } from "../utils";
 
 describe("testMediaTypeGenerator", () => {
     const objectName = { name: "Object", package: "" };
