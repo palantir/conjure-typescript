@@ -33,7 +33,7 @@ import { generateService } from "./serviceGenerator";
 import { SimpleAst } from "./simpleAst";
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { generateType } from "./typeGenerator";
-import { createHashableTypeName, dissasembleHashableTypeName } from "./utils";
+import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
 
 export async function generate(
     definition: IConjureDefinition,
@@ -56,7 +56,7 @@ export async function generate(
         ),
     );
     const knownDefinitions = Array.from(knownTypes.keys())
-        .map(dissasembleHashableTypeName)
+        .map(disassembleHashableTypeName)
         .concat(definition.services.map(serviceDefinition => serviceDefinition.serviceName))
         .concat(definition.errors.map(errorDefinition => errorDefinition.errorName));
     await Promise.all(
