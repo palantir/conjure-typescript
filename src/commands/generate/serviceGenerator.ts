@@ -40,8 +40,8 @@ import {
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../utils/docsUtils";
+import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../utils/resolveImports";
 import { resolveTsType } from "../../utils/resolveTsType";
-import { ImportsVisitor, sortImports } from "./imports";
 import { MediaTypeVisitor } from "./mediaTypeVisitor";
 import { SimpleAst } from "./simpleAst";
 import { StringConversionTypeVisitor } from "./stringConversionTypeVisitor";
@@ -65,7 +65,6 @@ export function generateService(
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
-    const importsVisitor = new ImportsVisitor(knownTypes, definition.serviceName, typeGenerationFlags);
     const mediaTypeVisitor = new MediaTypeVisitor(knownTypes);
 
     const endpointSignatures: MethodSignatureStructure[] = [];
@@ -93,7 +92,11 @@ export function generateService(
                     true,
                     true,
                 );
-                imports.push(...IType.visit(argDefinition.type, importsVisitor));
+
+                imports.push(
+                    ...resolveImports(argDefinition.type, definition.serviceName, knownTypes, typeGenerationFlags),
+                );
+
                 return {
                     kind: StructureKind.Parameter,
                     hasQuestionToken: IType.isOptional(argDefinition.type),
@@ -112,7 +115,9 @@ export function generateService(
                 false,
                 true,
             );
-            imports.push(...IType.visit(endpointDefinition.returns, importsVisitor));
+            imports.push(
+                ...resolveImports(endpointDefinition.returns, definition.serviceName, knownTypes, typeGenerationFlags),
+            );
         }
 
         const signature: MethodSignatureStructure = {
@@ -146,12 +151,15 @@ export function generateService(
         });
 
         endpointDefinition.errors?.forEach(error => {
-            const errorImports: ImportDeclarationStructure[] = importsVisitor
-                .reference({
+            const errorImports = resolveImportsForReferenceType(
+                {
                     name: error.error.name,
                     package: error.error.package,
-                })
-                .map(i => ({ ...i, isTypeOnly: true }));
+                },
+                definition.serviceName,
+                knownTypes,
+                typeGenerationFlags,
+            ).map(i => ({ ...i, isTypeOnly: true }));
             imports.push(...errorImports);
         });
     });

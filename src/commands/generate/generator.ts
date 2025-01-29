@@ -28,9 +28,9 @@ import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
+import { directoryNameForType } from "../../utils/fileUtils";
 import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
 import { generateError } from "./errorGenerator";
-import { dir } from "./imports";
 import { generateService } from "./serviceGenerator";
 import { SimpleAst } from "./simpleAst";
 import { generateType } from "./typeGenerator";
@@ -61,7 +61,7 @@ export async function generate(
         .concat(definition.errors.map(errorDefinition => errorDefinition.errorName));
     await Promise.all(
         _.uniqBy(knownDefinitions, ({ package: packageName }) => packageName).map(typeName => {
-            const modulePath = path.join(outDir, dir(typeName));
+            const modulePath = path.join(outDir, directoryNameForType(typeName));
             if (fs.existsSync(modulePath)) {
                 fs.removeSync(modulePath);
             }
