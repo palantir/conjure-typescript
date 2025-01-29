@@ -19,9 +19,9 @@ import { IType, ITypeDefinition, ITypeName, PrimitiveType } from "conjure-api";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
+import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
 import { SimpleAst } from "../simpleAst";
 import { generateType } from "../typeGenerator";
-import { DEFAULT_TYPE_GENERATION_FLAGS } from "./resources/constants";
 
 export function assertOutputAndExpectedAreEqual(outDir: string, expectedDir: string, fname: string) {
     const actualFilePath = path.join(outDir, fname);

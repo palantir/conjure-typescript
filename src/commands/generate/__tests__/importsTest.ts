@@ -18,8 +18,8 @@
 import { IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import { ImportDeclarationStructure, StructureKind } from "ts-morph";
 import { createHashableTypeName } from "../../../utils/hashingUtils";
+import { FLAVORED_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
 import { ImportsVisitor, sortImports } from "../imports";
-import { FLAVORED_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import { foreignObject, importsLocalObject as localObject } from "./testTypesGeneratorTest";
 
 const GENERATION_FLAGS_TO_USE_FOR_IMPORTS = FLAVORED_TYPE_GENERATION_FLAGS;

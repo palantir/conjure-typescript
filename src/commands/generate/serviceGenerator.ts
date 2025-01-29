@@ -94,6 +94,7 @@ export function generateService(
                 imports.push(
                     ...resolveImports(argDefinition.type, definition.serviceName, knownTypes, typeGenerationFlags),
                 );
+
                 return {
                     kind: StructureKind.Parameter,
                     hasQuestionToken: IType.isOptional(argDefinition.type),

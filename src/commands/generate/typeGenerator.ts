@@ -356,6 +356,7 @@ function processUnionMembers(
             false,
             false,
         );
+
         imports.push(...resolveImports(fieldDefinition.type, definition.typeName, knownTypes, typeGenerationFlags));
 
         const interfaceName = `${unionTsType}_${capitalize(memberName)}`;
