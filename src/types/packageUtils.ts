@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-import * as fs from "fs-extra";
-import { IProductDependency } from "./slslDependencies";
+import { IProductDependency } from "./slsDependencies";
 
 export interface IPackageJson {
     author?: string;
@@ -38,8 +37,4 @@ export interface IPackageJson {
     types?: string;
     typings?: string;
     version: string;
-}
-
-export async function writeJson(location: string, blob: object) {
-    return fs.writeJson(location, blob, { spaces: 2, replacer: null });
 }

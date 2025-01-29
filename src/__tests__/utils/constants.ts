@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018 Palantir Technologies, Inc.
+ * Copyright 2025 Palantir Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,5 +15,19 @@
  * limitations under the License.
  */
 
-export * from "./packageUtils";
-export * from "./slslDependencies";
+import { ITypeGenerationFlags } from "../../types";
+
+export const DEFAULT_TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
+    flavorizedAliases: false,
+    readonlyInterfaces: false,
+};
+
+export const FLAVORED_TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
+    ...DEFAULT_TYPE_GENERATION_FLAGS,
+    flavorizedAliases: true,
+};
+
+export const READONLY_TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
+    ...DEFAULT_TYPE_GENERATION_FLAGS,
+    readonlyInterfaces: true,
+};

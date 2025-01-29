@@ -28,16 +28,16 @@ import {
 import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
-import { loadConjureDefinition } from "../generateCommand";
-import { generate } from "../generator";
-import { typeNameToFilePath } from "../simpleAst";
-import { ITypeGenerationFlags } from "../typeGenerationFlags";
-import { isFlavorizable } from "../utils";
+import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
+import { isFlavorizable } from "../../../utils/flavorizingUtils";
 import {
     DEFAULT_TYPE_GENERATION_FLAGS,
     FLAVORED_TYPE_GENERATION_FLAGS,
     READONLY_TYPE_GENERATION_FLAGS,
-} from "./resources/constants";
+} from "../../../__tests__/utils/constants";
+import { loadConjureDefinition } from "../command";
+import { generate } from "../generator";
+import { typeNameToFilePath } from "../simpleAst";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
 describe("generator", () => {
