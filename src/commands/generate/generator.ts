@@ -15,15 +15,7 @@
  * limitations under the License.
  */
 
-import {
-    IAliasDefinition,
-    IConjureDefinition,
-    IEnumDefinition,
-    IObjectDefinition,
-    ITypeDefinition,
-    ITypeDefinitionVisitor,
-    IUnionDefinition,
-} from "conjure-api";
+import { IConjureDefinition, ITypeDefinition } from "conjure-api";
 import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";
@@ -41,9 +33,8 @@ export async function generate(
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
     // Create project structure
-    const knownTypes: Map<string, ITypeDefinition> = new Map();
-    const indexingVisitor = new IndexByTypeNameVisitor(knownTypes);
-    definition.types.forEach(typeDefinition => ITypeDefinition.visit(typeDefinition, indexingVisitor));
+    const knownTypes = computeKnownTypes(definition.types);
+
     // Add the errors to knownTypes so they can be imported by services
     definition.errors.forEach(errorDefinition =>
         knownTypes.set(
@@ -55,6 +46,7 @@ export async function generate(
             }),
         ),
     );
+
     const knownDefinitions = Array.from(knownTypes.keys())
         .map(disassembleHashableTypeName)
         .concat(definition.services.map(serviceDefinition => serviceDefinition.serviceName))
@@ -93,21 +85,34 @@ export async function generate(
         });
 }
 
-class IndexByTypeNameVisitor implements ITypeDefinitionVisitor<void> {
-    constructor(private map: Map<string, ITypeDefinition>) {}
-    public alias = (obj: IAliasDefinition) => {
-        this.map.set(createHashableTypeName(obj.typeName), ITypeDefinition.alias(obj));
-    };
-    public enum = (obj: IEnumDefinition) => {
-        this.map.set(createHashableTypeName(obj.typeName), ITypeDefinition.enum_(obj));
-    };
-    public object = (obj: IObjectDefinition) => {
-        this.map.set(createHashableTypeName(obj.typeName), ITypeDefinition.object(obj));
-    };
-    public union = (obj: IUnionDefinition) => {
-        this.map.set(createHashableTypeName(obj.typeName), ITypeDefinition.union(obj));
-    };
-    public unknown = (obj: ITypeDefinition) => {
-        throw new Error("unknown type definition: " + obj);
-    };
-}
+const computeKnownTypes = (types: ITypeDefinition[]): Map<string, ITypeDefinition> => {
+    return types.reduce((knownTypes, typeDefinition) => {
+        switch (typeDefinition.type) {
+            case "alias":
+                knownTypes.set(
+                    createHashableTypeName(typeDefinition.alias.typeName),
+                    ITypeDefinition.alias(typeDefinition.alias),
+                );
+                break;
+            case "enum":
+                knownTypes.set(
+                    createHashableTypeName(typeDefinition.enum.typeName),
+                    ITypeDefinition.enum_(typeDefinition.enum),
+                );
+                break;
+            case "object":
+                knownTypes.set(
+                    createHashableTypeName(typeDefinition.object.typeName),
+                    ITypeDefinition.object(typeDefinition.object),
+                );
+                break;
+            case "union":
+                knownTypes.set(
+                    createHashableTypeName(typeDefinition.union.typeName),
+                    ITypeDefinition.union(typeDefinition.union),
+                );
+                break;
+        }
+        return knownTypes;
+    }, new Map<string, ITypeDefinition>());
+};
