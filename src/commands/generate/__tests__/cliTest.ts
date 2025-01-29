@@ -19,7 +19,7 @@ import * as child_process from "child_process";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
-import { IPackageJson, ISlsManifestDependency } from "../../../utils";
+import { IPackageJson, ISlsManifestDependency } from "../../../types";
 import { createPackageJson, createTsconfigJson, GenerateCommand } from "../index";
 
 describe("generate command", () => {

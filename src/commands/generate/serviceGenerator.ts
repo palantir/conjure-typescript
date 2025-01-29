@@ -24,7 +24,6 @@ import {
     IServiceDefinition,
     IType,
     ITypeDefinition,
-    ITypeVisitor,
 } from "conjure-api";
 import { MediaType } from "conjure-client";
 import {
@@ -37,14 +36,14 @@ import {
     StructureKind,
     VariableDeclarationKind,
 } from "ts-morph";
-import { combineImports, ImportsVisitor } from "./imports";
-import { MediaTypeVisitor } from "./mediaTypeVisitor";
+import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
+import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../utils/constants";
+import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../utils/docsUtils";
+import { combineImports, resolveImports, resolveImportsForReferenceType } from "../../utils/resolveImports";
+import { resolveMediaType } from "../../utils/resolveMediaType";
+import { resolveStringConversion } from "../../utils/resolveStringConversion";
+import { resolveTsType } from "../../utils/resolveTsType";
 import { SimpleAst } from "./simpleAst";
-import { StringConversionTypeVisitor } from "./stringConversionTypeVisitor";
-import { TsArgumentTypeVisitor } from "./tsArgumentTypeVisitor";
-import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
-import { ITypeGenerationFlags } from "./typeGenerationFlags";
-import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs, CONJURE_CLIENT } from "./utils";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
@@ -52,7 +51,7 @@ const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
 const BRIDGE = "bridge";
 const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
     kind: StructureKind.ImportDeclaration,
-    moduleSpecifier: CONJURE_CLIENT,
+    moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
     namedImports: [{ name: HTTP_API_BRIDGE_TYPE }],
 };
 
@@ -65,15 +64,6 @@ export function generateService(
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
-    const tsReturnTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.serviceName, true, typeGenerationFlags);
-    const tsArgumentTypeVisitor = new TsArgumentTypeVisitor(
-        knownTypes,
-        definition.serviceName,
-        true,
-        typeGenerationFlags,
-    );
-    const importsVisitor = new ImportsVisitor(knownTypes, definition.serviceName, typeGenerationFlags);
-    const mediaTypeVisitor = new MediaTypeVisitor(knownTypes);
 
     const endpointSignatures: MethodSignatureStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
@@ -96,20 +86,40 @@ export function generateService(
                 return aIsOptional && !bIsOptional ? 1 : !aIsOptional && bIsOptional ? -1 : 0;
             })
             .map(argDefinition => {
-                const argType = IType.visit(argDefinition.type, tsArgumentTypeVisitor);
-                imports.push(...IType.visit(argDefinition.type, importsVisitor));
+                const parameterType = resolveTsType(
+                    argDefinition.type,
+                    definition.serviceName,
+                    knownTypes,
+                    typeGenerationFlags,
+                    true,
+                    true,
+                );
+
+                imports.push(
+                    ...resolveImports(argDefinition.type, definition.serviceName, knownTypes, typeGenerationFlags),
+                );
+
                 return {
                     kind: StructureKind.Parameter,
                     hasQuestionToken: IType.isOptional(argDefinition.type),
                     name: argDefinition.argName,
-                    type: argType,
+                    type: parameterType,
                 };
             });
 
         let returnTsType = "void";
         if (endpointDefinition.returns != null) {
-            returnTsType = IType.visit(endpointDefinition.returns, tsReturnTypeVisitor);
-            imports.push(...IType.visit(endpointDefinition.returns, importsVisitor));
+            returnTsType = resolveTsType(
+                endpointDefinition.returns,
+                definition.serviceName,
+                knownTypes,
+                typeGenerationFlags,
+                false,
+                true,
+            );
+            imports.push(
+                ...resolveImports(endpointDefinition.returns, definition.serviceName, knownTypes, typeGenerationFlags),
+            );
         }
 
         const signature: MethodSignatureStructure = {
@@ -128,12 +138,7 @@ export function generateService(
 
         endpointImplementations.push({
             kind: StructureKind.Method,
-            statements: generateEndpointBody(
-                definition.serviceName.name,
-                endpointDefinition,
-                returnTsType,
-                mediaTypeVisitor,
-            ),
+            statements: generateEndpointBody(definition.serviceName.name, endpointDefinition, returnTsType, knownTypes),
             name: endpointDefinition.endpointName,
             parameters,
             returnType: `Promise<${returnTsType}>`,
@@ -143,12 +148,15 @@ export function generateService(
         });
 
         endpointDefinition.errors?.forEach(error => {
-            const errorImports: ImportDeclarationStructure[] = importsVisitor
-                .reference({
+            const errorImports = resolveImportsForReferenceType(
+                {
                     name: error.error.name,
                     package: error.error.package,
-                })
-                .map(i => ({ ...i, isTypeOnly: true }));
+                },
+                definition.serviceName,
+                knownTypes,
+                typeGenerationFlags,
+            ).map(i => ({ ...i, isTypeOnly: true }));
             imports.push(...errorImports);
         });
     });
@@ -188,7 +196,7 @@ function generateEndpointBody(
     serviceName: string,
     endpointDefinition: IEndpointDefinition,
     returnTsType: string,
-    mediaTypeVisitor: ITypeVisitor<string>,
+    knownTypes: Map<string, ITypeDefinition>,
 ): (writer: CodeBlockWriter) => void {
     const bodyArgs: IArgumentDefinition[] = [];
     const headerArgs: IArgumentDefinition[] = [];
@@ -214,17 +222,17 @@ function generateEndpointBody(
     // It's not quite correct to default to application/json for body less and return less requests.
     // We do this to preserve existing behaviour.
     const requestMediaType =
-        bodyArgs.length === 0 ? MediaType.APPLICATION_JSON : IType.visit(bodyArgs[0].type, mediaTypeVisitor);
+        bodyArgs.length === 0 ? MediaType.APPLICATION_JSON : resolveMediaType(bodyArgs[0].type, knownTypes);
     const responseMediaType =
         endpointDefinition.returns != null && endpointDefinition.returns != null
-            ? IType.visit(endpointDefinition.returns, mediaTypeVisitor)
+            ? resolveMediaType(endpointDefinition.returns, knownTypes)
             : MediaType.APPLICATION_JSON;
     const formattedHeaderArgs = headerArgs.map(argDefinition => {
         const paramId = (argDefinition.paramType as IParameterType_Header).header.paramId!;
         if (paramId == null) {
             throw Error("header arguments must define a 'param-id': " + argDefinition.argName);
         }
-        const stringConversion = IType.visit(argDefinition.type, new StringConversionTypeVisitor());
+        const stringConversion = resolveStringConversion(argDefinition.type);
         return `"${paramId}": ${argDefinition.argName}${stringConversion},`;
     });
     const formattedQueryArgs = queryArgs.map(argDefinition => {

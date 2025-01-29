@@ -19,9 +19,9 @@ import { ErrorCode, IType, PrimitiveType } from "conjure-api";
 import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";
+import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
 import { generateError } from "../errorGenerator";
 import { SimpleAst } from "../simpleAst";
-import { DEFAULT_TYPE_GENERATION_FLAGS } from "./resources/constants";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
 describe("errorGenerator", () => {
