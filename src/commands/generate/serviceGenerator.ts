@@ -24,7 +24,6 @@ import {
     IServiceDefinition,
     IType,
     ITypeDefinition,
-    ITypeVisitor,
 } from "conjure-api";
 import { MediaType } from "conjure-client";
 import {
@@ -41,10 +40,10 @@ import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../utils/docsUtils";
 import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../utils/resolveImports";
+import { resolveMediaType } from "../../utils/resolveMediaType";
+import { resolveStringConversion } from "../../utils/resolveStringConversion";
 import { resolveTsType } from "../../utils/resolveTsType";
-import { MediaTypeVisitor } from "./mediaTypeVisitor";
 import { SimpleAst } from "./simpleAst";
-import { StringConversionTypeVisitor } from "./stringConversionTypeVisitor";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
@@ -65,7 +64,6 @@ export function generateService(
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
-    const mediaTypeVisitor = new MediaTypeVisitor(knownTypes);
 
     const endpointSignatures: MethodSignatureStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
@@ -136,12 +134,7 @@ export function generateService(
 
         endpointImplementations.push({
             kind: StructureKind.Method,
-            statements: generateEndpointBody(
-                definition.serviceName.name,
-                endpointDefinition,
-                returnTsType,
-                mediaTypeVisitor,
-            ),
+            statements: generateEndpointBody(definition.serviceName.name, endpointDefinition, returnTsType, knownTypes),
             name: endpointDefinition.endpointName,
             parameters,
             returnType: `Promise<${returnTsType}>`,
@@ -202,7 +195,7 @@ function generateEndpointBody(
     serviceName: string,
     endpointDefinition: IEndpointDefinition,
     returnTsType: string,
-    mediaTypeVisitor: ITypeVisitor<string>,
+    knownTypes: Map<string, ITypeDefinition>,
 ): (writer: CodeBlockWriter) => void {
     const bodyArgs: IArgumentDefinition[] = [];
     const headerArgs: IArgumentDefinition[] = [];
@@ -228,17 +221,17 @@ function generateEndpointBody(
     // It's not quite correct to default to application/json for body less and return less requests.
     // We do this to preserve existing behaviour.
     const requestMediaType =
-        bodyArgs.length === 0 ? MediaType.APPLICATION_JSON : IType.visit(bodyArgs[0].type, mediaTypeVisitor);
+        bodyArgs.length === 0 ? MediaType.APPLICATION_JSON : resolveMediaType(bodyArgs[0].type, knownTypes);
     const responseMediaType =
         endpointDefinition.returns != null && endpointDefinition.returns != null
-            ? IType.visit(endpointDefinition.returns, mediaTypeVisitor)
+            ? resolveMediaType(endpointDefinition.returns, knownTypes)
             : MediaType.APPLICATION_JSON;
     const formattedHeaderArgs = headerArgs.map(argDefinition => {
         const paramId = (argDefinition.paramType as IParameterType_Header).header.paramId!;
         if (paramId == null) {
             throw Error("header arguments must define a 'param-id': " + argDefinition.argName);
         }
-        const stringConversion = IType.visit(argDefinition.type, new StringConversionTypeVisitor());
+        const stringConversion = resolveStringConversion(argDefinition.type);
         return `"${paramId}": ${argDefinition.argName}${stringConversion},`;
     });
     const formattedQueryArgs = queryArgs.map(argDefinition => {
