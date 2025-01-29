@@ -40,12 +40,11 @@ import {
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../utils/docsUtils";
+import { resolveTsType } from "../../utils/resolveTsType";
 import { ImportsVisitor, sortImports } from "./imports";
 import { MediaTypeVisitor } from "./mediaTypeVisitor";
 import { SimpleAst } from "./simpleAst";
 import { StringConversionTypeVisitor } from "./stringConversionTypeVisitor";
-import { TsArgumentTypeVisitor } from "./tsArgumentTypeVisitor";
-import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
@@ -66,13 +65,6 @@ export function generateService(
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
-    const tsReturnTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.serviceName, true, typeGenerationFlags);
-    const tsArgumentTypeVisitor = new TsArgumentTypeVisitor(
-        knownTypes,
-        definition.serviceName,
-        true,
-        typeGenerationFlags,
-    );
     const importsVisitor = new ImportsVisitor(knownTypes, definition.serviceName, typeGenerationFlags);
     const mediaTypeVisitor = new MediaTypeVisitor(knownTypes);
 
@@ -93,19 +85,33 @@ export function generateService(
                 return aIsOptional && !bIsOptional ? 1 : !aIsOptional && bIsOptional ? -1 : 0;
             })
             .map(argDefinition => {
-                const argType = IType.visit(argDefinition.type, tsArgumentTypeVisitor);
+                const parameterType = resolveTsType(
+                    argDefinition.type,
+                    definition.serviceName,
+                    knownTypes,
+                    typeGenerationFlags,
+                    true,
+                    true,
+                );
                 imports.push(...IType.visit(argDefinition.type, importsVisitor));
                 return {
                     kind: StructureKind.Parameter,
                     hasQuestionToken: IType.isOptional(argDefinition.type),
                     name: argDefinition.argName,
-                    type: argType,
+                    type: parameterType,
                 };
             });
 
         let returnTsType = "void";
         if (endpointDefinition.returns != null) {
-            returnTsType = IType.visit(endpointDefinition.returns, tsReturnTypeVisitor);
+            returnTsType = resolveTsType(
+                endpointDefinition.returns,
+                definition.serviceName,
+                knownTypes,
+                typeGenerationFlags,
+                false,
+                true,
+            );
             imports.push(...IType.visit(endpointDefinition.returns, importsVisitor));
         }
 

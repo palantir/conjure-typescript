@@ -32,18 +32,14 @@ import { ImportDeclarationStructure, ImportSpecifierStructure, StructureKind } f
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { isFlavorizable } from "../../utils/flavorizingUtils";
 import { createHashableTypeName } from "../../utils/hashingUtils";
-import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
+import { resolveTsTypeForReferenceType } from "../../utils/resolveTsType";
 
 export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]> {
-    private tsTypeVisitor: TsReturnTypeVisitor;
-
     constructor(
         private knownTypes: Map<string, ITypeDefinition>,
         private currType: ITypeName,
         private typeGenerationFlags: ITypeGenerationFlags,
-    ) {
-        this.tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, currType, false, typeGenerationFlags);
-    }
+    ) {}
 
     public primitive = (_: PrimitiveType): ImportDeclarationStructure[] => [];
 
@@ -72,7 +68,14 @@ export class ImportsVisitor implements ITypeVisitor<ImportDeclarationStructure[]
             return [];
         }
         const moduleSpecifier = relativePath(this.currType, obj);
-        const name = this.tsTypeVisitor.reference(obj);
+        const name = resolveTsTypeForReferenceType(
+            obj,
+            this.currType,
+            this.knownTypes,
+            this.typeGenerationFlags,
+            false,
+            false,
+        );
         if (ITypeDefinition.isUnion(typeDefinition)) {
             return [
                 {

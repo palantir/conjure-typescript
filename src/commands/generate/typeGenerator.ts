@@ -39,9 +39,9 @@ import { addDeprecatedToDocs } from "../../utils/docsUtils";
 import { isFlavorizable } from "../../utils/flavorizingUtils";
 import { isValidFunctionName } from "../../utils/functionUtils";
 import { doubleQuote, singleQuote } from "../../utils/quotesUtils";
+import { resolveTsType } from "../../utils/resolveTsType";
 import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
-import { TsReturnTypeVisitor } from "./tsReturnTypeVisitor";
 
 export function generateType(
     definition: ITypeDefinition,
@@ -81,8 +81,14 @@ export async function generateAlias(
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
     if (isFlavorizable(definition.alias, typeGenerationFlags.flavorizedAliases)) {
-        const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false, typeGenerationFlags);
-        const fieldType = IType.visit(definition.alias, tsTypeVisitor);
+        const fieldType = resolveTsType(
+            definition.alias,
+            definition.typeName,
+            knownTypes,
+            typeGenerationFlags,
+            false,
+            false,
+        );
         const sourceFile = simpleAst.createSourceFile(definition.typeName);
         const typeAlias = sourceFile.addTypeAlias({
             isExported: true,
@@ -206,12 +212,18 @@ export async function generateObject(
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
-    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false, typeGenerationFlags);
     const importsVisitor = new ImportsVisitor(knownTypes, definition.typeName, typeGenerationFlags);
     const properties: PropertySignatureStructure[] = [];
     const imports: ImportDeclarationStructure[] = [];
     definition.fields.forEach(fieldDefinition => {
-        const fieldType = IType.visit(fieldDefinition.type, tsTypeVisitor);
+        const fieldType = resolveTsType(
+            fieldDefinition.type,
+            definition.typeName,
+            knownTypes,
+            typeGenerationFlags,
+            false,
+            false,
+        );
         const docs = addDeprecatedToDocs(fieldDefinition);
 
         const property: PropertySignatureStructure = {
@@ -330,7 +342,6 @@ function processUnionMembers(
     knownTypes: Map<string, ITypeDefinition>,
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
-    const tsTypeVisitor = new TsReturnTypeVisitor(knownTypes, definition.typeName, false, typeGenerationFlags);
     const importsVisitor = new ImportsVisitor(knownTypes, definition.typeName, typeGenerationFlags);
 
     const imports: ImportDeclarationStructure[] = [];
@@ -341,7 +352,14 @@ function processUnionMembers(
 
     definition.union.forEach(fieldDefinition => {
         const memberName = fieldDefinition.fieldName;
-        const fieldType = IType.visit(fieldDefinition.type, tsTypeVisitor);
+        const fieldType = resolveTsType(
+            fieldDefinition.type,
+            definition.typeName,
+            knownTypes,
+            typeGenerationFlags,
+            false,
+            false,
+        );
         imports.push(...IType.visit(fieldDefinition.type, importsVisitor));
 
         const interfaceName = `${unionTsType}_${capitalize(memberName)}`;
