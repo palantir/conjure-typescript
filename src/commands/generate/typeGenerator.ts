@@ -39,8 +39,8 @@ import { addDeprecatedToDocs } from "../../utils/docsUtils";
 import { isFlavorizable } from "../../utils/flavorizingUtils";
 import { isValidFunctionName } from "../../utils/functionUtils";
 import { doubleQuote, singleQuote } from "../../utils/quotesUtils";
+import { resolveImports, sortImports } from "../../utils/resolveImports";
 import { resolveTsType } from "../../utils/resolveTsType";
-import { ImportsVisitor, sortImports } from "./imports";
 import { SimpleAst } from "./simpleAst";
 
 export function generateType(
@@ -212,7 +212,6 @@ export async function generateObject(
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
-    const importsVisitor = new ImportsVisitor(knownTypes, definition.typeName, typeGenerationFlags);
     const properties: PropertySignatureStructure[] = [];
     const imports: ImportDeclarationStructure[] = [];
     definition.fields.forEach(fieldDefinition => {
@@ -236,8 +235,7 @@ export async function generateObject(
         };
 
         properties.push(property);
-
-        imports.push(...IType.visit(fieldDefinition.type, importsVisitor));
+        imports.push(...resolveImports(fieldDefinition.type, definition.typeName, knownTypes, typeGenerationFlags));
     });
 
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
@@ -342,8 +340,6 @@ function processUnionMembers(
     knownTypes: Map<string, ITypeDefinition>,
     typeGenerationFlags: ITypeGenerationFlags,
 ) {
-    const importsVisitor = new ImportsVisitor(knownTypes, definition.typeName, typeGenerationFlags);
-
     const imports: ImportDeclarationStructure[] = [];
     const visitorProperties: PropertySignatureStructure[] = [];
     const memberInterfaces: InterfaceDeclarationStructure[] = [];
@@ -360,7 +356,7 @@ function processUnionMembers(
             false,
             false,
         );
-        imports.push(...IType.visit(fieldDefinition.type, importsVisitor));
+        imports.push(...resolveImports(fieldDefinition.type, definition.typeName, knownTypes, typeGenerationFlags));
 
         const interfaceName = `${unionTsType}_${capitalize(memberName)}`;
         const docs = addDeprecatedToDocs(fieldDefinition);
