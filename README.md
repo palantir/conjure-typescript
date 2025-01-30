@@ -96,13 +96,18 @@ We also consider the command line interface and feature flags to be public API.
 
 - **Conjure enum: [EnumExample](./src/commands/generate/__tests__/resources/types/enumExample.ts)**
 
-    conjure-typescript leverages TypeScript's [string Enums](https://www.typescriptlang.org/docs/handbook/enums.html#string-enums).
+    conjure-typescript leverages TypeScript's [namespaces](https://www.typescriptlang.org/docs/handbook/namespaces.html).
 
   ```typescript
-  export enum EnumExample {
-      ONE = "ONE",
-      TWO = "TWO"
+  export namespace EnumExample {
+      export type ONE = "ONE";
+      export type TWO = "TWO";
+
+      export const ONE = "ONE" as "ONE";
+      export const TWO = "TWO" as "TWO";
   }
+
+  export type EnumExample = keyof typeof EnumExample;
 
   console.log(EnumExample.ONE); // prints "ONE"
   ```
