@@ -41,7 +41,7 @@ export class SimpleAst {
     public createSourceFile(currType: ITypeName): SourceFile {
         let sourceFile = this.sourceFileByPackageName.get(currType.package);
         if (sourceFile == null) {
-            sourceFile = this.ast.createSourceFile(path.join(this.outDir, dir(currType), "index.ts"));
+            sourceFile = this.ast.createSourceFile(path.join(this.outDir, directoryNameForType(currType), "index.ts"));
             this.sourceFileByPackageName.set(currType.package, sourceFile);
         }
         return sourceFile;
