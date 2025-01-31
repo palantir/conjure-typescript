@@ -57,12 +57,12 @@ const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
 
 const UNDEFINED_CONSTANT = "__undefined";
 
-export function generateService(
+export async function generateService(
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
-) {
+): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
 
     const endpointSignatures: MethodSignatureStructure[] = [];

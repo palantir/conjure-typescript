@@ -61,28 +61,26 @@ export async function generate(
         }),
     );
 
-    const promises: Array<Promise<any>> = [];
+    const promises: Promise<void>[] = [];
     const simpleAst = new SimpleAst(outDir);
 
     definition.services.forEach(serviceDefinition =>
-        generateService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags),
+        promises.push(generateService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags)),
     );
     definition.types.forEach(typeDefinition =>
-        generateType(typeDefinition, knownTypes, simpleAst, typeGenerationFlags),
+        promises.push(generateType(typeDefinition, knownTypes, simpleAst, typeGenerationFlags)),
     );
     definition.errors.forEach(errorDefinition =>
-        generateError(errorDefinition, knownTypes, simpleAst, typeGenerationFlags),
+        promises.push(generateError(errorDefinition, knownTypes, simpleAst, typeGenerationFlags)),
     );
 
-    promises.push(simpleAst.generateIndexFiles());
-    return Promise.all(promises)
-        .then(() => {
-            return;
-        })
-        .catch(e => {
-            fs.removeSync(outDir);
-            throw e;
-        });
+    try {
+        await Promise.all(promises);
+        await simpleAst.generateIndexFiles();
+    } catch (error) {
+        fs.removeSync(outDir);
+        throw error;
+    }
 }
 
 const computeKnownTypes = (types: ITypeDefinition[]): Map<string, ITypeDefinition> => {

@@ -47,7 +47,7 @@ export class SimpleAst {
         return sourceFile;
     }
 
-    public generateIndexFiles(): Promise<void[]> {
+    public async generateIndexFiles(): Promise<void[]> {
         const moduleTypes: Map<string, string[]> = new Map();
         this.ast.getSourceFiles().forEach(file => {
             const packageName = file.getDirectory().getBaseName();

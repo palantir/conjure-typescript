@@ -42,12 +42,12 @@ import { combineImports, resolveImports } from "../../utils/resolveImports";
 import { resolveTsType } from "../../utils/resolveTsType";
 import { SimpleAst } from "./simpleAst";
 
-export function generateType(
+export async function generateType(
     definition: ITypeDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
-) {
+): Promise<void> {
     if (ITypeDefinition.isAlias(definition)) {
         return generateAlias(definition.alias, knownTypes, simpleAst, typeGenerationFlags);
     } else if (ITypeDefinition.isEnum(definition)) {
@@ -73,12 +73,12 @@ const FLAVOR_PACKAGE_FIELD = "__conjure_package";
  *  };
  * ```
  */
-export function generateAlias(
+export async function generateAlias(
     definition: IAliasDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
-) {
+): Promise<void> {
     if (isFlavorizable(definition.alias, typeGenerationFlags.flavorizedAliases)) {
         const fieldType = resolveTsType(
             definition.alias,
@@ -121,7 +121,7 @@ export function generateAlias(
  * We do not use TypeScript Enums because they can not be assigned to an equivalent enum, making interop across
  * libraries more difficult
  */
-export function generateEnum(definition: IEnumDefinition, simpleAst: SimpleAst) {
+export async function generateEnum(definition: IEnumDefinition, simpleAst: SimpleAst): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
 
     if (definition.values.length > 0) {
@@ -205,7 +205,7 @@ export async function generateObject(
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
-) {
+): Promise<void> {
     const properties: PropertySignatureStructure[] = [];
     const imports: ImportDeclarationStructure[] = [];
     definition.fields.forEach(fieldDefinition => {

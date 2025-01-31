@@ -29,10 +29,10 @@ export const directoryNameForType = (typeName: ITypeName): string => {
 };
 
 export const relativePath = (fromType: ITypeName, toType: ITypeName): string => {
-    const relativeImport = path.relative(directoryNameForType(fromType), directoryNameForType(toType));
-    return relativeImport;
+    return path.relative(directoryNameForType(fromType), directoryNameForType(toType));
 };
 
+/* Pascal cases the subpackage name */
 export function moduleNameForType(typeName: ITypeName) {
     const directoryName = directoryNameForType(typeName);
     const camelCaseModule = directoryName.replace(/-(\w)/g, x => x[1].toUpperCase());
