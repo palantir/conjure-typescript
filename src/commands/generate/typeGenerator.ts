@@ -208,12 +208,12 @@ export const generateEnum = async (definition: IEnumDefinition, simpleAst: Simpl
  * }
  * ```
  */
-export async function generateObject(
+export const generateObject = async (
     definition: IObjectDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
-): Promise<void> {
+): Promise<void> => {
     const properties: PropertySignatureStructure[] = [];
     const imports: ImportDeclarationStructure[] = [];
     definition.fields.forEach(fieldDefinition => {
@@ -256,19 +256,19 @@ export async function generateObject(
 
     sourceFile.formatText({ trimTrailingWhitespace: true });
     return sourceFile.save();
-}
+};
 
 /** Variable name used in the generation of the union type visitor function. */
 const obj = "obj";
 /** Variable name used in the generation of the union type visitor function. */
 const visitor = "visitor";
 
-export async function generateUnion(
+export const generateUnion = async (
     definition: IUnionDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
-) {
+): Promise<void> => {
     const unionTsType = "I" + definition.typeName.name;
     const unionSourceFileInput = processUnionMembers(unionTsType, definition, knownTypes, typeGenerationFlags);
 
@@ -317,14 +317,14 @@ export async function generateUnion(
 
     sourceFile.formatText({ trimTrailingWhitespace: true });
     return sourceFile.save();
-}
+};
 
-function processUnionMembers(
+const processUnionMembers = (
     unionTsType: string,
     definition: IUnionDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     typeGenerationFlags: ITypeGenerationFlags,
-) {
+) => {
     const imports: ImportDeclarationStructure[] = [];
     const visitorProperties: PropertySignatureStructure[] = [];
     const memberInterfaces: InterfaceDeclarationStructure[] = [];
@@ -427,7 +427,7 @@ function processUnionMembers(
         visitorProperties,
         visitorStatements,
     };
-}
+};
 
 const capitalize = (value: string): string => {
     return value.charAt(0).toUpperCase() + value.slice(1);

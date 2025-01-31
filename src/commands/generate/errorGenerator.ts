@@ -90,6 +90,6 @@ export const generateError = async (
         returnType: `arg is ${interfaceName}`,
     });
 
-    sourceFile.formatText();
+    sourceFile.formatText({ trimTrailingWhitespace: true });
     return sourceFile.save();
 };

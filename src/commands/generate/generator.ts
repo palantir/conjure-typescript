@@ -27,11 +27,11 @@ import { generateService } from "./serviceGenerator";
 import { SimpleAst } from "./simpleAst";
 import { generateType } from "./typeGenerator";
 
-export async function generate(
+export const generate = async (
     definition: IConjureDefinition,
     outDir: string,
     typeGenerationFlags: ITypeGenerationFlags,
-) {
+): Promise<void> => {
     // Create project structure
     const knownTypes = computeKnownTypes(definition.types);
 
@@ -81,7 +81,7 @@ export async function generate(
         fs.removeSync(outDir);
         throw error;
     }
-}
+};
 
 const computeKnownTypes = (types: ITypeDefinition[]): Map<string, ITypeDefinition> => {
     return types.reduce((knownTypes, typeDefinition) => {

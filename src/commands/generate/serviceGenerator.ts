@@ -57,12 +57,12 @@ const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
 
 const UNDEFINED_CONSTANT = "__undefined";
 
-export async function generateService(
+export const generateService = async (
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
-): Promise<void> {
+): Promise<void> => {
     const sourceFile = simpleAst.createSourceFile(definition.serviceName);
 
     const endpointSignatures: MethodSignatureStructure[] = [];
@@ -191,14 +191,14 @@ export async function generateService(
 
     sourceFile.formatText({ trimTrailingWhitespace: true });
     return sourceFile.save();
-}
+};
 
-function generateEndpointBody(
+const generateEndpointBody = (
     serviceName: string,
     endpointDefinition: IEndpointDefinition,
     returnTsType: string,
     knownTypes: Map<string, ITypeDefinition>,
-): (writer: CodeBlockWriter) => void {
+): ((writer: CodeBlockWriter) => void) => {
     const bodyArgs: IArgumentDefinition[] = [];
     const headerArgs: IArgumentDefinition[] = [];
     const queryArgs: IArgumentDefinition[] = [];
@@ -284,7 +284,7 @@ function generateEndpointBody(
         );
         writer.write(");");
     };
-}
+};
 
 function parsePathParamsFromPath(httpPath: string): string[] {
     // first fix up the path to remove any ':.+' stuff in path params
