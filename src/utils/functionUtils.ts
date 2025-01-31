@@ -69,6 +69,6 @@ const STRICT_MODE_RESERVED_KEYWORDS = new Set([
     "yield",
 ]);
 
-export function isValidFunctionName(value: string) {
+export const isValidFunctionName = (value: string): boolean => {
     return !STRICT_MODE_RESERVED_KEYWORDS.has(value) && !RESERVED_KEYWORDS.has(value);
-}
+};

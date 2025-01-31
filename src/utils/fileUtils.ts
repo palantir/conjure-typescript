@@ -33,8 +33,8 @@ export const relativePath = (fromType: ITypeName, toType: ITypeName): string => 
 };
 
 /* Pascal cases the subpackage name */
-export function moduleNameForType(typeName: ITypeName) {
+export const moduleNameForType = (typeName: ITypeName) => {
     const directoryName = directoryNameForType(typeName);
     const camelCaseModule = directoryName.replace(/-(\w)/g, x => x[1].toUpperCase());
     return camelCaseModule.charAt(0).toUpperCase() + camelCaseModule.slice(1);
-}
+};

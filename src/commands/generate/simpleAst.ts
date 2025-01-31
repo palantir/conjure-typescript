@@ -75,6 +75,6 @@ export class SimpleAst {
     }
 }
 
-export function typeNameToFilePath(type: ITypeName): string {
+export const typeNameToFilePath = (type: ITypeName): string => {
     return path.join(directoryNameForType(type), moduleNameForType(type) + TS_EXTENSION);
-}
+};

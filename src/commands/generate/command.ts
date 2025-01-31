@@ -179,16 +179,16 @@ export class GenerateCommand implements CommandModule {
     }
 }
 
-export async function loadConjureDefinition(input: string): Promise<IConjureDefinition> {
+export const loadConjureDefinition = async (input: string): Promise<IConjureDefinition> => {
     return { errors: [], services: [], types: [], ...JSON.parse(await fs.readFile(input, "utf8")) };
-}
+};
 
-export async function createPackageJson(
+export const createPackageJson = async (
     projectPackageJson: IPackageJson,
     packageName: string,
     packageVersion: string,
     productDependencies?: string,
-): Promise<IPackageJson> {
+): Promise<IPackageJson> => {
     const packageJson: IPackageJson = {
         name: packageName!,
         version: packageVersion!,
@@ -212,11 +212,11 @@ export async function createPackageJson(
     }
 
     return packageJson;
-}
+};
 
-export async function resolveProductDependencies(
+export const resolveProductDependencies = async (
     productDependencies: string,
-): Promise<{ [coordinate: string]: IProductDependency }> {
+): Promise<{ [coordinate: string]: IProductDependency }> => {
     const resolvedProductDependencies: ISlsManifestDependency[] = await fs.readJSON(productDependencies);
     const dependencies: { [coordinate: string]: IProductDependency } = {};
     resolvedProductDependencies.forEach(productDependency => {
@@ -240,9 +240,9 @@ export async function resolveProductDependencies(
         };
     });
     return dependencies;
-}
+};
 
-export function createTsconfigJson(nodeCompatibleModules: boolean): ITsConfig {
+export const createTsconfigJson = (nodeCompatibleModules: boolean): ITsConfig => {
     return {
         compilerOptions: {
             declaration: true,
@@ -255,4 +255,4 @@ export function createTsconfigJson(nodeCompatibleModules: boolean): ITsConfig {
             typeRoots: [],
         },
     };
-}
+};

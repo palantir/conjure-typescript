@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-export function doubleQuote(value: string): string {
+export const doubleQuote = (value: string): string => {
     return `"${value}"`;
-}
+};
 
-export function singleQuote(value: string): string {
+export const singleQuote = (value: string): string => {
     return `'${value}'`;
-}
+};

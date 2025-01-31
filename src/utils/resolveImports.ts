@@ -156,7 +156,10 @@ export const resolveImportsForExternalType = (
     return resolveImports(externalReference.fallback, baseType, knownConjureTypes, typeGenerationFlags);
 };
 
-export function sortImports(imports: ImportDeclarationStructure[]): ImportDeclarationStructure[] {
+/**
+ * Sorts and deduplicates imports. Only works for namespace imports and will strip named imports.
+ */
+export const sortImports = (imports: ImportDeclarationStructure[]): ImportDeclarationStructure[] => {
     const namespaceImports: Map<string, ImportDeclarationStructure> = new Map();
 
     imports.forEach(i => {
@@ -171,13 +174,16 @@ export function sortImports(imports: ImportDeclarationStructure[]): ImportDeclar
     return Array.from(namespaceImports.values()).sort((a, b) =>
         a.moduleSpecifier < b.moduleSpecifier ? -1 : a.moduleSpecifier > b.moduleSpecifier ? 1 : 0,
     );
-}
+};
 
-export function combineImports(sourceFile: SourceFile, importDeclarations: ReadonlyArray<ImportDeclarationStructure>) {
+export const combineImports = (
+    sourceFile: SourceFile,
+    importDeclarations: ReadonlyArray<ImportDeclarationStructure>,
+): void => {
     for (const declaration of importDeclarations) {
         const existingDeclaration = sourceFile.getImportDeclaration(declaration.moduleSpecifier);
         if (existingDeclaration == null) {
             sourceFile.addImportDeclaration(declaration);
         }
     }
-}
+};

@@ -286,7 +286,7 @@ const generateEndpointBody = (
     };
 };
 
-function parsePathParamsFromPath(httpPath: string): string[] {
+const parsePathParamsFromPath = (httpPath: string): string[] => {
     // first fix up the path to remove any ':.+' stuff in path params
     const fixedPath = httpPath.replace(/{(.*):[^}]*}/, "{$1}");
     // follow-up by just pulling out any path segment with a starting '{' and trailing '}'
@@ -294,4 +294,4 @@ function parsePathParamsFromPath(httpPath: string): string[] {
         .split("/")
         .filter(segment => segment.startsWith("{") && segment.endsWith("}"))
         .map(segment => segment.slice(1, -1));
-}
+};
