@@ -161,9 +161,7 @@ export async function generateService(
         });
     });
 
-    if (imports.length !== 0) {
-        combineImports(sourceFile, imports);
-    }
+    combineImports(sourceFile, imports);
 
     const iface = sourceFile.addInterface({
         isExported: true,
@@ -190,6 +188,9 @@ export async function generateService(
         methods: endpointImplementations,
         name: definition.serviceName.name,
     });
+
+    sourceFile.formatText({ trimTrailingWhitespace: true });
+    return sourceFile.save();
 }
 
 function generateEndpointBody(

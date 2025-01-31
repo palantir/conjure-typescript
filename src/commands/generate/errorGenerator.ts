@@ -23,12 +23,12 @@ import { combineImports, resolveImports } from "../../utils/resolveImports";
 import { resolveTsType } from "../../utils/resolveTsType";
 import { SimpleAst } from "./simpleAst";
 
-export async function generateError(
+export const generateError = async (
     definition: IErrorDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
-): Promise<void> {
+): Promise<void> => {
     const sourceFile = simpleAst.createSourceFile(definition.errorName);
     const interfaceName = "I" + definition.errorName.name;
     const errorName = `${definition.namespace}:${definition.errorName.name}`;
@@ -48,9 +48,7 @@ export async function generateError(
         return acc + `${arg.fieldName}: ${resolvedTsType};\n`;
     }, "");
 
-    if (imports.length !== 0) {
-        combineImports(sourceFile, imports);
-    }
+    combineImports(sourceFile, imports);
 
     sourceFile.addInterface({
         isExported: true,
@@ -91,4 +89,7 @@ export async function generateError(
         ],
         returnType: `arg is ${interfaceName}`,
     });
-}
+
+    sourceFile.formatText();
+    return sourceFile.save();
+};

@@ -42,12 +42,12 @@ import { combineImports, resolveImports } from "../../utils/resolveImports";
 import { resolveTsType } from "../../utils/resolveTsType";
 import { SimpleAst } from "./simpleAst";
 
-export async function generateType(
+export const generateType = async (
     definition: ITypeDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
-): Promise<void> {
+): Promise<void> => {
     if (ITypeDefinition.isAlias(definition)) {
         return generateAlias(definition.alias, knownTypes, simpleAst, typeGenerationFlags);
     } else if (ITypeDefinition.isEnum(definition)) {
@@ -59,7 +59,7 @@ export async function generateType(
     } else {
         throw Error("unsupported type: " + definition);
     }
-}
+};
 
 const FLAVOR_TYPE_FIELD = "__conjure_type";
 const FLAVOR_PACKAGE_FIELD = "__conjure_package";
@@ -73,37 +73,42 @@ const FLAVOR_PACKAGE_FIELD = "__conjure_package";
  *  };
  * ```
  */
-export async function generateAlias(
+export const generateAlias = async (
     definition: IAliasDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
-): Promise<void> {
-    if (isFlavorizable(definition.alias, typeGenerationFlags.flavorizedAliases)) {
-        const fieldType = resolveTsType(
-            definition.alias,
-            definition.typeName,
-            knownTypes,
-            typeGenerationFlags,
-            false,
-            false,
-        );
-        const sourceFile = simpleAst.createSourceFile(definition.typeName);
-        const typeAlias = sourceFile.addTypeAlias({
-            isExported: true,
-            name: "I" + definition.typeName.name,
-            type: [
-                `${fieldType} & {`,
-                `\t${FLAVOR_TYPE_FIELD}?: "${definition.typeName.name}",`,
-                `\t${FLAVOR_PACKAGE_FIELD}?: "${definition.typeName.package}",`,
-                "}",
-            ].join("\n"),
-        });
-        if (definition.docs) {
-            typeAlias.addJsDoc(definition.docs);
-        }
+): Promise<void> => {
+    if (!isFlavorizable(definition.alias, typeGenerationFlags.flavorizedAliases)) {
+        return;
     }
-}
+
+    const fieldType = resolveTsType(
+        definition.alias,
+        definition.typeName,
+        knownTypes,
+        typeGenerationFlags,
+        false,
+        false,
+    );
+    const sourceFile = simpleAst.createSourceFile(definition.typeName);
+    const typeAlias = sourceFile.addTypeAlias({
+        isExported: true,
+        name: "I" + definition.typeName.name,
+        type: [
+            `${fieldType} & {`,
+            `\t${FLAVOR_TYPE_FIELD}?: "${definition.typeName.name}",`,
+            `\t${FLAVOR_PACKAGE_FIELD}?: "${definition.typeName.package}",`,
+            "}",
+        ].join("\n"),
+    });
+    if (definition.docs) {
+        typeAlias.addJsDoc(definition.docs);
+    }
+
+    sourceFile.formatText({ trimTrailingWhitespace: true });
+    return sourceFile.save();
+};
 
 /**
  * Generates a file of the following format:
@@ -121,7 +126,7 @@ export async function generateAlias(
  * We do not use TypeScript Enums because they can not be assigned to an equivalent enum, making interop across
  * libraries more difficult
  */
-export async function generateEnum(definition: IEnumDefinition, simpleAst: SimpleAst): Promise<void> {
+export const generateEnum = async (definition: IEnumDefinition, simpleAst: SimpleAst): Promise<void> => {
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
 
     if (definition.values.length > 0) {
@@ -188,7 +193,10 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
             type: "void",
         });
     }
-}
+
+    sourceFile.formatText({ trimTrailingWhitespace: true });
+    return sourceFile.save();
+};
 
 /**
  * Generates a file of the following format:
@@ -233,9 +241,8 @@ export async function generateObject(
     });
 
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
-    if (imports.length !== 0) {
-        combineImports(sourceFile, imports);
-    }
+
+    combineImports(sourceFile, imports);
 
     const typeName = `I${definition.typeName.name}`;
     const iface = sourceFile.addInterface({
@@ -246,6 +253,9 @@ export async function generateObject(
     if (definition.docs != null && definition.docs != null) {
         iface.addJsDoc({ description: definition.docs });
     }
+
+    sourceFile.formatText({ trimTrailingWhitespace: true });
+    return sourceFile.save();
 }
 
 /** Variable name used in the generation of the union type visitor function. */
@@ -263,9 +273,8 @@ export async function generateUnion(
     const unionSourceFileInput = processUnionMembers(unionTsType, definition, knownTypes, typeGenerationFlags);
 
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
-    if (unionSourceFileInput.imports.length !== 0) {
-        combineImports(sourceFile, unionSourceFileInput.imports);
-    }
+
+    combineImports(sourceFile, unionSourceFileInput.imports);
 
     const mod = sourceFile.addModule({ name: unionTsType, isExported: true });
     sourceFile.addInterfaces(unionSourceFileInput.memberInterfaces);
@@ -305,6 +314,9 @@ export async function generateUnion(
         typeParameters: [{ name: "T" }],
         isExported: true,
     });
+
+    sourceFile.formatText({ trimTrailingWhitespace: true });
+    return sourceFile.save();
 }
 
 function processUnionMembers(
@@ -417,6 +429,6 @@ function processUnionMembers(
     };
 }
 
-function capitalize(value: string): string {
+const capitalize = (value: string): string => {
     return value.charAt(0).toUpperCase() + value.slice(1);
-}
+};
