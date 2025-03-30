@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018 Palantir Technologies, Inc.
+ * Copyright 2025 Palantir Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
 
 const UNDEFINED_CONSTANT = "__undefined";
 
-export function generateService(
+export function generateThrowingService(
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
@@ -122,35 +122,34 @@ export function generateService(
             );
         }
 
-        const docs = addDeprecatedToDocs(endpointDefinition);
-        const docsWithoutThrownErrors = addIncubatingToDocs(endpointDefinition, docs);
-        const docsWithThrownErrors = addErrorsToDocs(endpointDefinition, docsWithoutThrownErrors);
-
-        // Generate the throwing methods
-        endpointSignatures.push({
+        const signature: MethodSignatureStructure = {
             kind: StructureKind.MethodSignature,
             name: endpointDefinition.endpointName,
             parameters,
             returnType: `Promise<${returnTsType}>`,
-            docs: docsWithThrownErrors != null ? [docsWithThrownErrors] : undefined,
-        });
+        };
+
+        let docs = addDeprecatedToDocs(endpointDefinition);
+        docs = addIncubatingToDocs(endpointDefinition, docs);
+        docs = addErrorsToDocs(endpointDefinition, docs);
+
+        if (docs != null) {
+            signature.docs = [docs];
+        }
+
+        endpointSignatures.push(signature);
+
         endpointImplementations.push({
             kind: StructureKind.Method,
-            statements: generateEndpointThrowingBody(
-                definition.serviceName.name,
-                endpointDefinition,
-                returnTsType,
-                knownTypes,
-            ),
+            statements: generateEndpointBody(definition.serviceName.name, endpointDefinition, returnTsType, knownTypes),
             name: endpointDefinition.endpointName,
             parameters,
             returnType: `Promise<${returnTsType}>`,
             // this appears to be a no-op by ts-simple-ast, since default in typescript is public
             scope: Scope.Public,
-            docs: docsWithThrownErrors != null ? [docsWithThrownErrors] : undefined,
+            docs: docs != null ? [docs] : undefined,
         });
 
-        // Generate the orError methods
         endpointDefinition.errors?.forEach(error => {
             const errorImports = resolveImportsForReferenceType(
                 {
@@ -162,34 +161,6 @@ export function generateService(
                 typeGenerationFlags,
             ).map(i => ({ ...i, isTypeOnly: true }));
             imports.push(...errorImports);
-        });
-
-        const errorNames = endpointDefinition.errors?.map(error => `I${error.error.name}`) ?? [];
-        if (errorNames.length === 0) {
-            errorNames.push("never");
-        }
-
-        const returnType =
-            `{ status: "success", response: ${returnTsType} }` +
-            " | " +
-            `{ status: "failure", error: ${errorNames.join(" | ")} }`;
-
-        endpointSignatures.push({
-            kind: StructureKind.MethodSignature,
-            name: `${endpointDefinition.endpointName}OrError`,
-            parameters,
-            returnType: `Promise<${returnType}>`,
-            docs: docsWithoutThrownErrors != null ? [docsWithoutThrownErrors] : undefined,
-        });
-        endpointImplementations.push({
-            kind: StructureKind.Method,
-            statements: generateEndpointOrErrorBody(endpointDefinition, parameters, returnTsType),
-            name: `${endpointDefinition.endpointName}OrError`,
-            parameters,
-            returnType: `Promise<${returnType}>`,
-            // this appears to be a no-op by ts-simple-ast, since default in typescript is public
-            scope: Scope.Public,
-            docs: docsWithoutThrownErrors != null ? [docsWithoutThrownErrors] : undefined,
         });
     });
 
@@ -225,7 +196,7 @@ export function generateService(
     return sourceFile.save();
 }
 
-function generateEndpointThrowingBody(
+function generateEndpointBody(
     serviceName: string,
     endpointDefinition: IEndpointDefinition,
     returnTsType: string,
@@ -315,43 +286,6 @@ function generateEndpointThrowingBody(
             `${responseMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${responseMediaType}"`}`,
         );
         writer.write(");");
-    };
-}
-
-function generateEndpointOrErrorBody(
-    endpointDefinition: IEndpointDefinition,
-    parameters: ParameterDeclarationStructure[],
-    returnTsType: string,
-): (writer: CodeBlockWriter) => void {
-    return writer => {
-        const wrappedMethodCall = `this.${endpointDefinition.endpointName}(${parameters
-            .map(parameter => parameter.name)
-            .join(", ")})`;
-
-        writer
-            .writeLine(`return ${wrappedMethodCall}`)
-            .write(
-                `.then(response => ({ status: "success", response }) as { status: "success", response: ${returnTsType} })`,
-            );
-
-        if (endpointDefinition.errors != null && endpointDefinition.errors.length > 0) {
-            writer
-                .writeLine(".catch((e: any) => {")
-                .writeLine("if (e == null || e.body == null) {")
-                .writeLine("throw e;")
-                .writeLine("}");
-            for (const error of endpointDefinition.errors) {
-                writer
-                    .writeLine(`if (e.body.errorName === "${error.error.namespace}:${error.error.name}") {`)
-                    .writeLine(
-                        `return { status: "failure", error: e.body } as { status: "failure", error: I${error.error.name} };`,
-                    )
-                    .writeLine("}");
-            }
-            writer.writeLine("throw e;").writeLine("});");
-        } else {
-            writer.write(";");
-        }
     };
 }
 

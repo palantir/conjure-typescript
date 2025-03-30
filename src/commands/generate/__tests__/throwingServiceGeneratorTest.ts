@@ -21,8 +21,8 @@ import * as path from "path";
 import { directory } from "tempy";
 import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
-import { generateService } from "../serviceGenerator";
 import { SimpleAst } from "../simpleAst";
+import { generateThrowingService } from "../throwingServiceGenerator";
 import {
     assertOutputAndExpectedAreEqual,
     foreignObject,
@@ -31,7 +31,7 @@ import {
 
 const stringType: IType = IType.primitive(PrimitiveType.STRING);
 
-describe("serviceGenerator", () => {
+describe("throwingServiceGenerator", () => {
     const expectedDir = path.join(__dirname, "./resources");
     let outDir: string;
     let simpleAst: SimpleAst;
@@ -42,7 +42,7 @@ describe("serviceGenerator", () => {
     });
 
     it("emits service interface and class with primitive return type", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -66,7 +66,7 @@ describe("serviceGenerator", () => {
     });
 
     it("emits service interface and class with safelong header type", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -97,7 +97,7 @@ describe("serviceGenerator", () => {
     });
 
     it("handles endpoint with void return type", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -124,7 +124,7 @@ describe("serviceGenerator", () => {
     });
 
     it("handles binary body and return types", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -151,7 +151,7 @@ describe("serviceGenerator", () => {
     });
 
     it("handle binary return and json request types", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -189,7 +189,7 @@ describe("serviceGenerator", () => {
     });
 
     it("emits imports and correct signature for service with references", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -231,7 +231,7 @@ describe("serviceGenerator", () => {
     });
 
     it("emits different param types", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -292,7 +292,7 @@ describe("serviceGenerator", () => {
     });
 
     it("handles out of order path params", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -336,7 +336,7 @@ describe("serviceGenerator", () => {
     });
 
     it("handles header auth-type", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -377,7 +377,7 @@ describe("serviceGenerator", () => {
     it("throws on multiple body args", async () => {
         expect.assertions(1);
         try {
-            await generateService(
+            await generateThrowingService(
                 {
                     endpoints: [
                         {
@@ -422,7 +422,7 @@ describe("serviceGenerator", () => {
     it("throws on header arg with no param-id", async () => {
         expect.assertions(1);
         try {
-            await generateService(
+            await generateThrowingService(
                 {
                     endpoints: [
                         {
@@ -457,7 +457,7 @@ describe("serviceGenerator", () => {
     it("throws on query arg with no param-id", async () => {
         expect.assertions(1);
         try {
-            await generateService(
+            await generateThrowingService(
                 {
                     endpoints: [
                         {
@@ -490,7 +490,7 @@ describe("serviceGenerator", () => {
     });
 
     it("emits service interfaces with docs", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 docs: "service level docs",
                 endpoints: [
@@ -518,8 +518,6 @@ describe("serviceGenerator", () => {
 export interface IMyService {
     /** endpoint level docs */
     foo(): Promise<void>;
-    /** endpoint level docs */
-    fooOrError(): Promise<{ status: "success", response: void } | { status: "failure", error: never }>;
 }
 `,
         );
@@ -532,7 +530,7 @@ export interface IMyService {
     });
 
     it("emits endpoint with incubating docs", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -558,15 +556,13 @@ export interface IMyService {
 export interface IMyService {
     /** @incubating */
     foo(): Promise<void>;
-    /** @incubating */
-    fooOrError(): Promise<{ status: "success", response: void } | { status: "failure", error: never }>;
 }
 `,
         );
     });
 
     it("emits endpoint with error docs", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 docs: "service level docs",
                 endpoints: [
@@ -622,15 +618,13 @@ export interface IMyService {
      * @throws {IMyError2} MyError2 documentation
      */
     foo(): Promise<void>;
-    /** endpoint level docs */
-    fooOrError(): Promise<{ status: "success", response: void } | { status: "failure", error: IMyError1 | IMyError2 }>;
 }
 `,
         );
     });
 
     it("emits service interfaces with error incubating docs", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 docs: "service level docs",
                 endpoints: [
@@ -675,11 +669,6 @@ export interface IMyService {
      * @throws {IMyError} MyError documentation
      */
     foo(): Promise<void>;
-    /**
-     * endpoint level docs
-     * @incubating
-     */
-    fooOrError(): Promise<{ status: "success", response: void } | { status: "failure", error: IMyError }>;
 }
 `,
         );
@@ -692,7 +681,7 @@ export interface IMyService {
     });
 
     it("emits endpoint with incubating and deprecated docs", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -722,18 +711,13 @@ export interface IMyService {
      * @incubating
      */
     foo(): Promise<void>;
-    /**
-     * @deprecated to be replaced
-     * @incubating
-     */
-    fooOrError(): Promise<{ status: "success", response: void } | { status: "failure", error: never }>;
 }
 `,
         );
     });
 
     it("emits service with optional params", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -775,7 +759,7 @@ export interface IMyService {
     });
 
     it("emits service with no duplicate error imports", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {

@@ -5,7 +5,6 @@ const __undefined: undefined = undefined;
 
 export interface IParamTypeService {
     foo(body: string, header: string, path: string, query: string): Promise<void>;
-    fooOrError(body: string, header: string, path: string, query: string): Promise<{ status: "success", response: void } | { status: "failure", error: never }>;
 }
 
 export class ParamTypeService {
@@ -31,10 +30,5 @@ export class ParamTypeService {
             __undefined,
             __undefined
         );
-    }
-
-    public fooOrError(body: string, header: string, path: string, query: string): Promise<{ status: "success", response: void } | { status: "failure", error: never }> {
-        return this.foo(body, header, path, query)
-            .then(response => ({ status: "success", response }) as { status: "success", response: void });
     }
 }

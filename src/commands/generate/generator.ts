@@ -23,8 +23,8 @@ import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { directoryNameForType } from "../../utils/fileUtils";
 import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
 import { generateError } from "./errorGenerator";
-import { generateService } from "./serviceGenerator";
 import { SimpleAst } from "./simpleAst";
+import { generateThrowingService } from "./throwingServiceGenerator";
 import { generateType } from "./typeGenerator";
 
 export async function generate(
@@ -65,7 +65,7 @@ export async function generate(
     const simpleAst = new SimpleAst(outDir);
 
     definition.services.forEach(serviceDefinition =>
-        promises.push(generateService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags)),
+        promises.push(generateThrowingService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags)),
     );
     definition.types.forEach(typeDefinition =>
         promises.push(generateType(typeDefinition, knownTypes, simpleAst, typeGenerationFlags)),
