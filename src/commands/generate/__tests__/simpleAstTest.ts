@@ -25,6 +25,7 @@ import { generateError } from "../errorGenerator";
 import { SimpleAst } from "../simpleAst";
 import { generateThrowingService } from "../throwingServiceGenerator";
 import { generateEnum } from "../typeGenerator";
+import { generateNonThrowingService } from "../nonThrowingServiceGenerator";
 
 describe("simpleAst", () => {
     let outDir: string;
@@ -92,6 +93,49 @@ describe("simpleAst", () => {
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
 
+        await generateNonThrowingService(
+            {
+                endpoints: [
+                    {
+                        args: [],
+                        endpointName: "foo",
+                        httpMethod: HttpMethod.GET,
+                        httpPath: "/foo",
+                        markers: [],
+                        returns: {
+                            primitive: PrimitiveType.INTEGER,
+                            type: "primitive",
+                        },
+                        tags: [],
+                        errors: [
+                            {
+                                error: {
+                                    name: "MyError",
+                                    package: "com.palantir.package1",
+                                    namespace: "Metadata",
+                                },
+                            },
+                        ],
+                    },
+                ],
+                serviceName: {
+                    name: "MyService",
+                    package: "com.palantir.package2",
+                },
+            },
+            new Map([
+                [
+                    createHashableTypeName({ name: "MyError", package: "com.palantir.package1" }),
+                    {
+                        type: "object",
+                        object: { typeName: { name: "MyError", package: "com.palantir.package1" }, fields: [] },
+                    },
+                ],
+            ]),
+            simpleAst,
+            DEFAULT_TYPE_GENERATION_FLAGS,
+        );
+
         await generateEnum(
             {
                 typeName: {
@@ -114,6 +158,7 @@ describe("simpleAst", () => {
         const package2Contents = fs.readFileSync(package2Index, "utf8");
         expect(package2Contents).toEqual(`export * from "./myEnum";
 export * from "./myService";
+export * from "./myServiceWithErrors";
 `);
     });
 });

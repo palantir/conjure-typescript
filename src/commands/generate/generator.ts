@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { IConjureDefinition, ITypeDefinition } from "conjure-api";
+import { IConjureDefinition, IServiceDefinition, ITypeDefinition } from "conjure-api";
 import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";
@@ -23,9 +23,32 @@ import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { directoryNameForType } from "../../utils/fileUtils";
 import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
 import { generateError } from "./errorGenerator";
+import { generateNonThrowingService } from "./nonThrowingServiceGenerator";
 import { SimpleAst } from "./simpleAst";
 import { generateThrowingService } from "./throwingServiceGenerator";
 import { generateType } from "./typeGenerator";
+
+const assertNoServiceNamesConflicts = (services: IServiceDefinition[]): void => {
+    const packageToServiceNamesMap: Map<string, Set<string>> = new Map();
+    services.forEach(service => {
+        const { name: serviceName, package: packageName } = service.serviceName;
+        if (!packageToServiceNamesMap.has(packageName)) {
+            packageToServiceNamesMap.set(packageName, new Set());
+        }
+
+        packageToServiceNamesMap.get(packageName)!.add(serviceName);
+    });
+
+    Array.from(packageToServiceNamesMap.entries()).forEach(([packageName, serviceNames]) => {
+        serviceNames.forEach(serviceName => {
+            if (serviceNames.has(`${serviceName}WithErrors`)) {
+                throw new Error(
+                    `Found service name conflict in ${packageName}. Conflict: ${serviceName}, ${serviceName}WithErrors`,
+                );
+            }
+        });
+    });
+};
 
 export async function generate(
     definition: IConjureDefinition,
@@ -47,6 +70,8 @@ export async function generate(
         ),
     );
 
+    assertNoServiceNamesConflicts(definition.services);
+
     const knownDefinitions = Array.from(knownTypes.keys())
         .map(disassembleHashableTypeName)
         .concat(definition.services.map(serviceDefinition => serviceDefinition.serviceName))
@@ -66,6 +91,9 @@ export async function generate(
 
     definition.services.forEach(serviceDefinition =>
         promises.push(generateThrowingService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags)),
+    );
+    definition.services.forEach(serviceDefinition =>
+        promises.push(generateNonThrowingService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags)),
     );
     definition.types.forEach(typeDefinition =>
         promises.push(generateType(typeDefinition, knownTypes, simpleAst, typeGenerationFlags)),

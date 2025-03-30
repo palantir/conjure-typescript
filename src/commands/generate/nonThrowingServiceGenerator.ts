@@ -38,39 +38,50 @@ import {
 } from "ts-morph";
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../utils/constants";
-import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../utils/docsUtils";
+import { addDeprecatedToDocs, addIncubatingToDocs } from "../../utils/docsUtils";
 import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../utils/resolveImports";
 import { resolveMediaType } from "../../utils/resolveMediaType";
 import { resolveStringConversion } from "../../utils/resolveStringConversion";
 import { resolveTsType } from "../../utils/resolveTsType";
 import { SimpleAst } from "./simpleAst";
 
-/** Type used in the generation of the service class. Expected to be provided by conjure-client */
+/** Types used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
+const CONJURE_FAILURE_TYPE = "ConjureFailure";
+const CONJURE_RESULT_TYPE = "ConjureResult";
+const CONJURE_SUCCESS_TYPE = "ConjureSuccess";
 
 /** Variable name used in the generation of the service class. */
 const BRIDGE = "bridge";
 
 /** Default imports used in the generation of the service class. */
-const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
+const CONJURE_CLIENT_IMPORTS: ImportDeclarationStructure = {
     kind: StructureKind.ImportDeclaration,
     moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
-    namedImports: [{ name: HTTP_API_BRIDGE_TYPE }],
+    namedImports: [
+        { name: CONJURE_FAILURE_TYPE },
+        { name: CONJURE_RESULT_TYPE },
+        { name: CONJURE_SUCCESS_TYPE },
+        { name: HTTP_API_BRIDGE_TYPE },
+    ],
     isTypeOnly: true,
 };
 
 const UNDEFINED_CONSTANT = "__undefined";
 
-export function generateThrowingService(
+export function generateNonThrowingService(
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
-    const sourceFile = simpleAst.createSourceFile(definition.serviceName);
+    const sourceFile = simpleAst.createSourceFile({
+        package: definition.serviceName.package,
+        name: `${definition.serviceName.name}WithErrors`,
+    });
     const endpointSignatures: MethodSignatureStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
-    const imports: ImportDeclarationStructure[] = [HTTP_API_BRIDGE_IMPORT];
+    const imports: ImportDeclarationStructure[] = [CONJURE_CLIENT_IMPORTS];
 
     sourceFile.addVariableStatement({
         declarationKind: VariableDeclarationKind.Const,
@@ -108,9 +119,9 @@ export function generateThrowingService(
                 };
             });
 
-        let returnTsType = "void";
+        let resultType = "void";
         if (endpointDefinition.returns != null) {
-            returnTsType = resolveTsType(
+            resultType = resolveTsType(
                 endpointDefinition.returns,
                 definition.serviceName,
                 knownTypes,
@@ -123,33 +134,8 @@ export function generateThrowingService(
             );
         }
 
-        const signature: MethodSignatureStructure = {
-            kind: StructureKind.MethodSignature,
-            name: endpointDefinition.endpointName,
-            parameters,
-            returnType: `Promise<${returnTsType}>`,
-        };
-
         let docs = addDeprecatedToDocs(endpointDefinition);
         docs = addIncubatingToDocs(endpointDefinition, docs);
-        docs = addErrorsToDocs(endpointDefinition, docs);
-
-        if (docs != null) {
-            signature.docs = [docs];
-        }
-
-        endpointSignatures.push(signature);
-
-        endpointImplementations.push({
-            kind: StructureKind.Method,
-            statements: generateEndpointBody(definition.serviceName.name, endpointDefinition, returnTsType, knownTypes),
-            name: endpointDefinition.endpointName,
-            parameters,
-            returnType: `Promise<${returnTsType}>`,
-            // this appears to be a no-op by ts-simple-ast, since default in typescript is public
-            scope: Scope.Public,
-            docs: docs != null ? [docs] : undefined,
-        });
 
         endpointDefinition.errors?.forEach(error => {
             const errorImports = resolveImportsForReferenceType(
@@ -163,6 +149,38 @@ export function generateThrowingService(
             ).map(i => ({ ...i, isTypeOnly: true }));
             imports.push(...errorImports);
         });
+
+        const errorNames = endpointDefinition.errors?.map(error => `I${error.error.name}`) ?? [];
+        if (errorNames.length === 0) {
+            errorNames.push("never");
+        }
+        const errorsType = errorNames.join(" | ");
+
+        const returnType = `ConjureResult<${resultType}, ${errorsType}>`;
+
+        endpointSignatures.push({
+            kind: StructureKind.MethodSignature,
+            name: endpointDefinition.endpointName,
+            parameters,
+            returnType: `Promise<${returnType}>`,
+            docs: docs != null ? [docs] : undefined,
+        });
+        endpointImplementations.push({
+            kind: StructureKind.Method,
+            statements: generateEndpointBody(
+                definition.serviceName.name,
+                endpointDefinition,
+                resultType,
+                errorsType,
+                knownTypes,
+            ),
+            name: endpointDefinition.endpointName,
+            parameters,
+            returnType: `Promise<${returnType}>`,
+            // this appears to be a no-op by ts-simple-ast, since default in typescript is public
+            scope: Scope.Public,
+            docs: docs != null ? [docs] : undefined,
+        });
     });
 
     sourceFile.addImportDeclarations(sortImports(imports));
@@ -170,7 +188,7 @@ export function generateThrowingService(
     const iface = sourceFile.addInterface({
         isExported: true,
         methods: endpointSignatures,
-        name: "I" + definition.serviceName.name,
+        name: `I${definition.serviceName.name}WithErrors`,
     });
     if (definition.docs != null) {
         iface.addJsDoc({ description: definition.docs });
@@ -190,7 +208,7 @@ export function generateThrowingService(
         ],
         isExported: true,
         methods: endpointImplementations,
-        name: definition.serviceName.name,
+        name: `${definition.serviceName.name}WithErrors`,
         implements: [iface.getName()],
     });
 
@@ -201,7 +219,8 @@ export function generateThrowingService(
 function generateEndpointBody(
     serviceName: string,
     endpointDefinition: IEndpointDefinition,
-    returnTsType: string,
+    resultType: string,
+    errorsType: string,
     knownTypes: Map<string, ITypeDefinition>,
 ): (writer: CodeBlockWriter) => void {
     const bodyArgs: IArgumentDefinition[] = [];
@@ -251,7 +270,7 @@ function generateEndpointBody(
 
     return writer => {
         writer
-            .write(`return this.${BRIDGE}.call<${returnTsType}>(`)
+            .write(`return this.${BRIDGE}.call<${resultType}>(`)
             .writeLine(`"${serviceName}",`)
             .writeLine(`"${endpointDefinition.endpointName}",`)
             .writeLine(`"${endpointDefinition.httpMethod}",`)
@@ -287,7 +306,10 @@ function generateEndpointBody(
         writer.writeLine(
             `${responseMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${responseMediaType}"`}`,
         );
-        writer.write(");");
+        writer
+            .write(")")
+            .writeLine(`.then(result => ({ status: "success", result }) as ConjureSuccess<${resultType}>)`)
+            .writeLine(`.catch(error => ({ status: "failure", error }) as ConjureFailure<${errorsType}>);`);
     };
 }
 

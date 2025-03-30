@@ -1,7 +1,7 @@
 import { IBackingFileSystem } from "../product-datasets/backingFileSystem";
 import { IDataset } from "../product-datasets/dataset";
 import { ICreateDatasetRequest } from "../product/createDatasetRequest";
-import { IHttpApiBridge } from "conjure-client";
+import type { IHttpApiBridge } from "conjure-client";
 
 /** Constant reference to `undefined` that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
@@ -42,7 +42,7 @@ export interface ITestService {
     testOptionalIntegerAndDouble(maybeInteger?: number | null, maybeDouble?: number | "NaN" | null): Promise<void>;
 }
 
-export class TestService {
+export class TestService implements ITestService {
     constructor(private bridge: IHttpApiBridge) {
     }
 

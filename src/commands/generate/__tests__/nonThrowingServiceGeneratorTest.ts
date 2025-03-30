@@ -21,8 +21,8 @@ import * as path from "path";
 import { directory } from "tempy";
 import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
+import { generateNonThrowingService } from "../nonThrowingServiceGenerator";
 import { SimpleAst } from "../simpleAst";
-import { generateThrowingService } from "../throwingServiceGenerator";
 import {
     assertOutputAndExpectedAreEqual,
     foreignObject,
@@ -31,7 +31,7 @@ import {
 
 const stringType: IType = IType.primitive(PrimitiveType.STRING);
 
-describe("throwingServiceGenerator", () => {
+describe("nonThrowingServiceGenerator", () => {
     const expectedDir = path.join(__dirname, "./resources");
     let outDir: string;
     let simpleAst: SimpleAst;
@@ -42,7 +42,7 @@ describe("throwingServiceGenerator", () => {
     });
 
     it("emits service interface and class with primitive return type", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -62,11 +62,11 @@ describe("throwingServiceGenerator", () => {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/primitiveService.ts");
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/primitiveServiceWithErrors.ts");
     });
 
     it("emits service interface and class with safelong header type", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -93,11 +93,11 @@ describe("throwingServiceGenerator", () => {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/serviceWithSafelongHeader.ts");
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/serviceWithSafelongHeaderWithErrors.ts");
     });
 
     it("handles endpoint with void return type", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -116,15 +116,15 @@ describe("throwingServiceGenerator", () => {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        const outFile = path.join(outDir, "services/myService.ts");
+        const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
-        expect(contents).toContain("returnsVoid(): Promise<void>;");
-        expect(contents).toContain("returnsVoid(): Promise<void> {");
+        expect(contents).toContain("returnsVoid(): Promise<ConjureResult<void, never>>;");
+        expect(contents).toContain("returnsVoid(): Promise<ConjureResult<void, never>> {");
         expect(contents).toContain("return this.bridge.call<void>(");
     });
 
     it("handles binary body and return types", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -144,14 +144,14 @@ describe("throwingServiceGenerator", () => {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        const outFile = path.join(outDir, "services/myService.ts");
+        const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
-        expect(contents).toContain("foo(): Promise<ReadableStream<Uint8Array>>;");
+        expect(contents).toContain("foo(): Promise<ConjureResult<ReadableStream<Uint8Array>, never>>;");
         expect(contents).toContain(`"application\/octet-stream"\n`);
     });
 
     it("handle binary return and json request types", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -179,17 +179,17 @@ describe("throwingServiceGenerator", () => {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        const outFile = path.join(outDir, "services/myService.ts");
+        const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain(
-            "foo(body: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<ReadableStream<Uint8Array>>;",
+            "foo(body: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<ConjureResult<ReadableStream<Uint8Array>, never>>;",
         );
         expect(contents).toContain(`"application\/octet-stream",\n`);
         expect(contents).toContain(`"application\/octet-stream"\n`);
     });
 
     it("emits imports and correct signature for service with references", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -223,15 +223,15 @@ describe("throwingServiceGenerator", () => {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        const outFile = path.join(outDir, "services/myService.ts");
+        const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain(`import { IOtherObject } from "../other/otherObject";`);
         expect(contents).toContain(`import { ISomeObject } from "./someObject";`);
-        expect(contents).toContain(`foo(obj: ISomeObject): Promise<IOtherObject>;`);
+        expect(contents).toContain(`foo(obj: ISomeObject): Promise<ConjureResult<IOtherObject, never>>;`);
     });
 
     it("emits different param types", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -288,11 +288,11 @@ describe("throwingServiceGenerator", () => {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/paramTypeService.ts");
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/paramTypeServiceWithErrors.ts");
     });
 
     it("handles out of order path params", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -332,11 +332,11 @@ describe("throwingServiceGenerator", () => {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/outOfOrderPathService.ts");
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/outOfOrderPathServiceWithErrors.ts");
     });
 
     it("handles header auth-type", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -367,17 +367,17 @@ describe("throwingServiceGenerator", () => {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        const outFile = path.join(outDir, "services/myService.ts");
+        const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
-        expect(contents).toContain("foo(header: string): Promise<void>;");
-        expect(contents).toContain("foo(header: string): Promise<void> {");
+        expect(contents).toContain("foo(header: string): Promise<ConjureResult<void, never>>;");
+        expect(contents).toContain("foo(header: string): Promise<ConjureResult<void, never>> {");
         expect(contents).toMatch(/{\s*"Header": header,\s*}/);
     });
 
     it("throws on multiple body args", async () => {
         expect.assertions(1);
         try {
-            await generateThrowingService(
+            await generateNonThrowingService(
                 {
                     endpoints: [
                         {
@@ -422,7 +422,7 @@ describe("throwingServiceGenerator", () => {
     it("throws on header arg with no param-id", async () => {
         expect.assertions(1);
         try {
-            await generateThrowingService(
+            await generateNonThrowingService(
                 {
                     endpoints: [
                         {
@@ -457,7 +457,7 @@ describe("throwingServiceGenerator", () => {
     it("throws on query arg with no param-id", async () => {
         expect.assertions(1);
         try {
-            await generateThrowingService(
+            await generateNonThrowingService(
                 {
                     endpoints: [
                         {
@@ -490,7 +490,7 @@ describe("throwingServiceGenerator", () => {
     });
 
     it("emits service interfaces with docs", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 docs: "service level docs",
                 endpoints: [
@@ -511,13 +511,13 @@ describe("throwingServiceGenerator", () => {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        const outFile = path.join(outDir, "services/myService.ts");
+        const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain(
             `/** service level docs */
-export interface IMyService {
+export interface IMyServiceWithErrors {
     /** endpoint level docs */
-    foo(): Promise<void>;
+    foo(): Promise<ConjureResult<void, never>>;
 }
 `,
         );
@@ -530,7 +530,7 @@ export interface IMyService {
     });
 
     it("emits endpoint with incubating docs", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -549,20 +549,20 @@ export interface IMyService {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        const outFile = path.join(outDir, "services/myService.ts");
+        const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain(
             `
-export interface IMyService {
+export interface IMyServiceWithErrors {
     /** @incubating */
-    foo(): Promise<void>;
+    foo(): Promise<ConjureResult<void, never>>;
 }
 `,
         );
     });
 
     it("emits endpoint with error docs", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 docs: "service level docs",
                 endpoints: [
@@ -607,24 +607,20 @@ export interface IMyService {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        const outFile = path.join(outDir, "services/myService.ts");
+        const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain(
             `/** service level docs */
-export interface IMyService {
-    /**
-     * endpoint level docs
-     * @throws {IMyError1} MyError1 documentation
-     * @throws {IMyError2} MyError2 documentation
-     */
-    foo(): Promise<void>;
+export interface IMyServiceWithErrors {
+    /** endpoint level docs */
+    foo(): Promise<ConjureResult<void, IMyError1 | IMyError2>>;
 }
 `,
         );
     });
 
     it("emits service interfaces with error incubating docs", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 docs: "service level docs",
                 endpoints: [
@@ -658,17 +654,16 @@ export interface IMyService {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        const outFile = path.join(outDir, "services/myService.ts");
+        const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain(
             `/** service level docs */
-export interface IMyService {
+export interface IMyServiceWithErrors {
     /**
      * endpoint level docs
      * @incubating
-     * @throws {IMyError} MyError documentation
      */
-    foo(): Promise<void>;
+    foo(): Promise<ConjureResult<void, IMyError>>;
 }
 `,
         );
@@ -681,7 +676,7 @@ export interface IMyService {
     });
 
     it("emits endpoint with incubating and deprecated docs", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -701,23 +696,23 @@ export interface IMyService {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        const outFile = path.join(outDir, "services/myService.ts");
+        const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain(
             `
-export interface IMyService {
+export interface IMyServiceWithErrors {
     /**
      * @deprecated to be replaced
      * @incubating
      */
-    foo(): Promise<void>;
+    foo(): Promise<ConjureResult<void, never>>;
 }
 `,
         );
     });
 
     it("emits service with optional params", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -755,11 +750,11 @@ export interface IMyService {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/optionalService.ts");
+        assertOutputAndExpectedAreEqual(outDir, expectedDir, "services/optionalServiceWithErrors.ts");
     });
 
     it("emits service with no duplicate error imports", async () => {
-        await generateThrowingService(
+        await generateNonThrowingService(
             {
                 endpoints: [
                     {
@@ -803,20 +798,19 @@ export interface IMyService {
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        const outFile = path.join(outDir, "services/myService.ts");
+        const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
 
         expect(contents).toContain(`import type { IMyError } from "../errors/myError";
-import type { IHttpApiBridge } from "conjure-client";
+import type { ConjureFailure, ConjureResult, ConjureSuccess, IHttpApiBridge } from "conjure-client";
 
 /** Constant reference to \`undefined\` that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
 
-export interface IMyService {
-    /** @throws {IMyError} */
-    foo(): Promise<void>;
-    /** @throws {IMyError} */
-    bar(): Promise<void>;
+export interface IMyServiceWithErrors {
+    foo(): Promise<ConjureResult<void, IMyError>>;
+    bar(): Promise<ConjureResult<void, IMyError>>;
+}
 `);
     });
 });
