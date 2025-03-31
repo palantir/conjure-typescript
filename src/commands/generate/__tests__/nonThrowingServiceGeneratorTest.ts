@@ -118,9 +118,33 @@ describe("nonThrowingServiceGenerator", () => {
         );
         const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
-        expect(contents).toContain("returnsVoid(): Promise<ConjureResult<void, never>>;");
-        expect(contents).toContain("returnsVoid(): Promise<ConjureResult<void, never>> {");
-        expect(contents).toContain("return this.bridge.call<void>(");
+        expect(contents).toContain(`
+export interface IMyServiceWithErrors {
+    returnsVoid(): Promise<IConjureResult<void, never>>;
+}`);
+        expect(contents).toContain(`
+export class MyServiceWithErrors implements IMyServiceWithErrors {
+    constructor(private bridge: IHttpApiBridge) {
+    }
+
+    public returnsVoid(): Promise<IConjureResult<void, never>> {
+        return this.bridge
+            .call<void>(
+                "MyService",
+                "returnsVoid",
+                "GET",
+                "/bar",
+                __undefined,
+                __undefined,
+                __undefined,
+                __undefined,
+                __undefined,
+                __undefined
+            )
+            .then(result => ({ status: "success", result }) as IConjureSuccess<void>)
+            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+    }
+}`);
     });
 
     it("handles binary body and return types", async () => {
@@ -146,7 +170,7 @@ describe("nonThrowingServiceGenerator", () => {
         );
         const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
-        expect(contents).toContain("foo(): Promise<ConjureResult<ReadableStream<Uint8Array>, never>>;");
+        expect(contents).toContain("foo(): Promise<IConjureResult<ReadableStream<Uint8Array>, never>>;");
         expect(contents).toContain(`"application\/octet-stream"\n`);
     });
 
@@ -182,7 +206,7 @@ describe("nonThrowingServiceGenerator", () => {
         const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain(
-            "foo(body: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<ConjureResult<ReadableStream<Uint8Array>, never>>;",
+            "foo(body: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<IConjureResult<ReadableStream<Uint8Array>, never>>;",
         );
         expect(contents).toContain(`"application\/octet-stream",\n`);
         expect(contents).toContain(`"application\/octet-stream"\n`);
@@ -227,7 +251,7 @@ describe("nonThrowingServiceGenerator", () => {
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain(`import { IOtherObject } from "../other/otherObject";`);
         expect(contents).toContain(`import { ISomeObject } from "./someObject";`);
-        expect(contents).toContain(`foo(obj: ISomeObject): Promise<ConjureResult<IOtherObject, never>>;`);
+        expect(contents).toContain(`foo(obj: ISomeObject): Promise<IConjureResult<IOtherObject, never>>;`);
     });
 
     it("emits different param types", async () => {
@@ -369,8 +393,8 @@ describe("nonThrowingServiceGenerator", () => {
         );
         const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
-        expect(contents).toContain("foo(header: string): Promise<ConjureResult<void, never>>;");
-        expect(contents).toContain("foo(header: string): Promise<ConjureResult<void, never>> {");
+        expect(contents).toContain("foo(header: string): Promise<IConjureResult<void, never>>;");
+        expect(contents).toContain("foo(header: string): Promise<IConjureResult<void, never>> {");
         expect(contents).toMatch(/{\s*"Header": header,\s*}/);
     });
 
@@ -517,7 +541,7 @@ describe("nonThrowingServiceGenerator", () => {
             `/** service level docs */
 export interface IMyServiceWithErrors {
     /** endpoint level docs */
-    foo(): Promise<ConjureResult<void, never>>;
+    foo(): Promise<IConjureResult<void, never>>;
 }
 `,
         );
@@ -555,7 +579,7 @@ export interface IMyServiceWithErrors {
             `
 export interface IMyServiceWithErrors {
     /** @incubating */
-    foo(): Promise<ConjureResult<void, never>>;
+    foo(): Promise<IConjureResult<void, never>>;
 }
 `,
         );
@@ -613,7 +637,7 @@ export interface IMyServiceWithErrors {
             `/** service level docs */
 export interface IMyServiceWithErrors {
     /** endpoint level docs */
-    foo(): Promise<ConjureResult<void, IMyError1 | IMyError2>>;
+    foo(): Promise<IConjureResult<void, IMyError1 | IMyError2>>;
 }
 `,
         );
@@ -663,7 +687,7 @@ export interface IMyServiceWithErrors {
      * endpoint level docs
      * @incubating
      */
-    foo(): Promise<ConjureResult<void, IMyError>>;
+    foo(): Promise<IConjureResult<void, IMyError>>;
 }
 `,
         );
@@ -705,7 +729,7 @@ export interface IMyServiceWithErrors {
      * @deprecated to be replaced
      * @incubating
      */
-    foo(): Promise<ConjureResult<void, never>>;
+    foo(): Promise<IConjureResult<void, never>>;
 }
 `,
         );
@@ -802,14 +826,14 @@ export interface IMyServiceWithErrors {
         const contents = fs.readFileSync(outFile, "utf8");
 
         expect(contents).toContain(`import type { IMyError } from "../errors/myError";
-import type { ConjureFailure, ConjureResult, ConjureSuccess, IHttpApiBridge } from "conjure-client";
+import type { IConjureFailure, IConjureResult, IConjureSuccess, IHttpApiBridge } from "conjure-client";
 
 /** Constant reference to \`undefined\` that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
 
 export interface IMyServiceWithErrors {
-    foo(): Promise<ConjureResult<void, IMyError>>;
-    bar(): Promise<ConjureResult<void, IMyError>>;
+    foo(): Promise<IConjureResult<void, IMyError>>;
+    bar(): Promise<IConjureResult<void, IMyError>>;
 }
 `);
     });

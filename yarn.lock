@@ -1619,6 +1619,13 @@ conjure-api@^4.50.0:
   dependencies:
     conjure-client "^2.4.1"
 
+conjure-client@^2.14.0:
+  version "2.14.0"
+  resolved "https://artifactory.palantir.build/artifactory/api/npm/all-npm/conjure-client/-/conjure-client-2.14.0.tgz#5869fd7d2b4cbe85d268b4ae219c3da62d898ff7"
+  integrity sha512-4jG3BhfxDvXf34sCavhXEcJ3egDh2MVwHEBDRZKDwSYbjxWlFSv4rw0dsSCRMEA7eSpV08D2jnaDzLoaEJeLYQ==
+  dependencies:
+    web-streams-polyfill "^3.2.1"
+
 conjure-client@^2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/conjure-client/-/conjure-client-2.4.1.tgz#f230d13d9cc6b8699d3f26955b806d431b652fe9"
@@ -5534,6 +5541,11 @@ web-streams-polyfill@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-2.0.6.tgz#76e0504b4f15a6310cfc9e78e27637b648f9741e"
   integrity "sha1-duBQS08VpjEM/J544nY3tkj5dB4= sha512-nXOi4fBykO4LzyQhZX3MAGib635KGZBoNTkNXrNIkz0zthEf2QokEWxRb0H632xNLDWtHFb1R6dFGzksjYMSDw=="
+
+web-streams-polyfill@^3.2.1:
+  version "3.3.3"
+  resolved "https://artifactory.palantir.build/artifactory/api/npm/all-npm/web-streams-polyfill/-/web-streams-polyfill-3.3.3.tgz#2073b91a2fdb1fbfbd401e7de0ac9f8214cecb4b"
+  integrity sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==
 
 webidl-conversions@^5.0.0:
   version "5.0.0"

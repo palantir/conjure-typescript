@@ -47,9 +47,9 @@ import { SimpleAst } from "./simpleAst";
 
 /** Types used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
-const CONJURE_FAILURE_TYPE = "ConjureFailure";
-const CONJURE_RESULT_TYPE = "ConjureResult";
-const CONJURE_SUCCESS_TYPE = "ConjureSuccess";
+const CONJURE_FAILURE_TYPE = "IConjureFailure";
+const CONJURE_RESULT_TYPE = "IConjureResult";
+const CONJURE_SUCCESS_TYPE = "IConjureSuccess";
 
 /** Variable name used in the generation of the service class. */
 const BRIDGE = "bridge";
@@ -156,7 +156,7 @@ export function generateNonThrowingService(
         }
         const errorsType = errorNames.join(" | ");
 
-        const returnType = `ConjureResult<${resultType}, ${errorsType}>`;
+        const returnType = `IConjureResult<${resultType}, ${errorsType}>`;
 
         endpointSignatures.push({
             kind: StructureKind.MethodSignature,
@@ -270,7 +270,8 @@ function generateEndpointBody(
 
     return writer => {
         writer
-            .write(`return this.${BRIDGE}.call<${resultType}>(`)
+            .write(`return this.${BRIDGE}`)
+            .writeLine(`.call<${resultType}>(`)
             .writeLine(`"${serviceName}",`)
             .writeLine(`"${endpointDefinition.endpointName}",`)
             .writeLine(`"${endpointDefinition.httpMethod}",`)
@@ -308,8 +309,8 @@ function generateEndpointBody(
         );
         writer
             .write(")")
-            .writeLine(`.then(result => ({ status: "success", result }) as ConjureSuccess<${resultType}>)`)
-            .writeLine(`.catch(error => ({ status: "failure", error }) as ConjureFailure<${errorsType}>);`);
+            .writeLine(`.then(result => ({ status: "success", result }) as IConjureSuccess<${resultType}>)`)
+            .writeLine(`.catch(error => ({ status: "failure", error }) as IConjureFailure<${errorsType}>);`);
     };
 }
 

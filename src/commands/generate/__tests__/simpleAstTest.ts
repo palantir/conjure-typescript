@@ -22,10 +22,10 @@ import { directory } from "tempy";
 import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
 import { generateError } from "../errorGenerator";
+import { generateNonThrowingService } from "../nonThrowingServiceGenerator";
 import { SimpleAst } from "../simpleAst";
 import { generateThrowingService } from "../throwingServiceGenerator";
 import { generateEnum } from "../typeGenerator";
-import { generateNonThrowingService } from "../nonThrowingServiceGenerator";
 
 describe("simpleAst", () => {
     let outDir: string;

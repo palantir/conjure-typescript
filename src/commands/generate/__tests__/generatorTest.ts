@@ -20,6 +20,7 @@ import {
     IConjureDefinition,
     IEnumDefinition,
     IObjectDefinition,
+    IServiceDefinition,
     ITypeDefinition,
     ITypeDefinitionVisitor,
     ITypeName,
@@ -71,6 +72,39 @@ describe("generator", () => {
         const outFile2 = path.join(outDir, "integration/myEnum2.ts");
         expect(fs.existsSync(outFile1)).toBeTruthy();
         expect(fs.existsSync(outFile2)).toBeTruthy();
+    });
+
+    it("throws on service name collisions", async () => {
+        const serviceDefinition1: IServiceDefinition = {
+            serviceName: {
+                name: "IMyService",
+                package: "com.palantir.foo",
+            },
+            endpoints: [],
+        };
+        const serviceDefinition2: IServiceDefinition = {
+            serviceName: {
+                name: "IMyServiceWithErrors",
+                package: "com.palantir.foo",
+            },
+            endpoints: [],
+        };
+        await expect(
+            async () =>
+                await generate(
+                    {
+                        errors: [],
+                        services: [serviceDefinition1, serviceDefinition2],
+                        types: [],
+                        version: 1,
+                        extensions: {},
+                    },
+                    outDir,
+                    DEFAULT_TYPE_GENERATION_FLAGS,
+                ),
+        ).rejects.toThrowError(
+            new Error("Found service name conflict in com.palantir.foo. Conflict: IMyService, IMyServiceWithErrors"),
+        );
     });
 
     it("generates multiple modules", async () => {
