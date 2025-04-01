@@ -16,10 +16,21 @@
  */
 
 import { ITypeGenerationFlags } from "../../types";
+import { IServiceGenerationFlags } from "../../types/serviceGenerationFlags";
 
 export const DEFAULT_TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
     flavorizedAliases: false,
     readonlyInterfaces: false,
+};
+
+export const DEFAULT_SERVICE_GENERATION_FLAGS: IServiceGenerationFlags = {
+    generateThrowingServices: true,
+    generateNonThrowingServices: false,
+};
+
+export const NON_THROWING_SERVICE_GENERATION_FLAGS: IServiceGenerationFlags = {
+    ...DEFAULT_SERVICE_GENERATION_FLAGS,
+    generateNonThrowingServices: true,
 };
 
 export const FLAVORED_TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
