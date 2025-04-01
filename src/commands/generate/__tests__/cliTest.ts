@@ -20,8 +20,8 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
 import { IPackageJson, ISlsManifestDependency } from "../../../types";
-import { createPackageJson, createTsconfigJson, GenerateCommand } from "../index";
 import { DEFAULT_SERVICE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
+import { createPackageJson, createTsconfigJson, GenerateCommand } from "../index";
 
 describe("generate command", () => {
     let outDir: string;

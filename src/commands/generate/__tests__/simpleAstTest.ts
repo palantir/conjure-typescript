@@ -23,8 +23,8 @@ import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
 import { generateError } from "../errorGenerator";
 import { generateNonThrowingService } from "../generateNonThrowingService";
-import { SimpleAst } from "../simpleAst";
 import { generateThrowingService } from "../generateThrowingService";
+import { SimpleAst } from "../simpleAst";
 import { generateEnum } from "../typeGenerator";
 
 describe("simpleAst", () => {

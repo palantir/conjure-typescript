@@ -21,8 +21,8 @@ import * as path from "path";
 import { directory } from "tempy";
 import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
-import { SimpleAst } from "../simpleAst";
 import { generateThrowingService } from "../generateThrowingService";
+import { SimpleAst } from "../simpleAst";
 import {
     assertOutputAndExpectedAreEqual,
     foreignObject,

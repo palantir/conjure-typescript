@@ -19,15 +19,15 @@ import { IConjureDefinition, ITypeDefinition } from "conjure-api";
 import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";
+import { IServiceGenerationFlags } from "../../types/serviceGenerationFlags";
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { directoryNameForType } from "../../utils/fileUtils";
 import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
 import { generateError } from "./errorGenerator";
 import { generateNonThrowingService } from "./generateNonThrowingService";
-import { SimpleAst } from "./simpleAst";
 import { generateThrowingService } from "./generateThrowingService";
+import { SimpleAst } from "./simpleAst";
 import { generateType } from "./typeGenerator";
-import { IServiceGenerationFlags } from "../../types/serviceGenerationFlags";
 import { validateServiceNames } from "./validators/validateServiceNames";
 
 export async function generate(

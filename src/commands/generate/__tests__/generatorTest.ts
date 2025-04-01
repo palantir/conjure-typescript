@@ -29,6 +29,7 @@ import {
 import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
+import { IServiceGenerationFlags } from "../../../types/serviceGenerationFlags";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
 import { isFlavorizable } from "../../../utils/flavorizingUtils";
 import {
@@ -42,7 +43,6 @@ import { loadConjureDefinition } from "../command";
 import { generate } from "../generator";
 import { typeNameToFilePath } from "../simpleAst";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
-import { IServiceGenerationFlags } from "../../../types/serviceGenerationFlags";
 
 describe("generator", () => {
     let outDir: string;
