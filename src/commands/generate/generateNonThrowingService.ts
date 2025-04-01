@@ -44,6 +44,7 @@ import { resolveMediaType } from "../../utils/resolveMediaType";
 import { resolveStringConversion } from "../../utils/resolveStringConversion";
 import { resolveTsType } from "../../utils/resolveTsType";
 import { SimpleAst } from "./simpleAst";
+import { parsePathParamsFromPath } from "../../utils/parsePathParamsFromPath";
 
 /** Types used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
@@ -282,7 +283,7 @@ function generateEndpointBody(
             writer.writeLine(`${UNDEFINED_CONSTANT},`);
         } else {
             writer.write("{");
-            formattedHeaderArgs.forEach(formattedHeader => writer.indent().writeLine(formattedHeader));
+            formattedHeaderArgs.forEach(formattedHeader => writer.writeLine(formattedHeader));
             writer.writeLine("},");
         }
 
@@ -290,7 +291,7 @@ function generateEndpointBody(
             writer.writeLine(`${UNDEFINED_CONSTANT},`);
         } else {
             writer.write("{");
-            formattedQueryArgs.forEach(formattedQuery => writer.indent().writeLine(formattedQuery));
+            formattedQueryArgs.forEach(formattedQuery => writer.writeLine(formattedQuery));
             writer.writeLine("},");
         }
 
@@ -298,7 +299,7 @@ function generateEndpointBody(
             writer.writeLine(`${UNDEFINED_CONSTANT},`);
         } else {
             writer.write("[");
-            pathParamsFromPath.forEach(pathArgName => writer.indent().writeLine(pathArgName + ","));
+            pathParamsFromPath.forEach(pathArgName => writer.writeLine(pathArgName + ","));
             writer.writeLine("],");
         }
         writer.writeLine(
@@ -308,18 +309,8 @@ function generateEndpointBody(
             `${responseMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${responseMediaType}"`}`,
         );
         writer
-            .write(")")
+            .writeLine(")")
             .writeLine(`.then(result => ({ status: "success", result }) as IConjureSuccess<${resultType}>)`)
             .writeLine(`.catch(error => ({ status: "failure", error }) as IConjureFailure<${errorsType}>);`);
     };
-}
-
-function parsePathParamsFromPath(httpPath: string): string[] {
-    // first fix up the path to remove any ':.+' stuff in path params
-    const fixedPath = httpPath.replace(/{(.*):[^}]*}/, "{$1}");
-    // follow-up by just pulling out any path segment with a starting '{' and trailing '}'
-    return fixedPath
-        .split("/")
-        .filter(segment => segment.startsWith("{") && segment.endsWith("}"))
-        .map(segment => segment.slice(1, -1));
 }

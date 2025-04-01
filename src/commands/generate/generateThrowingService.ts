@@ -44,6 +44,7 @@ import { resolveMediaType } from "../../utils/resolveMediaType";
 import { resolveStringConversion } from "../../utils/resolveStringConversion";
 import { resolveTsType } from "../../utils/resolveTsType";
 import { SimpleAst } from "./simpleAst";
+import { parsePathParamsFromPath } from "../../utils/parsePathParamsFromPath";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
@@ -251,7 +252,8 @@ function generateEndpointBody(
 
     return writer => {
         writer
-            .write(`return this.${BRIDGE}.call<${returnTsType}>(`)
+            .write(`return this.${BRIDGE}`)
+            .writeLine(`.call<${returnTsType}>(`)
             .writeLine(`"${serviceName}",`)
             .writeLine(`"${endpointDefinition.endpointName}",`)
             .writeLine(`"${endpointDefinition.httpMethod}",`)
@@ -262,7 +264,7 @@ function generateEndpointBody(
             writer.writeLine(`${UNDEFINED_CONSTANT},`);
         } else {
             writer.write("{");
-            formattedHeaderArgs.forEach(formattedHeader => writer.indent().writeLine(formattedHeader));
+            formattedHeaderArgs.forEach(formattedHeader => writer.writeLine(formattedHeader));
             writer.writeLine("},");
         }
 
@@ -270,7 +272,7 @@ function generateEndpointBody(
             writer.writeLine(`${UNDEFINED_CONSTANT},`);
         } else {
             writer.write("{");
-            formattedQueryArgs.forEach(formattedQuery => writer.indent().writeLine(formattedQuery));
+            formattedQueryArgs.forEach(formattedQuery => writer.writeLine(formattedQuery));
             writer.writeLine("},");
         }
 
@@ -278,7 +280,7 @@ function generateEndpointBody(
             writer.writeLine(`${UNDEFINED_CONSTANT},`);
         } else {
             writer.write("[");
-            pathParamsFromPath.forEach(pathArgName => writer.indent().writeLine(pathArgName + ","));
+            pathParamsFromPath.forEach(pathArgName => writer.writeLine(pathArgName + ","));
             writer.writeLine("],");
         }
         writer.writeLine(
@@ -289,14 +291,4 @@ function generateEndpointBody(
         );
         writer.write(");");
     };
-}
-
-function parsePathParamsFromPath(httpPath: string): string[] {
-    // first fix up the path to remove any ':.+' stuff in path params
-    const fixedPath = httpPath.replace(/{(.*):[^}]*}/, "{$1}");
-    // follow-up by just pulling out any path segment with a starting '{' and trailing '}'
-    return fixedPath
-        .split("/")
-        .filter(segment => segment.startsWith("{") && segment.endsWith("}"))
-        .map(segment => segment.slice(1, -1));
 }

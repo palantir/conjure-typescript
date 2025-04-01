@@ -192,7 +192,7 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
         });
     }
 
-    sourceFile.formatText({ trimTrailingWhitespace: true });
+    sourceFile.formatText();
     return sourceFile.save();
 }
 

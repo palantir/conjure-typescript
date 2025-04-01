@@ -12,21 +12,22 @@ export class OptionalService implements IOptionalService {
     }
 
     public foo(header: string, name?: string | null): Promise<void> {
-        return this.bridge.call<void>(
-            "OptionalService",
-            "foo",
-            "GET",
-            "/foo",
-            __undefined,
-            {
-                "Header": header,
-            },
-            {
-                "Query": name,
-            },
-            __undefined,
-            __undefined,
-            __undefined
-        );
+        return this.bridge
+            .call<void>(
+                "OptionalService",
+                "foo",
+                "GET",
+                "/foo",
+                __undefined,
+                {
+                    "Header": header,
+                },
+                {
+                    "Query": name,
+                },
+                __undefined,
+                __undefined,
+                __undefined
+            );
     }
 }

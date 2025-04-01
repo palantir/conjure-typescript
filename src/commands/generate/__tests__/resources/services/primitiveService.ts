@@ -12,17 +12,18 @@ export class PrimitiveService implements IPrimitiveService {
     }
 
     public getPrimitive(): Promise<number> {
-        return this.bridge.call<number>(
-            "PrimitiveService",
-            "getPrimitive",
-            "GET",
-            "/getPrimitive",
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined
-        );
+        return this.bridge
+            .call<number>(
+                "PrimitiveService",
+                "getPrimitive",
+                "GET",
+                "/getPrimitive",
+                __undefined,
+                __undefined,
+                __undefined,
+                __undefined,
+                __undefined,
+                __undefined
+            );
     }
 }

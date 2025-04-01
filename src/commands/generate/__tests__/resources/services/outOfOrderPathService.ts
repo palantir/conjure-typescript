@@ -12,21 +12,21 @@ export class OutOfOrderPathService implements IOutOfOrderPathService {
     }
 
     public foo(param1: string, param2: string): Promise<void> {
-        return this.bridge.call<void>(
-            "OutOfOrderPathService",
-            "foo",
-            "GET",
-            "/{param2}/{param1}",
-            __undefined,
-            __undefined,
-            __undefined,
-            [
-                param2,
-
-                param1,
-            ],
-            __undefined,
-            __undefined
-        );
+        return this.bridge
+            .call<void>(
+                "OutOfOrderPathService",
+                "foo",
+                "GET",
+                "/{param2}/{param1}",
+                __undefined,
+                __undefined,
+                __undefined,
+                [
+                    param2,
+                    param1,
+                ],
+                __undefined,
+                __undefined
+            );
     }
 }

@@ -118,9 +118,31 @@ describe("generateThrowingService", () => {
         );
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
-        expect(contents).toContain("returnsVoid(): Promise<void>;");
-        expect(contents).toContain("returnsVoid(): Promise<void> {");
-        expect(contents).toContain("return this.bridge.call<void>(");
+        expect(contents).toContain(`
+export interface IMyService {
+    returnsVoid(): Promise<void>;
+}`);
+        expect(contents).toContain(`
+export class MyService implements IMyService {
+    constructor(private bridge: IHttpApiBridge) {
+    }
+
+    public returnsVoid(): Promise<void> {
+        return this.bridge
+            .call<void>(
+                "MyService",
+                "returnsVoid",
+                "GET",
+                "/bar",
+                __undefined,
+                __undefined,
+                __undefined,
+                __undefined,
+                __undefined,
+                __undefined
+            );
+    }
+}`);
     });
 
     it("handles binary body and return types", async () => {

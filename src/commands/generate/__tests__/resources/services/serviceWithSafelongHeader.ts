@@ -12,19 +12,20 @@ export class ServiceWithSafelongHeader implements IServiceWithSafelongHeader {
     }
 
     public foo(investigation: number): Promise<void> {
-        return this.bridge.call<void>(
-            "ServiceWithSafelongHeader",
-            "foo",
-            "GET",
-            "/foo",
-            __undefined,
-            {
-                "X-Investigation": investigation.toString(),
-            },
-            __undefined,
-            __undefined,
-            __undefined,
-            __undefined
-        );
+        return this.bridge
+            .call<void>(
+                "ServiceWithSafelongHeader",
+                "foo",
+                "GET",
+                "/foo",
+                __undefined,
+                {
+                    "X-Investigation": investigation.toString(),
+                },
+                __undefined,
+                __undefined,
+                __undefined,
+                __undefined
+            );
     }
 }
