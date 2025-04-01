@@ -165,7 +165,7 @@ export class GenerateCommand implements CommandModule {
             },
             {
                 generateNonThrowingServices: args.generateNonThrowingServices,
-                generateThrowingServices: args.generateNonThrowingServices,
+                generateThrowingServices: args.generateThrowingServices,
             },
         );
         if (rawSource) {
