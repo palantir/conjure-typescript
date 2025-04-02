@@ -1626,13 +1626,6 @@ conjure-client@^2.14.0:
   dependencies:
     web-streams-polyfill "^3.2.1"
 
-conjure-client@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/conjure-client/-/conjure-client-2.4.1.tgz#f230d13d9cc6b8699d3f26955b806d431b652fe9"
-  integrity "sha1-8jDRPZzGuGmdPyaVW4BtQxtlL+k= sha512-D+m/j8G54CQVE/2i0RmgCZQXNqNy7TGOl4KrqVZV4LsTYhjrWXmBHvfHM+mhyPs69QWfDEgW48Yy/zUwEbuMYA=="
-  dependencies:
-    web-streams-polyfill "^2.0.6"
-
 connect@^3.7.0:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/connect/-/connect-3.7.0.tgz#5d49348910caa5e07a01800b030d0c35f20484f8"
@@ -5536,11 +5529,6 @@ wcwidth@^1.0.1:
   integrity "sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g= sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg=="
   dependencies:
     defaults "^1.0.3"
-
-web-streams-polyfill@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-2.0.6.tgz#76e0504b4f15a6310cfc9e78e27637b648f9741e"
-  integrity "sha1-duBQS08VpjEM/J544nY3tkj5dB4= sha512-nXOi4fBykO4LzyQhZX3MAGib635KGZBoNTkNXrNIkz0zthEf2QokEWxRb0H632xNLDWtHFb1R6dFGzksjYMSDw=="
 
 web-streams-polyfill@^3.2.1:
   version "3.3.3"
