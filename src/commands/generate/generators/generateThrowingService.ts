@@ -36,28 +36,33 @@ import {
     StructureKind,
     VariableDeclarationKind,
 } from "ts-morph";
-import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
-import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../utils/constants";
-import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../utils/docsUtils";
-import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../utils/resolveImports";
-import { resolveMediaType } from "../../utils/resolveMediaType";
-import { resolveStringConversion } from "../../utils/resolveStringConversion";
-import { resolveTsType } from "../../utils/resolveTsType";
-import { SimpleAst } from "./simpleAst";
+import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
+import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
+import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
+import { parsePathParamsFromPath } from "../../../utils/parsePathParamsFromPath";
+import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../../utils/resolveImports";
+import { resolveMediaType } from "../../../utils/resolveMediaType";
+import { resolveStringConversion } from "../../../utils/resolveStringConversion";
+import { resolveTsType } from "../../../utils/resolveTsType";
+import { SimpleAst } from "../simpleAst";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
+
 /** Variable name used in the generation of the service class. */
 const BRIDGE = "bridge";
+
+/** Default import used in the generation of the service class. */
 const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
     kind: StructureKind.ImportDeclaration,
     moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
     namedImports: [{ name: HTTP_API_BRIDGE_TYPE }],
+    isTypeOnly: true,
 };
 
 const UNDEFINED_CONSTANT = "__undefined";
 
-export function generateService(
+export function generateThrowingService(
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
@@ -68,11 +73,13 @@ export function generateService(
     const endpointSignatures: MethodSignatureStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
     const imports: ImportDeclarationStructure[] = [HTTP_API_BRIDGE_IMPORT];
+
     sourceFile.addVariableStatement({
         declarationKind: VariableDeclarationKind.Const,
         docs: ["Constant reference to `undefined` that we expect to get minified and therefore reduce total code size"],
         declarations: [{ name: UNDEFINED_CONSTANT, type: "undefined", initializer: "undefined" }],
     });
+
     definition.endpoints.forEach(endpointDefinition => {
         const parameters: ParameterDeclarationStructure[] = endpointDefinition.args
             .sort((a, b) => {
@@ -124,12 +131,15 @@ export function generateService(
             parameters,
             returnType: `Promise<${returnTsType}>`,
         };
+
         let docs = addDeprecatedToDocs(endpointDefinition);
         docs = addIncubatingToDocs(endpointDefinition, docs);
         docs = addErrorsToDocs(endpointDefinition, docs);
+
         if (docs != null) {
             signature.docs = [docs];
         }
+
         endpointSignatures.push(signature);
 
         endpointImplementations.push({
@@ -157,9 +167,7 @@ export function generateService(
         });
     });
 
-    if (imports.length !== 0) {
-        sourceFile.addImportDeclarations(sortImports(imports));
-    }
+    sourceFile.addImportDeclarations(sortImports(imports));
 
     const iface = sourceFile.addInterface({
         isExported: true,
@@ -185,6 +193,7 @@ export function generateService(
         isExported: true,
         methods: endpointImplementations,
         name: definition.serviceName.name,
+        implements: [iface.getName()],
     });
 
     sourceFile.formatText();
@@ -255,7 +264,7 @@ function generateEndpointBody(
             writer.writeLine(`${UNDEFINED_CONSTANT},`);
         } else {
             writer.write("{");
-            formattedHeaderArgs.forEach(formattedHeader => writer.indent().writeLine(formattedHeader));
+            formattedHeaderArgs.forEach(formattedHeader => writer.writeLine(formattedHeader));
             writer.writeLine("},");
         }
 
@@ -263,7 +272,7 @@ function generateEndpointBody(
             writer.writeLine(`${UNDEFINED_CONSTANT},`);
         } else {
             writer.write("{");
-            formattedQueryArgs.forEach(formattedQuery => writer.indent().writeLine(formattedQuery));
+            formattedQueryArgs.forEach(formattedQuery => writer.writeLine(formattedQuery));
             writer.writeLine("},");
         }
 
@@ -271,7 +280,7 @@ function generateEndpointBody(
             writer.writeLine(`${UNDEFINED_CONSTANT},`);
         } else {
             writer.write("[");
-            pathParamsFromPath.forEach(pathArgName => writer.indent().writeLine(pathArgName + ","));
+            pathParamsFromPath.forEach(pathArgName => writer.writeLine(pathArgName + ","));
             writer.writeLine("],");
         }
         writer.writeLine(
@@ -282,14 +291,4 @@ function generateEndpointBody(
         );
         writer.write(");");
     };
-}
-
-function parsePathParamsFromPath(httpPath: string): string[] {
-    // first fix up the path to remove any ':.+' stuff in path params
-    const fixedPath = httpPath.replace(/{(.*):[^}]*}/, "{$1}");
-    // follow-up by just pulling out any path segment with a starting '{' and trailing '}'
-    return fixedPath
-        .split("/")
-        .filter(segment => segment.startsWith("{") && segment.endsWith("}"))
-        .map(segment => segment.slice(1, -1));
 }

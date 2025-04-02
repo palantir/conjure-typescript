@@ -22,10 +22,10 @@ import * as path from "path";
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { directoryNameForType } from "../../utils/fileUtils";
 import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
-import { generateError } from "./errorGenerator";
-import { generateService } from "./serviceGenerator";
+import { generateError } from "./generators/generateError";
+import { generateThrowingService } from "./generators/generateThrowingService";
+import { generateType } from "./generators/generateType";
 import { SimpleAst } from "./simpleAst";
-import { generateType } from "./typeGenerator";
 
 export async function generate(
     definition: IConjureDefinition,
@@ -65,11 +65,13 @@ export async function generate(
     const simpleAst = new SimpleAst(outDir);
 
     definition.services.forEach(serviceDefinition =>
-        promises.push(generateService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags)),
+        promises.push(generateThrowingService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags)),
     );
+
     definition.types.forEach(typeDefinition =>
         promises.push(generateType(typeDefinition, knownTypes, simpleAst, typeGenerationFlags)),
     );
+
     definition.errors.forEach(errorDefinition =>
         promises.push(generateError(errorDefinition, knownTypes, simpleAst, typeGenerationFlags)),
     );

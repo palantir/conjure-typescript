@@ -21,8 +21,8 @@ import * as path from "path";
 import { directory } from "tempy";
 import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
 import { createSimpleObject } from "../../../__tests__/utils/createSimpleObject";
+import { generateType } from "../generators/generateType";
 import { SimpleAst } from "../simpleAst";
-import { generateType } from "../typeGenerator";
 
 export function assertOutputAndExpectedAreEqual(outDir: string, expectedDir: string, fname: string) {
     const actualFilePath = path.join(outDir, fname);

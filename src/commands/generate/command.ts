@@ -56,7 +56,7 @@ export interface IGenerateCommandArgs {
     productDependencies?: string;
 
     /**
-     * Generates flavoured types for compatible aliases (string, rids...)
+     * Generate flavoured types for compatible aliases (string, rids...)
      */
     flavorizedAliases?: boolean;
 

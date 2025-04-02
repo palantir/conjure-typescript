@@ -20,11 +20,11 @@ import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";
 import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
-import { generateError } from "../errorGenerator";
+import { generateError } from "../generators/generateError";
 import { SimpleAst } from "../simpleAst";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
-describe("errorGenerator", () => {
+describe("generateError", () => {
     const expectedDir = path.join(__dirname, "./resources");
     let outDir: string;
     let simpleAst: SimpleAst;

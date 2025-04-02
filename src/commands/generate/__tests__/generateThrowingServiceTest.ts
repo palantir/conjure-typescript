@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018 Palantir Technologies, Inc.
+ * Copyright 2025 Palantir Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import * as path from "path";
 import { directory } from "tempy";
 import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
-import { generateService } from "../serviceGenerator";
+import { generateThrowingService } from "../generators/generateThrowingService";
 import { SimpleAst } from "../simpleAst";
 import {
     assertOutputAndExpectedAreEqual,
@@ -31,7 +31,7 @@ import {
 
 const stringType: IType = IType.primitive(PrimitiveType.STRING);
 
-describe("serviceGenerator", () => {
+describe("generateThrowingService", () => {
     const expectedDir = path.join(__dirname, "./resources");
     let outDir: string;
     let simpleAst: SimpleAst;
@@ -42,7 +42,7 @@ describe("serviceGenerator", () => {
     });
 
     it("emits service interface and class with primitive return type", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -66,7 +66,7 @@ describe("serviceGenerator", () => {
     });
 
     it("emits service interface and class with safelong header type", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -97,7 +97,7 @@ describe("serviceGenerator", () => {
     });
 
     it("handles endpoint with void return type", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -118,13 +118,34 @@ describe("serviceGenerator", () => {
         );
         const outFile = path.join(outDir, "services/myService.ts");
         const contents = fs.readFileSync(outFile, "utf8");
-        expect(contents).toContain("returnsVoid(): Promise<void>;");
-        expect(contents).toContain("returnsVoid(): Promise<void> {");
-        expect(contents).toContain("return this.bridge.call<void>(");
+        expect(contents).toContain(`
+export interface IMyService {
+    returnsVoid(): Promise<void>;
+}`);
+        expect(contents).toContain(`
+export class MyService implements IMyService {
+    constructor(private bridge: IHttpApiBridge) {
+    }
+
+    public returnsVoid(): Promise<void> {
+        return this.bridge.call<void>(
+            "MyService",
+            "returnsVoid",
+            "GET",
+            "/bar",
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined
+        );
+    }
+}`);
     });
 
     it("handles binary body and return types", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -151,7 +172,7 @@ describe("serviceGenerator", () => {
     });
 
     it("handle binary return and json request types", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -189,7 +210,7 @@ describe("serviceGenerator", () => {
     });
 
     it("emits imports and correct signature for service with references", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -231,7 +252,7 @@ describe("serviceGenerator", () => {
     });
 
     it("emits different param types", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -292,7 +313,7 @@ describe("serviceGenerator", () => {
     });
 
     it("handles out of order path params", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -336,7 +357,7 @@ describe("serviceGenerator", () => {
     });
 
     it("handles header auth-type", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -377,7 +398,7 @@ describe("serviceGenerator", () => {
     it("throws on multiple body args", async () => {
         expect.assertions(1);
         try {
-            await generateService(
+            await generateThrowingService(
                 {
                     endpoints: [
                         {
@@ -422,7 +443,7 @@ describe("serviceGenerator", () => {
     it("throws on header arg with no param-id", async () => {
         expect.assertions(1);
         try {
-            await generateService(
+            await generateThrowingService(
                 {
                     endpoints: [
                         {
@@ -457,7 +478,7 @@ describe("serviceGenerator", () => {
     it("throws on query arg with no param-id", async () => {
         expect.assertions(1);
         try {
-            await generateService(
+            await generateThrowingService(
                 {
                     endpoints: [
                         {
@@ -490,7 +511,7 @@ describe("serviceGenerator", () => {
     });
 
     it("emits service interfaces with docs", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 docs: "service level docs",
                 endpoints: [
@@ -530,7 +551,7 @@ export interface IMyService {
     });
 
     it("emits endpoint with incubating docs", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -562,7 +583,7 @@ export interface IMyService {
     });
 
     it("emits endpoint with error docs", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 docs: "service level docs",
                 endpoints: [
@@ -624,7 +645,7 @@ export interface IMyService {
     });
 
     it("emits service interfaces with error incubating docs", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 docs: "service level docs",
                 endpoints: [
@@ -681,7 +702,7 @@ export interface IMyService {
     });
 
     it("emits endpoint with incubating and deprecated docs", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -717,7 +738,7 @@ export interface IMyService {
     });
 
     it("emits service with optional params", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -759,7 +780,7 @@ export interface IMyService {
     });
 
     it("emits service with no duplicate error imports", async () => {
-        await generateService(
+        await generateThrowingService(
             {
                 endpoints: [
                     {
@@ -807,10 +828,16 @@ export interface IMyService {
         const contents = fs.readFileSync(outFile, "utf8");
 
         expect(contents).toContain(`import type { IMyError } from "../errors/myError";
-import { IHttpApiBridge } from "conjure-client";
+import type { IHttpApiBridge } from "conjure-client";
 
 /** Constant reference to \`undefined\` that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
+
+export interface IMyService {
+    /** @throws {IMyError} */
+    foo(): Promise<void>;
+    /** @throws {IMyError} */
+    bar(): Promise<void>;
 `);
     });
 });
