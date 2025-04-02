@@ -1619,9 +1619,9 @@ conjure-api@^4.50.0:
   dependencies:
     conjure-client "^2.4.1"
 
-conjure-client@^2.14.0:
+conjure-client@^2.14.0, conjure-client@^2.4.1:
   version "2.14.0"
-  resolved "https://registry.npmjs.org/conjure-client/-/conjure-client-2.14.0.tgz#5869fd7d2b4cbe85d268b4ae219c3da62d898ff7"
+  resolved "https://registry.yarnpkg.com/conjure-client/-/conjure-client-2.14.0.tgz#5869fd7d2b4cbe85d268b4ae219c3da62d898ff7"
   integrity sha512-4jG3BhfxDvXf34sCavhXEcJ3egDh2MVwHEBDRZKDwSYbjxWlFSv4rw0dsSCRMEA7eSpV08D2jnaDzLoaEJeLYQ==
   dependencies:
     web-streams-polyfill "^3.2.1"
@@ -5532,7 +5532,7 @@ wcwidth@^1.0.1:
 
 web-streams-polyfill@^3.2.1:
   version "3.3.3"
-  resolved "https://registry.npmjs.org/web-streams-polyfill/-/web-streams-polyfill-3.3.3.tgz#2073b91a2fdb1fbfbd401e7de0ac9f8214cecb4b"
+  resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.3.3.tgz#2073b91a2fdb1fbfbd401e7de0ac9f8214cecb4b"
   integrity sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==
 
 webidl-conversions@^5.0.0:
