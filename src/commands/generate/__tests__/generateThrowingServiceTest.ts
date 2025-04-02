@@ -128,19 +128,18 @@ export class MyService implements IMyService {
     }
 
     public returnsVoid(): Promise<void> {
-        return this.bridge
-            .call<void>(
-                "MyService",
-                "returnsVoid",
-                "GET",
-                "/bar",
-                __undefined,
-                __undefined,
-                __undefined,
-                __undefined,
-                __undefined,
-                __undefined
-            );
+        return this.bridge.call<void>(
+            "MyService",
+            "returnsVoid",
+            "GET",
+            "/bar",
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined,
+            __undefined
+        );
     }
 }`);
     });

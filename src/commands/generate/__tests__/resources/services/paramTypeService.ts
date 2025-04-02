@@ -12,24 +12,23 @@ export class ParamTypeService implements IParamTypeService {
     }
 
     public foo(body: string, header: string, path: string, query: string): Promise<void> {
-        return this.bridge
-            .call<void>(
-                "ParamTypeService",
-                "foo",
-                "GET",
-                "/foo/{path}",
-                body,
-                {
-                    "Header": header,
-                },
-                {
-                    "Query": query,
-                },
-                [
-                    path,
-                ],
-                __undefined,
-                __undefined
-            );
+        return this.bridge.call<void>(
+            "ParamTypeService",
+            "foo",
+            "GET",
+            "/foo/{path}",
+            body,
+            {
+                "Header": header,
+            },
+            {
+                "Query": query,
+            },
+            [
+                path,
+            ],
+            __undefined,
+            __undefined
+        );
     }
 }

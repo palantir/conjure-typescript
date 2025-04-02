@@ -253,8 +253,7 @@ function generateEndpointBody(
 
     return writer => {
         writer
-            .write(`return this.${BRIDGE}`)
-            .writeLine(`.call<${returnTsType}>(`)
+            .write(`return this.${BRIDGE}.call<${returnTsType}>(`)
             .writeLine(`"${serviceName}",`)
             .writeLine(`"${endpointDefinition.endpointName}",`)
             .writeLine(`"${endpointDefinition.httpMethod}",`)
