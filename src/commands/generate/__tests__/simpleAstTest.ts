@@ -21,11 +21,11 @@ import * as path from "path";
 import { directory } from "tempy";
 import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
-import { generateError } from "../errorGenerator";
-import { generateNonThrowingService } from "../generateNonThrowingService";
-import { generateThrowingService } from "../generateThrowingService";
+import { generateError } from "../generators/generateError";
+import { generateNonThrowingService } from "../generators/generateNonThrowingService";
+import { generateThrowingService } from "../generators/generateThrowingService";
+import { generateEnum } from "../generators/generateType";
 import { SimpleAst } from "../simpleAst";
-import { generateEnum } from "../typeGenerator";
 
 describe("simpleAst", () => {
     let outDir: string;

@@ -21,8 +21,8 @@ import * as path from "path";
 import { directory } from "tempy";
 import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
+import { generateAlias, generateEnum, generateObject, generateUnion } from "../generators/generateType";
 import { SimpleAst } from "../simpleAst";
-import { generateAlias, generateEnum, generateObject, generateUnion } from "../typeGenerator";
 import {
     assertDoesNotExist,
     assertOutputAndExpectedAreEqual,
@@ -58,7 +58,7 @@ const dateAlias: ITypeDefinition = ITypeDefinition.alias({
 });
 const dateAliasReference: IType = IType.reference(dateAliasName);
 
-describe("typeGenerator", () => {
+describe("generateType", () => {
     const expectedDir = path.join(__dirname, "./resources");
     let outDir: string;
     let simpleAst: SimpleAst;

@@ -23,11 +23,11 @@ import { IServiceGenerationFlags } from "../../types/serviceGenerationFlags";
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { directoryNameForType } from "../../utils/fileUtils";
 import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
-import { generateError } from "./errorGenerator";
-import { generateNonThrowingService } from "./generateNonThrowingService";
-import { generateThrowingService } from "./generateThrowingService";
+import { generateError } from "./generators/generateError";
+import { generateNonThrowingService } from "./generators/generateNonThrowingService";
+import { generateThrowingService } from "./generators/generateThrowingService";
+import { generateType } from "./generators/generateType";
 import { SimpleAst } from "./simpleAst";
-import { generateType } from "./typeGenerator";
 import { validateServiceNames } from "./validators/validateServiceNames";
 
 export async function generate(
