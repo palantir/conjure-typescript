@@ -18,7 +18,7 @@
 import { IServiceDefinition } from "conjure-api";
 import { IServiceGenerationFlags } from "../../../types/serviceGenerationFlags";
 
-const WITH_ERRORS_SERVICE_SUFFIX = "WithErrors";
+const NON_THROWING_SERVICE_SUFFIX = "WithErrors";
 
 export const validateServiceNames = (
     services: IServiceDefinition[],
@@ -41,7 +41,7 @@ export const validateServiceNames = (
 
     Array.from(packageToServiceNamesMap.entries()).forEach(([packageName, throwingServiceNames]) => {
         throwingServiceNames.forEach(throwingServiceName => {
-            const nonThrowingServiceName = `${throwingServiceName}${WITH_ERRORS_SERVICE_SUFFIX}`;
+            const nonThrowingServiceName = `${throwingServiceName}${NON_THROWING_SERVICE_SUFFIX}`;
             if (throwingServiceNames.has(nonThrowingServiceName)) {
                 throw new Error(
                     `Found service name conflict in ${packageName}. Cannot generate non-throwing service '${nonThrowingServiceName}' because it already exists.`,

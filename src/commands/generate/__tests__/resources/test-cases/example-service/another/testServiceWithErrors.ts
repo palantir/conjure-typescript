@@ -46,10 +46,6 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
     constructor(private bridge: IHttpApiBridge) {
     }
 
-    /**
-     * Returns a mapping from file system id to backing file system configuration.
-     *
-     */
     public getFileSystems(): Promise<IConjureResult<{ [key: string]: IBackingFileSystem }, never>> {
         return this.bridge
             .call<{ [key: string]: IBackingFileSystem }>(
@@ -244,11 +240,6 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
             .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
     }
 
-    /**
-     * Gets all branches of this dataset.
-     *
-     * @deprecated use getBranches instead
-     */
     public getBranchesDeprecated(datasetRid: string): Promise<IConjureResult<Array<string>, never>> {
         return this.bridge
             .call<Array<string>>(

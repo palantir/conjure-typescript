@@ -69,6 +69,7 @@ const CONJURE_CLIENT_IMPORTS: ImportDeclarationStructure = {
 };
 
 const UNDEFINED_CONSTANT = "__undefined";
+const NON_THROWING_SERVICE_SUFFIX = "WithErrors";
 
 export function generateNonThrowingService(
     definition: IServiceDefinition,
@@ -76,9 +77,10 @@ export function generateNonThrowingService(
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
+    const serviceName = `${definition.serviceName.name}${NON_THROWING_SERVICE_SUFFIX}`;
     const sourceFile = simpleAst.createSourceFile({
         package: definition.serviceName.package,
-        name: `${definition.serviceName.name}WithErrors`,
+        name: serviceName,
     });
     const endpointSignatures: MethodSignatureStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
@@ -157,13 +159,13 @@ export function generateNonThrowingService(
         }
         const errorsType = errorNames.join(" | ");
 
-        const returnType = `IConjureResult<${resultType}, ${errorsType}>`;
+        const returnType = `Promise<IConjureResult<${resultType}, ${errorsType}>>`;
 
         endpointSignatures.push({
             kind: StructureKind.MethodSignature,
             name: endpointDefinition.endpointName,
             parameters,
-            returnType: `Promise<${returnType}>`,
+            returnType,
             docs: docs != null ? [docs] : undefined,
         });
         endpointImplementations.push({
@@ -177,10 +179,9 @@ export function generateNonThrowingService(
             ),
             name: endpointDefinition.endpointName,
             parameters,
-            returnType: `Promise<${returnType}>`,
+            returnType,
             // this appears to be a no-op by ts-simple-ast, since default in typescript is public
             scope: Scope.Public,
-            docs: docs != null ? [docs] : undefined,
         });
     });
 
@@ -189,7 +190,7 @@ export function generateNonThrowingService(
     const iface = sourceFile.addInterface({
         isExported: true,
         methods: endpointSignatures,
-        name: `I${definition.serviceName.name}WithErrors`,
+        name: `I${serviceName}`,
     });
     if (definition.docs != null) {
         iface.addJsDoc({ description: definition.docs });
@@ -209,7 +210,7 @@ export function generateNonThrowingService(
         ],
         isExported: true,
         methods: endpointImplementations,
-        name: `${definition.serviceName.name}WithErrors`,
+        name: serviceName,
         implements: [iface.getName()],
     });
 
