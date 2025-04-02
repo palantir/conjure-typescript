@@ -34,14 +34,14 @@ import {
     VariableDeclarationKind,
     VariableStatementStructure,
 } from "ts-morph";
-import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
-import { addDeprecatedToDocs } from "../../utils/docsUtils";
-import { isFlavorizable } from "../../utils/flavorizingUtils";
-import { isValidFunctionName } from "../../utils/functionUtils";
-import { doubleQuote, singleQuote } from "../../utils/quotesUtils";
-import { resolveImports, sortImports } from "../../utils/resolveImports";
-import { resolveTsType } from "../../utils/resolveTsType";
-import { SimpleAst } from "./simpleAst";
+import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
+import { addDeprecatedToDocs } from "../../../utils/docsUtils";
+import { isFlavorizable } from "../../../utils/flavorizingUtils";
+import { isValidFunctionName } from "../../../utils/functionUtils";
+import { doubleQuote, singleQuote } from "../../../utils/quotesUtils";
+import { resolveImports, sortImports } from "../../../utils/resolveImports";
+import { resolveTsType } from "../../../utils/resolveTsType";
+import { SimpleAst } from "../simpleAst";
 
 export function generateType(
     definition: ITypeDefinition,
@@ -192,7 +192,7 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
         });
     }
 
-    sourceFile.formatText({ trimTrailingWhitespace: true });
+    sourceFile.formatText();
     return sourceFile.save();
 }
 
