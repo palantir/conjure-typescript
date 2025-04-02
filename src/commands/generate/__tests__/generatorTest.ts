@@ -185,6 +185,17 @@ describe("definitionTests", () => {
             ),
         );
 
+        it(
+            `${fileName} produces equivalent non-throwing services TypeScript`,
+            testGenerateAllFilesAreTheSame(
+                definitionFilePath,
+                paths,
+                actualTestCaseDir,
+                DEFAULT_TYPE_GENERATION_FLAGS,
+                NON_THROWING_SERVICE_GENERATION_FLAGS,
+            ),
+        );
+
         // Not every test has a flavored version
         if (fs.existsSync(actualFlavoredTestCaseDir)) {
             it(
