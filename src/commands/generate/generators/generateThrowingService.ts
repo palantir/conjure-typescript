@@ -15,19 +15,8 @@
  * limitations under the License.
  */
 
+import { IServiceDefinition, IType, ITypeDefinition } from "conjure-api";
 import {
-    IArgumentDefinition,
-    IEndpointDefinition,
-    IParameterType,
-    IParameterType_Header,
-    IParameterType_Query,
-    IServiceDefinition,
-    IType,
-    ITypeDefinition,
-} from "conjure-api";
-import { MediaType } from "conjure-client";
-import {
-    CodeBlockWriter,
     ImportDeclarationStructure,
     MethodDeclarationStructure,
     MethodSignatureStructure,
@@ -39,18 +28,17 @@ import {
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
-import { parsePathParamsFromPath } from "../../../utils/parsePathParamsFromPath";
 import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../../utils/resolveImports";
-import { resolveMediaType } from "../../../utils/resolveMediaType";
-import { resolveStringConversion } from "../../../utils/resolveStringConversion";
 import { resolveTsType } from "../../../utils/resolveTsType";
 import { SimpleAst } from "../simpleAst";
+import { generateThrowingEndpoint } from "./utils/generateThrowingEndpoint";
 
 /** Type used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
 
-/** Variable name used in the generation of the service class. */
+/** Variable names used in the generation of the service class. */
 const BRIDGE = "bridge";
+const UNDEFINED_CONSTANT = "__undefined";
 
 /** Default import used in the generation of the service class. */
 const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
@@ -59,8 +47,6 @@ const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
     namedImports: [{ name: HTTP_API_BRIDGE_TYPE }],
     isTypeOnly: true,
 };
-
-const UNDEFINED_CONSTANT = "__undefined";
 
 export function generateThrowingService(
     definition: IServiceDefinition,
@@ -110,9 +96,9 @@ export function generateThrowingService(
                 };
             });
 
-        let returnTsType = "void";
+        let resultType = "void";
         if (endpointDefinition.returns != null) {
-            returnTsType = resolveTsType(
+            resultType = resolveTsType(
                 endpointDefinition.returns,
                 definition.serviceName,
                 knownTypes,
@@ -125,33 +111,21 @@ export function generateThrowingService(
             );
         }
 
-        const signature: MethodSignatureStructure = {
-            kind: StructureKind.MethodSignature,
-            name: endpointDefinition.endpointName,
-            parameters,
-            returnType: `Promise<${returnTsType}>`,
-        };
-
         let docs = addDeprecatedToDocs(endpointDefinition);
         docs = addIncubatingToDocs(endpointDefinition, docs);
         docs = addErrorsToDocs(endpointDefinition, docs);
 
-        if (docs != null) {
-            signature.docs = [docs];
-        }
+        const { signature, implementation } = generateThrowingEndpoint({
+            serviceDefinition: definition,
+            endpointDefinition,
+            resultType,
+            knownTypes,
+            parameters,
+            docs,
+        });
 
         endpointSignatures.push(signature);
-
-        endpointImplementations.push({
-            kind: StructureKind.Method,
-            statements: generateEndpointBody(definition.serviceName.name, endpointDefinition, returnTsType, knownTypes),
-            name: endpointDefinition.endpointName,
-            parameters,
-            returnType: `Promise<${returnTsType}>`,
-            // this appears to be a no-op by ts-simple-ast, since default in typescript is public
-            scope: Scope.Public,
-            docs: docs != null ? [docs] : undefined,
-        });
+        endpointImplementations.push(implementation);
 
         endpointDefinition.errors?.forEach(error => {
             const errorImports = resolveImportsForReferenceType(
@@ -198,97 +172,4 @@ export function generateThrowingService(
 
     sourceFile.formatText();
     return sourceFile.save();
-}
-
-function generateEndpointBody(
-    serviceName: string,
-    endpointDefinition: IEndpointDefinition,
-    returnTsType: string,
-    knownTypes: Map<string, ITypeDefinition>,
-): (writer: CodeBlockWriter) => void {
-    const bodyArgs: IArgumentDefinition[] = [];
-    const headerArgs: IArgumentDefinition[] = [];
-    const queryArgs: IArgumentDefinition[] = [];
-
-    endpointDefinition.args.forEach(argDefinition => {
-        if (IParameterType.isBody(argDefinition.paramType)) {
-            bodyArgs.push(argDefinition);
-        } else if (IParameterType.isHeader(argDefinition.paramType)) {
-            headerArgs.push(argDefinition);
-        } else if (IParameterType.isQuery(argDefinition.paramType)) {
-            queryArgs.push(argDefinition);
-        }
-    });
-
-    const pathParamsFromPath = parsePathParamsFromPath(endpointDefinition.httpPath);
-
-    if (bodyArgs.length > 1) {
-        throw Error("endpoint cannot have more than one body arg, found: " + bodyArgs.length);
-    }
-
-    const data = bodyArgs.length === 0 ? UNDEFINED_CONSTANT : bodyArgs[0].argName;
-    // It's not quite correct to default to application/json for body less and return less requests.
-    // We do this to preserve existing behaviour.
-    const requestMediaType =
-        bodyArgs.length === 0 ? MediaType.APPLICATION_JSON : resolveMediaType(bodyArgs[0].type, knownTypes);
-    const responseMediaType =
-        endpointDefinition.returns != null && endpointDefinition.returns != null
-            ? resolveMediaType(endpointDefinition.returns, knownTypes)
-            : MediaType.APPLICATION_JSON;
-    const formattedHeaderArgs = headerArgs.map(argDefinition => {
-        const paramId = (argDefinition.paramType as IParameterType_Header).header.paramId!;
-        if (paramId == null) {
-            throw Error("header arguments must define a 'param-id': " + argDefinition.argName);
-        }
-        const stringConversion = resolveStringConversion(argDefinition.type);
-        return `"${paramId}": ${argDefinition.argName}${stringConversion},`;
-    });
-    const formattedQueryArgs = queryArgs.map(argDefinition => {
-        const paramId = (argDefinition.paramType as IParameterType_Query).query.paramId;
-        if (paramId == null) {
-            throw Error("query arguments must define a 'param-id': " + argDefinition.argName);
-        }
-        return `"${paramId}": ${argDefinition.argName},`;
-    });
-
-    return writer => {
-        writer
-            .write(`return this.${BRIDGE}.call<${returnTsType}>(`)
-            .writeLine(`"${serviceName}",`)
-            .writeLine(`"${endpointDefinition.endpointName}",`)
-            .writeLine(`"${endpointDefinition.httpMethod}",`)
-            .writeLine(`"${endpointDefinition.httpPath}",`)
-            .writeLine(`${data},`);
-
-        if (formattedHeaderArgs.length === 0) {
-            writer.writeLine(`${UNDEFINED_CONSTANT},`);
-        } else {
-            writer.write("{");
-            formattedHeaderArgs.forEach(formattedHeader => writer.writeLine(formattedHeader));
-            writer.writeLine("},");
-        }
-
-        if (formattedQueryArgs.length === 0) {
-            writer.writeLine(`${UNDEFINED_CONSTANT},`);
-        } else {
-            writer.write("{");
-            formattedQueryArgs.forEach(formattedQuery => writer.writeLine(formattedQuery));
-            writer.writeLine("},");
-        }
-
-        if (pathParamsFromPath.length === 0) {
-            writer.writeLine(`${UNDEFINED_CONSTANT},`);
-        } else {
-            writer.write("[");
-            pathParamsFromPath.forEach(pathArgName => writer.writeLine(pathArgName + ","));
-            writer.writeLine("],");
-        }
-        writer.writeLine(
-            `${requestMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${requestMediaType}"`},`,
-        );
-        writer.writeLine(
-            `${responseMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${responseMediaType}"`}`,
-        );
-        writer.write(");");
-    };
 }

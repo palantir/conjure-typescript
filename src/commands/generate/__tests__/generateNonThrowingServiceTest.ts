@@ -170,7 +170,7 @@ export class MyServiceWithErrors implements IMyServiceWithErrors {
         );
         const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
-        expect(contents).toContain("foo(): Promise<IConjureResult<ReadableStream<Uint8Array>, never>>;");
+        expect(contents).toContain("foo(): Promise<ReadableStream<Uint8Array>>;");
         expect(contents).toContain(`"application\/octet-stream"\n`);
     });
 
@@ -206,7 +206,7 @@ export class MyServiceWithErrors implements IMyServiceWithErrors {
         const outFile = path.join(outDir, "services/myServiceWithErrors.ts");
         const contents = fs.readFileSync(outFile, "utf8");
         expect(contents).toContain(
-            "foo(body: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<IConjureResult<ReadableStream<Uint8Array>, never>>;",
+            "foo(body: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<ReadableStream<Uint8Array>>;",
         );
         expect(contents).toContain(`"application\/octet-stream",\n`);
         expect(contents).toContain(`"application\/octet-stream"\n`);

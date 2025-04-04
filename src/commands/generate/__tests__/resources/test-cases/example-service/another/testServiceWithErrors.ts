@@ -18,8 +18,8 @@ export interface ITestServiceWithErrors {
     getFileSystems(): Promise<IConjureResult<{ [key: string]: IBackingFileSystem }, never>>;
     createDataset(request: ICreateDatasetRequest, testHeaderArg: string): Promise<IConjureResult<IDataset, never>>;
     getDataset(datasetRid: string): Promise<IConjureResult<IDataset | null, never>>;
-    getRawData(datasetRid: string): Promise<IConjureResult<ReadableStream<Uint8Array>, never>>;
-    getAliasedRawData(datasetRid: string): Promise<IConjureResult<ReadableStream<Uint8Array>, never>>;
+    getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
+    getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
     maybeGetRawData(datasetRid: string): Promise<IConjureResult<ReadableStream<Uint8Array> | null, never>>;
     getAliasedString(datasetRid: string): Promise<IConjureResult<string, never>>;
     uploadRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<IConjureResult<void, never>>;
@@ -104,44 +104,38 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
             .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
     }
 
-    public getRawData(datasetRid: string): Promise<IConjureResult<ReadableStream<Uint8Array>, never>> {
-        return this.bridge
-            .call<ReadableStream<Uint8Array>>(
-                "TestService",
-                "getRawData",
-                "GET",
-                "/catalog/datasets/{datasetRid}/raw",
-                __undefined,
-                __undefined,
-                __undefined,
-                [
-                    datasetRid,
-                ],
-                __undefined,
-                "application/octet-stream"
-            )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<ReadableStream<Uint8Array>>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+    public getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>> {
+        return this.bridge.call<ReadableStream<Uint8Array>>(
+            "TestService",
+            "getRawData",
+            "GET",
+            "/catalog/datasets/{datasetRid}/raw",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
+                datasetRid,
+            ],
+            __undefined,
+            "application/octet-stream"
+        );
     }
 
-    public getAliasedRawData(datasetRid: string): Promise<IConjureResult<ReadableStream<Uint8Array>, never>> {
-        return this.bridge
-            .call<ReadableStream<Uint8Array>>(
-                "TestService",
-                "getAliasedRawData",
-                "GET",
-                "/catalog/datasets/{datasetRid}/raw-aliased",
-                __undefined,
-                __undefined,
-                __undefined,
-                [
-                    datasetRid,
-                ],
-                __undefined,
-                "application/octet-stream"
-            )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<ReadableStream<Uint8Array>>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+    public getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>> {
+        return this.bridge.call<ReadableStream<Uint8Array>>(
+            "TestService",
+            "getAliasedRawData",
+            "GET",
+            "/catalog/datasets/{datasetRid}/raw-aliased",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
+                datasetRid,
+            ],
+            __undefined,
+            "application/octet-stream"
+        );
     }
 
     public maybeGetRawData(datasetRid: string): Promise<IConjureResult<ReadableStream<Uint8Array> | null, never>> {

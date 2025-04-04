@@ -15,19 +15,8 @@
  * limitations under the License.
  */
 
+import { IServiceDefinition, IType, ITypeDefinition } from "conjure-api";
 import {
-    IArgumentDefinition,
-    IEndpointDefinition,
-    IParameterType,
-    IParameterType_Header,
-    IParameterType_Query,
-    IServiceDefinition,
-    IType,
-    ITypeDefinition,
-} from "conjure-api";
-import { MediaType } from "conjure-client";
-import {
-    CodeBlockWriter,
     ImportDeclarationStructure,
     MethodDeclarationStructure,
     MethodSignatureStructure,
@@ -38,13 +27,12 @@ import {
 } from "ts-morph";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
-import { addDeprecatedToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
-import { parsePathParamsFromPath } from "../../../utils/parsePathParamsFromPath";
+import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
 import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../../utils/resolveImports";
-import { resolveMediaType } from "../../../utils/resolveMediaType";
-import { resolveStringConversion } from "../../../utils/resolveStringConversion";
 import { resolveTsType } from "../../../utils/resolveTsType";
 import { SimpleAst } from "../simpleAst";
+import { generateNonThrowingEndpoint } from "./utils/generateNonThrowingEndpoint";
+import { generateThrowingEndpoint } from "./utils/generateThrowingEndpoint";
 
 /** Types used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
@@ -52,8 +40,10 @@ const CONJURE_FAILURE_TYPE = "IConjureFailure";
 const CONJURE_RESULT_TYPE = "IConjureResult";
 const CONJURE_SUCCESS_TYPE = "IConjureSuccess";
 
-/** Variable name used in the generation of the service class. */
+/** Variable names used in the generation of the service class. */
 const BRIDGE = "bridge";
+const UNDEFINED_CONSTANT = "__undefined";
+const NON_THROWING_SERVICE_SUFFIX = "WithErrors";
 
 /** Default imports used in the generation of the service class. */
 const CONJURE_CLIENT_IMPORTS: ImportDeclarationStructure = {
@@ -67,9 +57,6 @@ const CONJURE_CLIENT_IMPORTS: ImportDeclarationStructure = {
     ],
     isTypeOnly: true,
 };
-
-const UNDEFINED_CONSTANT = "__undefined";
-const NON_THROWING_SERVICE_SUFFIX = "WithErrors";
 
 export function generateNonThrowingService(
     definition: IServiceDefinition,
@@ -159,30 +146,28 @@ export function generateNonThrowingService(
         }
         const errorsType = errorNames.join(" | ");
 
-        const returnType = `Promise<IConjureResult<${resultType}, ${errorsType}>>`;
+        const { signature, implementation } =
+            resultType === "ReadableStream<Uint8Array>"
+                ? generateThrowingEndpoint({
+                      serviceDefinition: definition,
+                      endpointDefinition,
+                      resultType,
+                      knownTypes,
+                      parameters,
+                      docs: addErrorsToDocs(endpointDefinition, docs),
+                  })
+                : generateNonThrowingEndpoint({
+                      serviceDefinition: definition,
+                      endpointDefinition,
+                      resultType,
+                      errorsType,
+                      knownTypes,
+                      parameters,
+                      docs,
+                  });
 
-        endpointSignatures.push({
-            kind: StructureKind.MethodSignature,
-            name: endpointDefinition.endpointName,
-            parameters,
-            returnType,
-            docs: docs != null ? [docs] : undefined,
-        });
-        endpointImplementations.push({
-            kind: StructureKind.Method,
-            statements: generateEndpointBody(
-                definition.serviceName.name,
-                endpointDefinition,
-                resultType,
-                errorsType,
-                knownTypes,
-            ),
-            name: endpointDefinition.endpointName,
-            parameters,
-            returnType,
-            // this appears to be a no-op by ts-simple-ast, since default in typescript is public
-            scope: Scope.Public,
-        });
+        endpointSignatures.push(signature);
+        endpointImplementations.push(implementation);
     });
 
     sourceFile.addImportDeclarations(sortImports(imports));
@@ -216,102 +201,4 @@ export function generateNonThrowingService(
 
     sourceFile.formatText();
     return sourceFile.save();
-}
-
-function generateEndpointBody(
-    serviceName: string,
-    endpointDefinition: IEndpointDefinition,
-    resultType: string,
-    errorsType: string,
-    knownTypes: Map<string, ITypeDefinition>,
-): (writer: CodeBlockWriter) => void {
-    const bodyArgs: IArgumentDefinition[] = [];
-    const headerArgs: IArgumentDefinition[] = [];
-    const queryArgs: IArgumentDefinition[] = [];
-
-    endpointDefinition.args.forEach(argDefinition => {
-        if (IParameterType.isBody(argDefinition.paramType)) {
-            bodyArgs.push(argDefinition);
-        } else if (IParameterType.isHeader(argDefinition.paramType)) {
-            headerArgs.push(argDefinition);
-        } else if (IParameterType.isQuery(argDefinition.paramType)) {
-            queryArgs.push(argDefinition);
-        }
-    });
-
-    const pathParamsFromPath = parsePathParamsFromPath(endpointDefinition.httpPath);
-
-    if (bodyArgs.length > 1) {
-        throw Error("endpoint cannot have more than one body arg, found: " + bodyArgs.length);
-    }
-
-    const data = bodyArgs.length === 0 ? UNDEFINED_CONSTANT : bodyArgs[0].argName;
-    // It's not quite correct to default to application/json for body less and return less requests.
-    // We do this to preserve existing behaviour.
-    const requestMediaType =
-        bodyArgs.length === 0 ? MediaType.APPLICATION_JSON : resolveMediaType(bodyArgs[0].type, knownTypes);
-    const responseMediaType =
-        endpointDefinition.returns != null && endpointDefinition.returns != null
-            ? resolveMediaType(endpointDefinition.returns, knownTypes)
-            : MediaType.APPLICATION_JSON;
-    const formattedHeaderArgs = headerArgs.map(argDefinition => {
-        const paramId = (argDefinition.paramType as IParameterType_Header).header.paramId!;
-        if (paramId == null) {
-            throw Error("header arguments must define a 'param-id': " + argDefinition.argName);
-        }
-        const stringConversion = resolveStringConversion(argDefinition.type);
-        return `"${paramId}": ${argDefinition.argName}${stringConversion},`;
-    });
-    const formattedQueryArgs = queryArgs.map(argDefinition => {
-        const paramId = (argDefinition.paramType as IParameterType_Query).query.paramId;
-        if (paramId == null) {
-            throw Error("query arguments must define a 'param-id': " + argDefinition.argName);
-        }
-        return `"${paramId}": ${argDefinition.argName},`;
-    });
-
-    return writer => {
-        writer
-            .write(`return this.${BRIDGE}`)
-            .writeLine(`.call<${resultType}>(`)
-            .writeLine(`"${serviceName}",`)
-            .writeLine(`"${endpointDefinition.endpointName}",`)
-            .writeLine(`"${endpointDefinition.httpMethod}",`)
-            .writeLine(`"${endpointDefinition.httpPath}",`)
-            .writeLine(`${data},`);
-
-        if (formattedHeaderArgs.length === 0) {
-            writer.writeLine(`${UNDEFINED_CONSTANT},`);
-        } else {
-            writer.write("{");
-            formattedHeaderArgs.forEach(formattedHeader => writer.writeLine(formattedHeader));
-            writer.writeLine("},");
-        }
-
-        if (formattedQueryArgs.length === 0) {
-            writer.writeLine(`${UNDEFINED_CONSTANT},`);
-        } else {
-            writer.write("{");
-            formattedQueryArgs.forEach(formattedQuery => writer.writeLine(formattedQuery));
-            writer.writeLine("},");
-        }
-
-        if (pathParamsFromPath.length === 0) {
-            writer.writeLine(`${UNDEFINED_CONSTANT},`);
-        } else {
-            writer.write("[");
-            pathParamsFromPath.forEach(pathArgName => writer.writeLine(pathArgName + ","));
-            writer.writeLine("],");
-        }
-        writer.writeLine(
-            `${requestMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${requestMediaType}"`},`,
-        );
-        writer.writeLine(
-            `${responseMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${responseMediaType}"`}`,
-        );
-        writer
-            .writeLine(")")
-            .writeLine(`.then(result => ({ status: "success", result }) as IConjureSuccess<${resultType}>)`)
-            .writeLine(`.catch(error => ({ status: "failure", error }) as IConjureFailure<${errorsType}>);`);
-    };
 }
