@@ -1612,10 +1612,10 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity "sha1-2Klr13/Wjfd5OnMDajug1UBdR3s= sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg=="
 
-conjure-api@^4.50.0:
-  version "4.50.0"
-  resolved "https://registry.yarnpkg.com/conjure-api/-/conjure-api-4.50.0.tgz#351795ccca6ab5598e630748a81ba8f8713b8cd2"
-  integrity sha512-YGqhW21t/Z/n/SKdyr5fNu8zqWYpnN+tp10+5ZEQw5f7heUv5sX84OuJc5Xq6G6J/4egbwRmS9R11ICvcLm9vA==
+conjure-api@^4.51.0:
+  version "4.51.0"
+  resolved "https://artifactory.palantir.build/artifactory/api/npm/all-npm/conjure-api/-/conjure-api-4.51.0.tgz#eb7bb3ae66eddaa0bc0cdfd4ce77545cc7ca8542"
+  integrity sha512-cATg0Vwn/fwc0gFtgO3bWsx/0Mf2uyzzoz3bVtCkWJQpeHghlBOaCPrn/DKc4LMO005ieOvJcG8VokvnF7O5cA==
   dependencies:
     conjure-client "^2.4.1"
 

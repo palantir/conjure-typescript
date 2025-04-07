@@ -18,8 +18,15 @@ export interface ITestServiceWithErrors {
     getFileSystems(): Promise<IConjureResult<{ [key: string]: IBackingFileSystem }, never>>;
     createDataset(request: ICreateDatasetRequest, testHeaderArg: string): Promise<IConjureResult<IDataset, never>>;
     getDataset(datasetRid: string): Promise<IConjureResult<IDataset | null, never>>;
+    /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
     getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
+    /**
+     * This endpoint is deprecated. Use `getRawData` instead.
+     *
+     * This method calls a streaming endpoint. The method will throw if the endpoint throws an error.
+     */
     getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
+    /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
     maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null>;
     getAliasedString(datasetRid: string): Promise<IConjureResult<string, never>>;
     uploadRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<IConjureResult<void, never>>;
@@ -104,6 +111,7 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
             .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
     }
 
+    /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
     public getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>> {
         return this.bridge.call<ReadableStream<Uint8Array>>(
             "TestService",
@@ -121,6 +129,11 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
         );
     }
 
+    /**
+     * This endpoint is deprecated. Use `getRawData` instead.
+     *
+     * This method calls a streaming endpoint. The method will throw if the endpoint throws an error.
+     */
     public getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>> {
         return this.bridge.call<ReadableStream<Uint8Array>>(
             "TestService",
@@ -138,6 +151,7 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
         );
     }
 
+    /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
     public maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null> {
         return this.bridge.call<ReadableStream<Uint8Array> | null>(
             "TestService",

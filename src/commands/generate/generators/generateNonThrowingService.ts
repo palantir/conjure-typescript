@@ -16,6 +16,7 @@
  */
 
 import { IServiceDefinition, IType, ITypeDefinition } from "conjure-api";
+import { MediaType } from "conjure-client";
 import {
     ImportDeclarationStructure,
     MethodDeclarationStructure,
@@ -29,12 +30,11 @@ import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
 import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../../utils/resolveImports";
+import { resolveMediaType } from "../../../utils/resolveMediaType";
 import { resolveTsType } from "../../../utils/resolveTsType";
 import { SimpleAst } from "../simpleAst";
 import { generateNonThrowingEndpoint } from "./utils/generateNonThrowingEndpoint";
 import { generateThrowingEndpoint } from "./utils/generateThrowingEndpoint";
-import { MediaType } from "conjure-client";
-import { resolveMediaType } from "../../../utils/resolveMediaType";
 
 /** Types used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
@@ -59,6 +59,9 @@ const CONJURE_CLIENT_IMPORTS: ImportDeclarationStructure = {
     ],
     isTypeOnly: true,
 };
+
+const THROWING_METHOD_DOCUMENTATION =
+    "This method calls a streaming endpoint. The method will throw if the endpoint throws an error.";
 
 export function generateNonThrowingService(
     definition: IServiceDefinition,
@@ -150,6 +153,8 @@ export function generateNonThrowingService(
         }
         const errorsType = errorNames.join(" | ");
 
+        // If the endpoint is a streaming endpoint, we don't want to wrap the result in an `IConjureResult`
+        // and instead return the raw result type. This means the method will be throwing.
         const { signature, implementation } =
             responseMediaType === MediaType.APPLICATION_OCTET_STREAM
                 ? generateThrowingEndpoint({
@@ -158,7 +163,10 @@ export function generateNonThrowingService(
                       resultType,
                       knownTypes,
                       parameters,
-                      docs: addErrorsToDocs(endpointDefinition, docs),
+                      docs: addErrorsToDocs(
+                          endpointDefinition,
+                          docs != null ? `${docs}\n${THROWING_METHOD_DOCUMENTATION}` : THROWING_METHOD_DOCUMENTATION,
+                      ),
                   })
                 : generateNonThrowingEndpoint({
                       serviceDefinition: definition,
