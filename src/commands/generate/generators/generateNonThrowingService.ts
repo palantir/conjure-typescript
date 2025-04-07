@@ -33,6 +33,8 @@ import { resolveTsType } from "../../../utils/resolveTsType";
 import { SimpleAst } from "../simpleAst";
 import { generateNonThrowingEndpoint } from "./utils/generateNonThrowingEndpoint";
 import { generateThrowingEndpoint } from "./utils/generateThrowingEndpoint";
+import { MediaType } from "conjure-client";
+import { resolveMediaType } from "../../../utils/resolveMediaType";
 
 /** Types used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
@@ -110,7 +112,9 @@ export function generateNonThrowingService(
             });
 
         let resultType = "void";
+        let responseMediaType = MediaType.APPLICATION_JSON;
         if (endpointDefinition.returns != null) {
+            responseMediaType = resolveMediaType(endpointDefinition.returns, knownTypes);
             resultType = resolveTsType(
                 endpointDefinition.returns,
                 definition.serviceName,
@@ -147,7 +151,7 @@ export function generateNonThrowingService(
         const errorsType = errorNames.join(" | ");
 
         const { signature, implementation } =
-            resultType === "ReadableStream<Uint8Array>"
+            responseMediaType === MediaType.APPLICATION_OCTET_STREAM
                 ? generateThrowingEndpoint({
                       serviceDefinition: definition,
                       endpointDefinition,

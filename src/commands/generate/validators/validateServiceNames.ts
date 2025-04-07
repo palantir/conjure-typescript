@@ -20,10 +20,18 @@ import { IServiceGenerationFlags } from "../../../types/serviceGenerationFlags";
 
 const NON_THROWING_SERVICE_SUFFIX = "WithErrors";
 
+/**
+ * @description Validates that there are no conflicting service names when generating both throwing and non-throwing services.
+ * Throws an error if a conflict is found.
+ *
+ * @param services - The list of service definitions to validate.
+ * @param serviceGenerationFlags - Flags indicating which services are being generated.
+ */
 export const validateServiceNames = (
     services: IServiceDefinition[],
     serviceGenerationFlags: IServiceGenerationFlags,
 ): void => {
+    // Check if both throwing and non-throwing services are being generated
     if (!serviceGenerationFlags.generateNonThrowingServices || !serviceGenerationFlags.generateThrowingServices) {
         return;
     }

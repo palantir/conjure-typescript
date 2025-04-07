@@ -20,7 +20,7 @@ export interface ITestServiceWithErrors {
     getDataset(datasetRid: string): Promise<IConjureResult<IDataset | null, never>>;
     getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
     getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
-    maybeGetRawData(datasetRid: string): Promise<IConjureResult<ReadableStream<Uint8Array> | null, never>>;
+    maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null>;
     getAliasedString(datasetRid: string): Promise<IConjureResult<string, never>>;
     uploadRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<IConjureResult<void, never>>;
     uploadAliasedRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<IConjureResult<void, never>>;
@@ -138,24 +138,21 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
         );
     }
 
-    public maybeGetRawData(datasetRid: string): Promise<IConjureResult<ReadableStream<Uint8Array> | null, never>> {
-        return this.bridge
-            .call<ReadableStream<Uint8Array> | null>(
-                "TestService",
-                "maybeGetRawData",
-                "GET",
-                "/catalog/datasets/{datasetRid}/raw-maybe",
-                __undefined,
-                __undefined,
-                __undefined,
-                [
-                    datasetRid,
-                ],
-                __undefined,
-                "application/octet-stream"
-            )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<ReadableStream<Uint8Array> | null>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+    public maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null> {
+        return this.bridge.call<ReadableStream<Uint8Array> | null>(
+            "TestService",
+            "maybeGetRawData",
+            "GET",
+            "/catalog/datasets/{datasetRid}/raw-maybe",
+            __undefined,
+            __undefined,
+            __undefined,
+            [
+                datasetRid,
+            ],
+            __undefined,
+            "application/octet-stream"
+        );
     }
 
     public getAliasedString(datasetRid: string): Promise<IConjureResult<string, never>> {

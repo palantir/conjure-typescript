@@ -81,7 +81,7 @@ function generateNonThrowingEndpointBody({
     const requestMediaType =
         bodyArgs.length === 0 ? MediaType.APPLICATION_JSON : resolveMediaType(bodyArgs[0].type, knownTypes);
     const responseMediaType =
-        endpointDefinition.returns != null && endpointDefinition.returns != null
+        endpointDefinition.returns != null
             ? resolveMediaType(endpointDefinition.returns, knownTypes)
             : MediaType.APPLICATION_JSON;
     const formattedHeaderArgs = headerArgs.map(argDefinition => {
