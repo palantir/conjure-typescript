@@ -20,10 +20,6 @@ export interface ITestService {
     createDataset(request: ICreateDatasetRequest, testHeaderArg: string): Promise<IDataset>;
     getDataset(datasetRid: string): Promise<IDataset | null>;
     getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
-    /**
-     * This endpoint is deprecated. Use `getRawData` instead.
-     *
-     */
     getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
     maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null>;
     getAliasedString(datasetRid: string): Promise<IAliasedString>;
@@ -121,10 +117,6 @@ export class TestService implements ITestService {
         );
     }
 
-    /**
-     * This endpoint is deprecated. Use `getRawData` instead.
-     *
-     */
     public getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>> {
         return this.bridge.call<ReadableStream<Uint8Array>>(
             "TestService",

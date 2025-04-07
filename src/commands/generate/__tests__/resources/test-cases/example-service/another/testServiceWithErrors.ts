@@ -20,11 +20,7 @@ export interface ITestServiceWithErrors {
     getDataset(datasetRid: string): Promise<IConjureResult<IDataset | null, never>>;
     /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
     getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
-    /**
-     * This endpoint is deprecated. Use `getRawData` instead.
-     *
-     * This method calls a streaming endpoint. The method will throw if the endpoint throws an error.
-     */
+    /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
     getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
     /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
     maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null>;
@@ -129,11 +125,7 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
         );
     }
 
-    /**
-     * This endpoint is deprecated. Use `getRawData` instead.
-     *
-     * This method calls a streaming endpoint. The method will throw if the endpoint throws an error.
-     */
+    /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
     public getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>> {
         return this.bridge.call<ReadableStream<Uint8Array>>(
             "TestService",
