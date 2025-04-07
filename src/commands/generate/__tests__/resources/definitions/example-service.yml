@@ -92,8 +92,6 @@ services:
 
       getAliasedRawData:
         http: GET /datasets/{datasetRid}/raw-aliased
-        docs: |
-          This endpoint is deprecated. Use `getRawData` instead.
         args:
           datasetRid:
             type: rid
