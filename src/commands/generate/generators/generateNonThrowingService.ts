@@ -16,6 +16,7 @@
  */
 
 import { IServiceDefinition, IType, ITypeDefinition } from "conjure-api";
+import { MediaType } from "conjure-client";
 import {
     ImportDeclarationStructure,
     MethodDeclarationStructure,
@@ -29,36 +30,46 @@ import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
 import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../../utils/resolveImports";
+import { resolveMediaType } from "../../../utils/resolveMediaType";
 import { resolveTsType } from "../../../utils/resolveTsType";
 import { SimpleAst } from "../simpleAst";
+import { generateNonThrowingEndpoint } from "./utils/generateNonThrowingEndpoint";
 import { generateThrowingEndpoint } from "./utils/generateThrowingEndpoint";
 
-/** Type used in the generation of the service class. Expected to be provided by conjure-client */
+/** Types used in the generation of the service class. Expected to be provided by conjure-client */
 const HTTP_API_BRIDGE_TYPE = "IHttpApiBridge";
+const CONJURE_RESULT_TYPE = "IConjureResult";
 
 /** Variable names used in the generation of the service class. */
 const BRIDGE = "bridge";
 const UNDEFINED_CONSTANT = "__undefined";
+const NON_THROWING_SERVICE_SUFFIX = "WithErrors";
 
-/** Default import used in the generation of the service class. */
-const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
+/** Default imports used in the generation of the service class. */
+const CONJURE_CLIENT_IMPORTS: ImportDeclarationStructure = {
     kind: StructureKind.ImportDeclaration,
     moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
-    namedImports: [{ name: HTTP_API_BRIDGE_TYPE }],
+    namedImports: [{ name: CONJURE_RESULT_TYPE }, { name: HTTP_API_BRIDGE_TYPE }],
     isTypeOnly: true,
 };
 
-export function generateThrowingService(
+const THROWING_METHOD_DOCUMENTATION =
+    "This method calls a streaming endpoint. The method will throw if the endpoint throws an error.";
+
+export function generateNonThrowingService(
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
 ): Promise<void> {
-    const sourceFile = simpleAst.createSourceFile(definition.serviceName);
-
+    const serviceName = `${definition.serviceName.name}${NON_THROWING_SERVICE_SUFFIX}`;
+    const sourceFile = simpleAst.createSourceFile({
+        package: definition.serviceName.package,
+        name: serviceName,
+    });
     const endpointSignatures: MethodSignatureStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
-    const imports: ImportDeclarationStructure[] = [HTTP_API_BRIDGE_IMPORT];
+    const imports: ImportDeclarationStructure[] = [CONJURE_CLIENT_IMPORTS];
 
     sourceFile.addVariableStatement({
         declarationKind: VariableDeclarationKind.Const,
@@ -97,7 +108,9 @@ export function generateThrowingService(
             });
 
         let resultType = "void";
+        let responseMediaType = MediaType.APPLICATION_JSON;
         if (endpointDefinition.returns != null) {
+            responseMediaType = resolveMediaType(endpointDefinition.returns, knownTypes);
             resultType = resolveTsType(
                 endpointDefinition.returns,
                 definition.serviceName,
@@ -113,19 +126,6 @@ export function generateThrowingService(
 
         let docs = addDeprecatedToDocs(endpointDefinition);
         docs = addIncubatingToDocs(endpointDefinition, docs);
-        docs = addErrorsToDocs(endpointDefinition, docs);
-
-        const { signature, implementation } = generateThrowingEndpoint({
-            serviceDefinition: definition,
-            endpointDefinition,
-            resultType,
-            knownTypes,
-            parameters,
-            docs,
-        });
-
-        endpointSignatures.push(signature);
-        endpointImplementations.push(implementation);
 
         endpointDefinition.errors?.forEach(error => {
             const errorImports = resolveImportsForReferenceType(
@@ -139,6 +139,40 @@ export function generateThrowingService(
             ).map(i => ({ ...i, isTypeOnly: true }));
             imports.push(...errorImports);
         });
+
+        const errorNames = endpointDefinition.errors?.map(error => `I${error.error.name}`) ?? [];
+        if (errorNames.length === 0) {
+            errorNames.push("never");
+        }
+        const errorsType = errorNames.join(" | ");
+
+        // If the endpoint is a streaming endpoint, we don't want to wrap the result in an `IConjureResult`
+        // and instead return the raw result type. This means the method will be throwing.
+        const { signature, implementation } =
+            responseMediaType === MediaType.APPLICATION_OCTET_STREAM
+                ? generateThrowingEndpoint({
+                      serviceDefinition: definition,
+                      endpointDefinition,
+                      resultType,
+                      knownTypes,
+                      parameters,
+                      docs: addErrorsToDocs(
+                          endpointDefinition,
+                          docs != null ? `${docs}\n${THROWING_METHOD_DOCUMENTATION}` : THROWING_METHOD_DOCUMENTATION,
+                      ),
+                  })
+                : generateNonThrowingEndpoint({
+                      serviceDefinition: definition,
+                      endpointDefinition,
+                      resultType,
+                      errorsType,
+                      knownTypes,
+                      parameters,
+                      docs,
+                  });
+
+        endpointSignatures.push(signature);
+        endpointImplementations.push(implementation);
     });
 
     sourceFile.addImportDeclarations(sortImports(imports));
@@ -146,7 +180,7 @@ export function generateThrowingService(
     const iface = sourceFile.addInterface({
         isExported: true,
         methods: endpointSignatures,
-        name: "I" + definition.serviceName.name,
+        name: `I${serviceName}`,
     });
     if (definition.docs != null) {
         iface.addJsDoc({ description: definition.docs });
@@ -166,7 +200,7 @@ export function generateThrowingService(
         ],
         isExported: true,
         methods: endpointImplementations,
-        name: definition.serviceName.name,
+        name: serviceName,
         implements: [iface.getName()],
     });
 

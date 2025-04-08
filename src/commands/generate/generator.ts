@@ -19,18 +19,22 @@ import { IConjureDefinition, ITypeDefinition } from "conjure-api";
 import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";
+import { IServiceGenerationFlags } from "../../types/serviceGenerationFlags";
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
 import { directoryNameForType } from "../../utils/fileUtils";
 import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
 import { generateError } from "./generators/generateError";
+import { generateNonThrowingService } from "./generators/generateNonThrowingService";
 import { generateThrowingService } from "./generators/generateThrowingService";
 import { generateType } from "./generators/generateType";
 import { SimpleAst } from "./simpleAst";
+import { validateServiceNames } from "./validators/validateServiceNames";
 
 export async function generate(
     definition: IConjureDefinition,
     outDir: string,
     typeGenerationFlags: ITypeGenerationFlags,
+    serviceGenerationFlags: IServiceGenerationFlags,
 ) {
     // Create project structure
     const knownTypes = computeKnownTypes(definition.types);
@@ -46,6 +50,9 @@ export async function generate(
             }),
         ),
     );
+
+    // Validate service names if user wants to generate throwing an non-throwing services
+    validateServiceNames(definition.services, serviceGenerationFlags);
 
     const knownDefinitions = Array.from(knownTypes.keys())
         .map(disassembleHashableTypeName)
@@ -64,9 +71,17 @@ export async function generate(
     const promises: Array<Promise<any>> = [];
     const simpleAst = new SimpleAst(outDir);
 
-    definition.services.forEach(serviceDefinition =>
-        promises.push(generateThrowingService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags)),
-    );
+    if (serviceGenerationFlags.generateThrowingServices) {
+        definition.services.forEach(serviceDefinition =>
+            promises.push(generateThrowingService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags)),
+        );
+    }
+
+    if (serviceGenerationFlags.generateNonThrowingServices) {
+        definition.services.forEach(serviceDefinition =>
+            promises.push(generateNonThrowingService(serviceDefinition, knownTypes, simpleAst, typeGenerationFlags)),
+        );
+    }
 
     definition.types.forEach(typeDefinition =>
         promises.push(generateType(typeDefinition, knownTypes, simpleAst, typeGenerationFlags)),

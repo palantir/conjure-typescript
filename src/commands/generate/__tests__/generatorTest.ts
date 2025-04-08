@@ -20,6 +20,7 @@ import {
     IConjureDefinition,
     IEnumDefinition,
     IObjectDefinition,
+    IServiceDefinition,
     ITypeDefinition,
     ITypeDefinitionVisitor,
     ITypeName,
@@ -28,11 +29,14 @@ import {
 import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
+import { IServiceGenerationFlags } from "../../../types/serviceGenerationFlags";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
 import { isFlavorizable } from "../../../utils/flavorizingUtils";
 import {
+    DEFAULT_SERVICE_GENERATION_FLAGS,
     DEFAULT_TYPE_GENERATION_FLAGS,
     FLAVORED_TYPE_GENERATION_FLAGS,
+    NON_THROWING_SERVICE_GENERATION_FLAGS,
     READONLY_TYPE_GENERATION_FLAGS,
 } from "../../../__tests__/utils/constants";
 import { loadConjureDefinition } from "../command";
@@ -66,11 +70,59 @@ describe("generator", () => {
             },
             outDir,
             DEFAULT_TYPE_GENERATION_FLAGS,
+            DEFAULT_SERVICE_GENERATION_FLAGS,
         );
         const outFile1 = path.join(outDir, "integration/myEnum.ts");
         const outFile2 = path.join(outDir, "integration/myEnum2.ts");
         expect(fs.existsSync(outFile1)).toBeTruthy();
         expect(fs.existsSync(outFile2)).toBeTruthy();
+    });
+
+    it("throws on service name collisions", async () => {
+        const serviceDefinition1: IServiceDefinition = {
+            serviceName: {
+                name: "IMyService",
+                package: "com.palantir.foo",
+            },
+            endpoints: [],
+        };
+        const serviceDefinition2: IServiceDefinition = {
+            serviceName: {
+                name: "IMyServiceWithErrors",
+                package: "com.palantir.foo",
+            },
+            endpoints: [],
+        };
+
+        await expect(
+            generate(
+                {
+                    errors: [],
+                    services: [serviceDefinition1, serviceDefinition2],
+                    types: [],
+                    version: 1,
+                    extensions: {},
+                },
+                outDir,
+                DEFAULT_TYPE_GENERATION_FLAGS,
+                NON_THROWING_SERVICE_GENERATION_FLAGS,
+            ),
+        ).rejects.toThrow();
+
+        await expect(
+            generate(
+                {
+                    errors: [],
+                    services: [serviceDefinition1, serviceDefinition2],
+                    types: [],
+                    version: 1,
+                    extensions: {},
+                },
+                outDir,
+                DEFAULT_TYPE_GENERATION_FLAGS,
+                DEFAULT_SERVICE_GENERATION_FLAGS,
+            ),
+        ).resolves.not.toThrow();
     });
 
     it("generates multiple modules", async () => {
@@ -92,6 +144,7 @@ describe("generator", () => {
             },
             outDir,
             DEFAULT_TYPE_GENERATION_FLAGS,
+            DEFAULT_SERVICE_GENERATION_FLAGS,
         );
         expect(fs.existsSync(path.join(outDir, "integration-first/myEnum.ts"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "integration-second/myEnum2.ts"))).toBeTruthy();
@@ -123,7 +176,24 @@ describe("definitionTests", () => {
 
         it(
             `${fileName} produces equivalent TypeScript`,
-            testGenerateAllFilesAreTheSame(definitionFilePath, paths, actualTestCaseDir, DEFAULT_TYPE_GENERATION_FLAGS),
+            testGenerateAllFilesAreTheSame(
+                definitionFilePath,
+                paths,
+                actualTestCaseDir,
+                DEFAULT_TYPE_GENERATION_FLAGS,
+                DEFAULT_SERVICE_GENERATION_FLAGS,
+            ),
+        );
+
+        it(
+            `${fileName} produces equivalent non-throwing services TypeScript`,
+            testGenerateAllFilesAreTheSame(
+                definitionFilePath,
+                paths,
+                actualTestCaseDir,
+                DEFAULT_TYPE_GENERATION_FLAGS,
+                NON_THROWING_SERVICE_GENERATION_FLAGS,
+            ),
         );
 
         // Not every test has a flavored version
@@ -135,6 +205,7 @@ describe("definitionTests", () => {
                     paths,
                     actualFlavoredTestCaseDir,
                     FLAVORED_TYPE_GENERATION_FLAGS,
+                    DEFAULT_SERVICE_GENERATION_FLAGS,
                 ),
             );
         }
@@ -148,6 +219,7 @@ describe("definitionTests", () => {
                     paths,
                     actualReadonlyTestCaseDir,
                     READONLY_TYPE_GENERATION_FLAGS,
+                    DEFAULT_SERVICE_GENERATION_FLAGS,
                 ),
             );
         }
@@ -159,6 +231,7 @@ function testGenerateAllFilesAreTheSame(
     paths: string,
     actualTestCaseDir: string,
     typeGenerationFlags: ITypeGenerationFlags,
+    serviceGenerationFlags: IServiceGenerationFlags,
 ) {
     return async () => {
         const tempDir = directory();
@@ -166,9 +239,15 @@ function testGenerateAllFilesAreTheSame(
         await fs.mkdirp(outputDir);
         const conjureDefinition = await loadConjureDefinition(definitionFilePath);
 
-        await generate(conjureDefinition, outputDir, typeGenerationFlags);
+        await generate(conjureDefinition, outputDir, typeGenerationFlags, serviceGenerationFlags);
 
-        expectAllFilesAreTheSame(conjureDefinition, outputDir, actualTestCaseDir, typeGenerationFlags);
+        expectAllFilesAreTheSame(
+            conjureDefinition,
+            outputDir,
+            actualTestCaseDir,
+            typeGenerationFlags,
+            serviceGenerationFlags,
+        );
     };
 }
 
@@ -177,6 +256,7 @@ function expectAllFilesAreTheSame(
     actualDir: string,
     expectedDir: string,
     typeGenerationFlags: ITypeGenerationFlags,
+    serviceGenerationFlags: IServiceGenerationFlags,
 ) {
     for (const type of definition.types) {
         // We do not generate flavoured types for all aliases
@@ -187,9 +267,22 @@ function expectAllFilesAreTheSame(
         assertOutputAndExpectedAreEqual(actualDir, expectedDir, relativeFilePath);
     }
 
-    for (const service of definition.services) {
-        const relativeFilePath = typeNameToFilePath(service.serviceName);
-        assertOutputAndExpectedAreEqual(actualDir, expectedDir, relativeFilePath);
+    if (serviceGenerationFlags.generateThrowingServices) {
+        for (const service of definition.services) {
+            const relativeFilePath = typeNameToFilePath(service.serviceName);
+            assertOutputAndExpectedAreEqual(actualDir, expectedDir, relativeFilePath);
+        }
+    }
+
+    if (serviceGenerationFlags.generateNonThrowingServices) {
+        for (const service of definition.services) {
+            const serviceName = {
+                package: service.serviceName.package,
+                name: `${service.serviceName.name}WithErrors`,
+            };
+            const relativeFilePath = typeNameToFilePath(serviceName);
+            assertOutputAndExpectedAreEqual(actualDir, expectedDir, relativeFilePath);
+        }
     }
 }
 

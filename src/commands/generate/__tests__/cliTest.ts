@@ -20,6 +20,7 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
 import { IPackageJson, ISlsManifestDependency } from "../../../types";
+import { DEFAULT_SERVICE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
 import { createPackageJson, createTsconfigJson, GenerateCommand } from "../index";
 
 describe("generate command", () => {
@@ -193,6 +194,7 @@ describe("generate command", () => {
             packageName: "foo",
             packageVersion: "1.0.0",
             nodeCompatibleModules: false,
+            ...DEFAULT_SERVICE_GENERATION_FLAGS,
         });
         expect(fs.existsSync(path.join(outDir, "index.ts"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "tsconfig.json"))).toBeFalsy();
@@ -211,6 +213,7 @@ describe("generate command", () => {
             packageVersion: "1.0.0",
             nodeCompatibleModules: false,
             rawSource: false,
+            ...DEFAULT_SERVICE_GENERATION_FLAGS,
         });
         expect(fs.existsSync(path.join(outDir, "index.ts"))).toBeTruthy();
         expect(fs.existsSync(path.join(outDir, "tsconfig.json"))).toBeTruthy();
@@ -224,6 +227,7 @@ describe("generate command", () => {
             packageVersion: "1.0.0",
             nodeCompatibleModules: false,
             rawSource: false,
+            ...DEFAULT_SERVICE_GENERATION_FLAGS,
         });
         await executeCommand("yarn install --no-lockfile", outDir);
         expect(fs.existsSync(path.join(outDir, "node_modules"))).toBeTruthy();
@@ -237,6 +241,7 @@ describe("generate command", () => {
             packageVersion: "1.0.0",
             nodeCompatibleModules: false,
             rawSource: false,
+            ...DEFAULT_SERVICE_GENERATION_FLAGS,
         });
         await executeCommand("yarn install --no-lockfile", outDir);
         await executeCommand("yarn build", outDir);
@@ -250,6 +255,7 @@ describe("generate command", () => {
             packageVersion: "1.0.0",
             nodeCompatibleModules: false,
             rawSource: false,
+            ...DEFAULT_SERVICE_GENERATION_FLAGS,
         });
         expect(fs.existsSync(path.join(outDir, ".npmignore"))).toBeTruthy();
         expect(fs.readFileSync(path.join(outDir, ".npmignore"), { encoding: "utf8" })).toEqual(
@@ -263,6 +269,7 @@ describe("generate command", () => {
                 _: ["generate", input, outDir],
                 nodeCompatibleModules: false,
                 rawSource: false,
+                ...DEFAULT_SERVICE_GENERATION_FLAGS,
             }),
         ).rejects.toThrowError('Must either specify "rawSource" or specify "packageName" and "packageVersion"');
     });
@@ -275,6 +282,7 @@ describe("generate command", () => {
                 packageVersion: "1.0.0",
                 nodeCompatibleModules: false,
                 rawSource: false,
+                ...DEFAULT_SERVICE_GENERATION_FLAGS,
             }),
         ).rejects.toThrowError('Directory "missing" does not exist');
     });

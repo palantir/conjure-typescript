@@ -64,6 +64,16 @@ export interface IGenerateCommandArgs {
      * Generated interfaces have readonly properties and collections
      */
     readonlyInterfaces?: boolean;
+
+    /**
+     * Generate services whose methods rethrow thrown API errors
+     */
+    generateThrowingServices: boolean;
+
+    /**
+     * Generate services whose methods return thrown API errors as results
+     */
+    generateNonThrowingServices: boolean;
 }
 
 interface ICleanedGenerateCommandArgs {
@@ -129,6 +139,16 @@ export class GenerateCommand implements CommandModule {
                 describe: "Path to a file containing a list of product dependencies",
                 type: "string",
             })
+            .option("generateThrowingServices", {
+                default: true,
+                describe: "Generate services whose methods rethrow thrown API errors",
+                type: "boolean",
+            })
+            .option("generateNonThrowingServices", {
+                default: false,
+                describe: "Generate services whose methods return thrown API errors as results",
+                type: "boolean",
+            })
             .demand(2);
     }
 
@@ -136,10 +156,18 @@ export class GenerateCommand implements CommandModule {
         const [, , output] = args._;
         const { rawSource } = args;
         const { conjureDefinition, packageJson, tsConfig, gitIgnore } = await this.parseCommandLineArguments(args);
-        const generatePromise = generate(conjureDefinition, output, {
-            flavorizedAliases: args.flavorizedAliases ?? false,
-            readonlyInterfaces: args.readonlyInterfaces ?? false,
-        });
+        const generatePromise = generate(
+            conjureDefinition,
+            output,
+            {
+                flavorizedAliases: args.flavorizedAliases ?? false,
+                readonlyInterfaces: args.readonlyInterfaces ?? false,
+            },
+            {
+                generateNonThrowingServices: args.generateNonThrowingServices,
+                generateThrowingServices: args.generateThrowingServices,
+            },
+        );
         if (rawSource) {
             return generatePromise;
         }
