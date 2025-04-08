@@ -42,7 +42,6 @@ const UNDEFINED_CONSTANT = "__undefined";
 
 type generateNonThrowingEndpointBodyArgs = {
     endpointDefinition: IEndpointDefinition;
-    errorsType: string;
     knownTypes: Map<string, ITypeDefinition>;
     resultType: string;
     serviceDefinition: IServiceDefinition;
@@ -50,7 +49,6 @@ type generateNonThrowingEndpointBodyArgs = {
 
 function generateNonThrowingEndpointBody({
     endpointDefinition,
-    errorsType,
     knownTypes,
     resultType,
     serviceDefinition,
@@ -141,13 +139,14 @@ function generateNonThrowingEndpointBody({
         );
         writer
             .writeLine(")")
-            .writeLine(`.then(result => ({ status: "success", result }) as IConjureSuccess<${resultType}>)`)
-            .writeLine(`.catch(error => ({ status: "failure", error }) as IConjureFailure<${errorsType}>);`);
+            .writeLine(`.then(result => ({ status: "success" as const, result }))`)
+            .writeLine(`.catch((error: any) => ({ status: "failure", error }));`);
     };
 }
 
 type GenerateNonThrowingEndpointArgs = generateNonThrowingEndpointBodyArgs & {
     docs: string | undefined;
+    errorsType: string;
     parameters: ParameterDeclarationStructure[];
 };
 
@@ -179,7 +178,6 @@ export function generateNonThrowingEndpoint({
             kind: StructureKind.Method,
             statements: generateNonThrowingEndpointBody({
                 endpointDefinition,
-                errorsType,
                 knownTypes,
                 resultType,
                 serviceDefinition,

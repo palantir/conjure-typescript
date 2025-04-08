@@ -1,7 +1,7 @@
 import { IBackingFileSystem } from "../product-datasets/backingFileSystem";
 import { IDataset } from "../product-datasets/dataset";
 import { ICreateDatasetRequest } from "../product/createDatasetRequest";
-import type { IConjureFailure, IConjureResult, IConjureSuccess, IHttpApiBridge } from "conjure-client";
+import type { IConjureResult, IHttpApiBridge } from "conjure-client";
 
 /** Constant reference to `undefined` that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
@@ -63,8 +63,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<{ [key: string]: IBackingFileSystem }>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public createDataset(request: ICreateDatasetRequest, testHeaderArg: string): Promise<IConjureResult<IDataset, never>> {
@@ -83,8 +83,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<IDataset>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public getDataset(datasetRid: string): Promise<IConjureResult<IDataset | null, never>> {
@@ -103,8 +103,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<IDataset | null>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
@@ -177,8 +177,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<string>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public uploadRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<IConjureResult<void, never>> {
@@ -195,8 +195,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 "application/octet-stream",
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<void>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public uploadAliasedRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<IConjureResult<void, never>> {
@@ -213,8 +213,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 "application/octet-stream",
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<void>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public getBranches(datasetRid: string): Promise<IConjureResult<Array<string>, never>> {
@@ -233,8 +233,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<Array<string>>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public getBranchesDeprecated(datasetRid: string): Promise<IConjureResult<Array<string>, never>> {
@@ -253,8 +253,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<Array<string>>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public resolveBranch(datasetRid: string, branch: string): Promise<IConjureResult<string | null, never>> {
@@ -274,8 +274,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<string | null>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public testParam(datasetRid: string): Promise<IConjureResult<string | null, never>> {
@@ -294,8 +294,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<string | null>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public testQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<IConjureResult<number, never>> {
@@ -318,8 +318,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<number>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<IConjureResult<void, never>> {
@@ -342,8 +342,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<void>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public testBoolean(): Promise<IConjureResult<boolean, never>> {
@@ -360,8 +360,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<boolean>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public testDouble(): Promise<IConjureResult<number | "NaN", never>> {
@@ -378,8 +378,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<number | "NaN">)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public testInteger(): Promise<IConjureResult<number, never>> {
@@ -396,8 +396,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<number>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public testPostOptional(maybeString?: string | null): Promise<IConjureResult<string | null, never>> {
@@ -414,8 +414,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<string | null>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 
     public testOptionalIntegerAndDouble(maybeInteger?: number | null, maybeDouble?: number | "NaN" | null): Promise<IConjureResult<void, never>> {
@@ -435,7 +435,7 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<void>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 }

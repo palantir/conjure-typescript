@@ -1,4 +1,4 @@
-import type { IConjureFailure, IConjureResult, IConjureSuccess, IHttpApiBridge } from "conjure-client";
+import type { IConjureResult, IHttpApiBridge } from "conjure-client";
 
 /** Constant reference to `undefined` that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
@@ -25,7 +25,7 @@ export class PrimitiveServiceWithErrors implements IPrimitiveServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<number>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 }

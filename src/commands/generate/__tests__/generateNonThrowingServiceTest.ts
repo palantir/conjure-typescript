@@ -141,8 +141,8 @@ export class MyServiceWithErrors implements IMyServiceWithErrors {
                 __undefined,
                 __undefined
             )
-            .then(result => ({ status: "success", result }) as IConjureSuccess<void>)
-            .catch(error => ({ status: "failure", error }) as IConjureFailure<never>);
+            .then(result => ({ status: "success" as const, result }))
+            .catch((error: any) => ({ status: "failure", error }));
     }
 }`);
     });
@@ -826,7 +826,7 @@ export interface IMyServiceWithErrors {
         const contents = fs.readFileSync(outFile, "utf8");
 
         expect(contents).toContain(`import type { IMyError } from "../errors/myError";
-import type { IConjureFailure, IConjureResult, IConjureSuccess, IHttpApiBridge } from "conjure-client";
+import type { IConjureResult, IHttpApiBridge } from "conjure-client";
 
 /** Constant reference to \`undefined\` that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
