@@ -187,15 +187,22 @@ export function generateNonThrowingService(
     }
 
     sourceFile.addClass({
+        properties: [
+            {
+                name: BRIDGE,
+                scope: Scope.Private,
+                type: HTTP_API_BRIDGE_TYPE,
+            },
+        ],
         ctors: [
             {
                 parameters: [
                     {
                         name: BRIDGE,
-                        scope: Scope.Private,
                         type: HTTP_API_BRIDGE_TYPE,
                     },
                 ],
+                statements: [`this.${BRIDGE} = ${BRIDGE};`],
             },
         ],
         isExported: true,

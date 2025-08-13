@@ -8,7 +8,10 @@ export interface IServiceWithSafelongHeader {
 }
 
 export class ServiceWithSafelongHeader implements IServiceWithSafelongHeader {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public foo(investigation: number): Promise<void> {

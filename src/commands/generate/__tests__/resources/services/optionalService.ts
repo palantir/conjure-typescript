@@ -8,7 +8,10 @@ export interface IOptionalService {
 }
 
 export class OptionalService implements IOptionalService {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public foo(header: string, name?: string | null): Promise<void> {

@@ -8,7 +8,10 @@ export interface IOptionalServiceWithErrors {
 }
 
 export class OptionalServiceWithErrors implements IOptionalServiceWithErrors {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public foo(header: string, name?: string | null): Promise<IConjureResult<void, never>> {

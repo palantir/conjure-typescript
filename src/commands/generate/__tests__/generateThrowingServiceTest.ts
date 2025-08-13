@@ -124,7 +124,10 @@ export interface IMyService {
 }`);
         expect(contents).toContain(`
 export class MyService implements IMyService {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public returnsVoid(): Promise<void> {

@@ -8,7 +8,10 @@ export interface IParamTypeServiceWithErrors {
 }
 
 export class ParamTypeServiceWithErrors implements IParamTypeServiceWithErrors {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public foo(body: string, header: string, path: string, query: string): Promise<IConjureResult<void, never>> {

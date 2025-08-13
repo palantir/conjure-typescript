@@ -8,7 +8,10 @@ export interface IOutOfOrderPathServiceWithErrors {
 }
 
 export class OutOfOrderPathServiceWithErrors implements IOutOfOrderPathServiceWithErrors {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public foo(param1: string, param2: string): Promise<IConjureResult<void, never>> {

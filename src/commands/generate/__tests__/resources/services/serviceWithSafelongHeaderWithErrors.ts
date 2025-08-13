@@ -8,7 +8,10 @@ export interface IServiceWithSafelongHeaderWithErrors {
 }
 
 export class ServiceWithSafelongHeaderWithErrors implements IServiceWithSafelongHeaderWithErrors {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public foo(investigation: number): Promise<IConjureResult<void, never>> {

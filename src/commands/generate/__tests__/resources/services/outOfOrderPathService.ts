@@ -8,7 +8,10 @@ export interface IOutOfOrderPathService {
 }
 
 export class OutOfOrderPathService implements IOutOfOrderPathService {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public foo(param1: string, param2: string): Promise<void> {

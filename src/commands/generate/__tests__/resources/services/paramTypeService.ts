@@ -8,7 +8,10 @@ export interface IParamTypeService {
 }
 
 export class ParamTypeService implements IParamTypeService {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public foo(body: string, header: string, path: string, query: string): Promise<void> {

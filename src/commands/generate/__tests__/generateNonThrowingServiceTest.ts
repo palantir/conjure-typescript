@@ -124,7 +124,10 @@ export interface IMyServiceWithErrors {
 }`);
         expect(contents).toContain(`
 export class MyServiceWithErrors implements IMyServiceWithErrors {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public returnsVoid(): Promise<IConjureResult<void, never>> {

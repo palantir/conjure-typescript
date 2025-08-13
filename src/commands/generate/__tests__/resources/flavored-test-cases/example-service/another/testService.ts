@@ -44,7 +44,10 @@ export interface ITestService {
 }
 
 export class TestService implements ITestService {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     /**

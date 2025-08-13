@@ -8,7 +8,10 @@ export interface IPrimitiveService {
 }
 
 export class PrimitiveService implements IPrimitiveService {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public getPrimitive(): Promise<number> {

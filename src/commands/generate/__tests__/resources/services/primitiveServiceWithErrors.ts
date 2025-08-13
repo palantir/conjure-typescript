@@ -8,7 +8,10 @@ export interface IPrimitiveServiceWithErrors {
 }
 
 export class PrimitiveServiceWithErrors implements IPrimitiveServiceWithErrors {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public getPrimitive(): Promise<IConjureResult<number, never>> {

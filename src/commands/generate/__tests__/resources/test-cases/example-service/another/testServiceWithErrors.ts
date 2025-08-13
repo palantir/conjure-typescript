@@ -46,7 +46,10 @@ export interface ITestServiceWithErrors {
 }
 
 export class TestServiceWithErrors implements ITestServiceWithErrors {
-    constructor(private bridge: IHttpApiBridge) {
+    private bridge: IHttpApiBridge;
+
+    constructor(bridge: IHttpApiBridge) {
+        this.bridge = bridge;
     }
 
     public getFileSystems(): Promise<IConjureResult<{ [key: string]: IBackingFileSystem }, never>> {
