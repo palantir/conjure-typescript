@@ -41,7 +41,7 @@ export interface IGenerateCommandArgs {
     packageVersion?: string;
 
     /*
-     * Configure TypeScript compilation to generate modules that are node compatible
+     * Configure TypeScript compilation to generate "commonjs" modules, compatible with legacy node versions
      */
     nodeCompatibleModules: boolean;
 
@@ -200,6 +200,7 @@ export class GenerateCommand implements CommandModule {
                 packageName!,
                 packageVersion!,
                 productDependencies,
+                args.nodeCompatibleModules,
             ),
             tsConfig: createTsconfigJson(args.nodeCompatibleModules),
             gitIgnore: ["*.ts", "!*.d.ts", "tsconfig.json"].join("\n"),
@@ -215,13 +216,15 @@ export async function createPackageJson(
     projectPackageJson: IPackageJson,
     packageName: string,
     packageVersion: string,
-    productDependencies?: string,
+    productDependencies: string | undefined,
+    nodeCompatibleModules: boolean,
 ): Promise<IPackageJson> {
     const packageJson: IPackageJson = {
         name: packageName!,
         version: packageVersion!,
         main: "index.js",
         types: "index.d.ts",
+        type: nodeCompatibleModules ? "commonjs" : "module",
         sideEffects: false,
         scripts: { build: "tsc" },
         dependencies: {
