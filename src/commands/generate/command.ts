@@ -180,7 +180,7 @@ export class GenerateCommand implements CommandModule {
     };
 
     private async parseCommandLineArguments(args: IGenerateCommandArgs): Promise<ICleanedGenerateCommandArgs> {
-        const { packageName, packageVersion, productDependencies, rawSource } = args;
+        const { packageName, packageVersion, productDependencies, rawSource, nodeCompatibleModules } = args;
         const [, input, output] = args._;
         if (!rawSource && (packageName == null || packageVersion == null)) {
             throw Error('Must either specify "rawSource" or specify "packageName" and "packageVersion"');
@@ -200,9 +200,9 @@ export class GenerateCommand implements CommandModule {
                 packageName!,
                 packageVersion!,
                 productDependencies,
-                args.nodeCompatibleModules,
+                nodeCompatibleModules,
             ),
-            tsConfig: createTsconfigJson(args.nodeCompatibleModules),
+            tsConfig: createTsconfigJson(nodeCompatibleModules),
             gitIgnore: ["*.ts", "!*.d.ts", "tsconfig.json"].join("\n"),
         };
     }
