@@ -40,11 +40,12 @@ describe("generate command", () => {
         } as any;
 
         it("generates simple package.json", async () => {
-            expect(await createPackageJson(inputPackage, "foo", "1.0.0")).toEqual({
+            expect(await createPackageJson(inputPackage, "foo", "1.0.0", undefined, false)).toEqual({
                 name: "foo",
                 version: "1.0.0",
                 main: "index.js",
                 types: "index.d.ts",
+                type: "module",
                 sideEffects: false,
                 scripts: {
                     build: "tsc",
@@ -84,6 +85,7 @@ describe("generate command", () => {
                 },
                 main: "index.js",
                 types: "index.d.ts",
+                type: "module",
                 sideEffects: false,
                 scripts: {
                     build: "tsc",
@@ -95,7 +97,7 @@ describe("generate command", () => {
                 author: "Conjure",
                 license: "UNLICENSED",
             };
-            expect(await createPackageJson(inputPackage, "foo", "1.0.0", productDependencyPath)).toEqual(
+            expect(await createPackageJson(inputPackage, "foo", "1.0.0", productDependencyPath, false)).toEqual(
                 expectedPackageJson,
             );
         });
@@ -128,6 +130,7 @@ describe("generate command", () => {
                 },
                 main: "index.js",
                 types: "index.d.ts",
+                type: "module",
                 sideEffects: false,
                 scripts: {
                     build: "tsc",
@@ -139,7 +142,7 @@ describe("generate command", () => {
                 author: "Conjure",
                 license: "UNLICENSED",
             };
-            expect(await createPackageJson(inputPackage, "foo", "1.0.0", productDependencyPath)).toEqual(
+            expect(await createPackageJson(inputPackage, "foo", "1.0.0", productDependencyPath, false)).toEqual(
                 expectedPackageJson,
             );
         });
@@ -170,6 +173,7 @@ describe("generate command", () => {
                 },
                 main: "index.js",
                 types: "index.d.ts",
+                type: "module",
                 sideEffects: false,
                 scripts: {
                     build: "tsc",
@@ -181,9 +185,29 @@ describe("generate command", () => {
                 author: "Conjure",
                 license: "UNLICENSED",
             };
-            expect(await createPackageJson(inputPackage, "foo", "1.0.0", productDependencyPath)).toEqual(
+            expect(await createPackageJson(inputPackage, "foo", "1.0.0", productDependencyPath, false)).toEqual(
                 expectedPackageJson,
             );
+        });
+
+        it("generates package.json with nodeCompatibleModules=true", async () => {
+            expect(await createPackageJson(inputPackage, "foo", "1.0.0", undefined, true)).toEqual({
+                name: "foo",
+                version: "1.0.0",
+                main: "index.js",
+                types: "index.d.ts",
+                type: "commonjs",
+                sideEffects: false,
+                scripts: {
+                    build: "tsc",
+                },
+                dependencies: { "conjure-client": "1.0.0" },
+                devDependencies: {
+                    typescript: "2.7.2",
+                },
+                author: "Conjure",
+                license: "UNLICENSED",
+            });
         });
     });
 

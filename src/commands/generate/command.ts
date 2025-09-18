@@ -41,7 +41,7 @@ export interface IGenerateCommandArgs {
     packageVersion?: string;
 
     /*
-     * Configure TypeScript compilation to generate modules that are node compatible
+     * Configure TypeScript compilation to generate "commonjs" modules, compatible with legacy node versions
      */
     nodeCompatibleModules: boolean;
 
@@ -180,7 +180,7 @@ export class GenerateCommand implements CommandModule {
     };
 
     private async parseCommandLineArguments(args: IGenerateCommandArgs): Promise<ICleanedGenerateCommandArgs> {
-        const { packageName, packageVersion, productDependencies, rawSource } = args;
+        const { packageName, packageVersion, productDependencies, rawSource, nodeCompatibleModules } = args;
         const [, input, output] = args._;
         if (!rawSource && (packageName == null || packageVersion == null)) {
             throw Error('Must either specify "rawSource" or specify "packageName" and "packageVersion"');
@@ -200,8 +200,9 @@ export class GenerateCommand implements CommandModule {
                 packageName!,
                 packageVersion!,
                 productDependencies,
+                nodeCompatibleModules,
             ),
-            tsConfig: createTsconfigJson(args.nodeCompatibleModules),
+            tsConfig: createTsconfigJson(nodeCompatibleModules),
             gitIgnore: ["*.ts", "!*.d.ts", "tsconfig.json"].join("\n"),
         };
     }
@@ -215,13 +216,15 @@ export async function createPackageJson(
     projectPackageJson: IPackageJson,
     packageName: string,
     packageVersion: string,
-    productDependencies?: string,
+    productDependencies: string | undefined,
+    nodeCompatibleModules: boolean,
 ): Promise<IPackageJson> {
     const packageJson: IPackageJson = {
         name: packageName!,
         version: packageVersion!,
         main: "index.js",
         types: "index.d.ts",
+        type: nodeCompatibleModules ? "commonjs" : "module",
         sideEffects: false,
         scripts: { build: "tsc" },
         dependencies: {
