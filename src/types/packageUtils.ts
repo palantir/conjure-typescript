@@ -35,8 +35,6 @@ export interface IPackageJson {
     };
     sideEffects?: boolean;
     types?: string;
-    // See https://nodejs.org/api/packages.html#type
-    type?: "commonjs" | "module";
     typings?: string;
     version: string;
 }
