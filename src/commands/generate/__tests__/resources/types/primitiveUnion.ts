@@ -56,16 +56,12 @@ export interface IPrimitiveUnionVisitor<T> {
 }
 
 function visit<T>(obj: IPrimitiveUnion, visitor: IPrimitiveUnionVisitor<T>): T {
-    if (isBar(obj)) {
-        return visitor.bar(obj.bar);
+    switch (obj.type) {
+        case "bar": return visitor.bar(obj.bar);
+        case "foo": return visitor.foo(obj.foo);
+        case "uuid": return visitor.uuid(obj.uuid);
+        default: return visitor.unknown(obj);
     }
-    if (isFoo(obj)) {
-        return visitor.foo(obj.foo);
-    }
-    if (isUuid(obj)) {
-        return visitor.uuid(obj.uuid);
-    }
-    return visitor.unknown(obj);
 }
 
 export const IPrimitiveUnion = {

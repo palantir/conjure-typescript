@@ -41,13 +41,11 @@ export interface IUnionWithDocsVisitor<T> {
 }
 
 function visit<T>(obj: IUnionWithDocs, visitor: IUnionWithDocsVisitor<T>): T {
-    if (isBar(obj)) {
-        return visitor.bar(obj.bar);
+    switch (obj.type) {
+        case "bar": return visitor.bar(obj.bar);
+        case "foo": return visitor.foo(obj.foo);
+        default: return visitor.unknown(obj);
     }
-    if (isFoo(obj)) {
-        return visitor.foo(obj.foo);
-    }
-    return visitor.unknown(obj);
 }
 
 export const IUnionWithDocs = {

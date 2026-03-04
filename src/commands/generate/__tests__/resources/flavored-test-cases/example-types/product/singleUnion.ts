@@ -22,10 +22,10 @@ export interface ISingleUnionVisitor<T> {
 }
 
 function visit<T>(obj: ISingleUnion, visitor: ISingleUnionVisitor<T>): T {
-    if (isFoo(obj)) {
-        return visitor.foo(obj.foo);
+    switch (obj.type) {
+        case "foo": return visitor.foo(obj.foo);
+        default: return visitor.unknown(obj);
     }
-    return visitor.unknown(obj);
 }
 
 export const ISingleUnion = {

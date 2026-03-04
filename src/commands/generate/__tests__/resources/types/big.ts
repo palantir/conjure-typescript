@@ -24,10 +24,10 @@ export interface IBigVisitor<T> {
 }
 
 function visit<T>(obj: IBig, visitor: IBigVisitor<T>): T {
-    if (isLittle(obj)) {
-        return visitor.little(obj.little);
+    switch (obj.type) {
+        case "little": return visitor.little(obj.little);
+        default: return visitor.unknown(obj);
     }
-    return visitor.unknown(obj);
 }
 
 export const IBig = {

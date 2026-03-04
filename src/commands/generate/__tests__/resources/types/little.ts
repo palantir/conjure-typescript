@@ -22,10 +22,10 @@ export interface ILittleVisitor<T> {
 }
 
 function visit<T>(obj: ILittle, visitor: ILittleVisitor<T>): T {
-    if (isDouble(obj)) {
-        return visitor.double(obj.double);
+    switch (obj.type) {
+        case "double": return visitor.double(obj.double);
+        default: return visitor.unknown(obj);
     }
-    return visitor.unknown(obj);
 }
 
 export const ILittle = {

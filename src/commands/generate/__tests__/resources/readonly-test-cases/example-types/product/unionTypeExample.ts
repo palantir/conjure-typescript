@@ -128,28 +128,16 @@ export interface IUnionTypeExampleVisitor<T> {
 }
 
 function visit<T>(obj: IUnionTypeExample, visitor: IUnionTypeExampleVisitor<T>): T {
-    if (isStringExample(obj)) {
-        return visitor.stringExample(obj.stringExample);
+    switch (obj.type) {
+        case "stringExample": return visitor.stringExample(obj.stringExample);
+        case "set": return visitor.set(obj.set);
+        case "thisFieldIsAnInteger": return visitor.thisFieldIsAnInteger(obj.thisFieldIsAnInteger);
+        case "alsoAnInteger": return visitor.alsoAnInteger(obj.alsoAnInteger);
+        case "if": return visitor.if(obj.if);
+        case "new": return visitor.new(obj.new);
+        case "interface": return visitor.interface(obj.interface);
+        default: return visitor.unknown(obj);
     }
-    if (isSet(obj)) {
-        return visitor.set(obj.set);
-    }
-    if (isThisFieldIsAnInteger(obj)) {
-        return visitor.thisFieldIsAnInteger(obj.thisFieldIsAnInteger);
-    }
-    if (isAlsoAnInteger(obj)) {
-        return visitor.alsoAnInteger(obj.alsoAnInteger);
-    }
-    if (isIf(obj)) {
-        return visitor.if(obj.if);
-    }
-    if (isNew(obj)) {
-        return visitor.new(obj.new);
-    }
-    if (isInterface(obj)) {
-        return visitor.interface(obj.interface);
-    }
-    return visitor.unknown(obj);
 }
 
 export const IUnionTypeExample = {
