@@ -56,16 +56,12 @@ export interface IUnionVisitor<T> {
 }
 
 function visit<T>(obj: IUnion, visitor: IUnionVisitor<T>): T {
-    if (isFoo(obj)) {
-        return visitor.foo(obj.foo);
+    switch (obj.type) {
+        case "foo": return visitor.foo(obj.foo);
+        case "bar": return visitor.bar(obj.bar);
+        case "baz": return visitor.baz(obj.baz);
+        default: return visitor.unknown(obj);
     }
-    if (isBar(obj)) {
-        return visitor.bar(obj.bar);
-    }
-    if (isBaz(obj)) {
-        return visitor.baz(obj.baz);
-    }
-    return visitor.unknown(obj);
 }
 
 export const IUnion = {

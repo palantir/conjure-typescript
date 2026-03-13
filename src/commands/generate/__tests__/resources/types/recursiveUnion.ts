@@ -41,13 +41,11 @@ export interface IRecursiveUnionVisitor<T> {
 }
 
 function visit<T>(obj: IRecursiveUnion, visitor: IRecursiveUnionVisitor<T>): T {
-    if (isRecursiveField(obj)) {
-        return visitor.recursiveField(obj.recursiveField);
+    switch (obj.type) {
+        case "recursiveField": return visitor.recursiveField(obj.recursiveField);
+        case "stringAlias": return visitor.stringAlias(obj.stringAlias);
+        default: return visitor.unknown(obj);
     }
-    if (isStringAlias(obj)) {
-        return visitor.stringAlias(obj.stringAlias);
-    }
-    return visitor.unknown(obj);
 }
 
 export const IRecursiveUnion = {

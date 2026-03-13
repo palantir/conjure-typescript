@@ -39,13 +39,11 @@ export interface IUnionTypeExampleVisitor<T> {
 }
 
 function visit<T>(obj: IUnionTypeExample, visitor: IUnionTypeExampleVisitor<T>): T {
-    if (isString(obj)) {
-        return visitor.string(obj.string);
+    switch (obj.type) {
+        case "string": return visitor.string(obj.string);
+        case "set": return visitor.set(obj.set);
+        default: return visitor.unknown(obj);
     }
-    if (isSet(obj)) {
-        return visitor.set(obj.set);
-    }
-    return visitor.unknown(obj);
 }
 
 export const IUnionTypeExample = {

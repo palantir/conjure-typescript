@@ -63,16 +63,12 @@ export interface IDeprecatedUnionVisitor<T> {
 }
 
 function visit<T>(obj: IDeprecatedUnion, visitor: IDeprecatedUnionVisitor<T>): T {
-    if (isGood(obj)) {
-        return visitor.good(obj.good);
+    switch (obj.type) {
+        case "good": return visitor.good(obj.good);
+        case "noGood": return visitor.noGood(obj.noGood);
+        case "noGoodDoc": return visitor.noGoodDoc(obj.noGoodDoc);
+        default: return visitor.unknown(obj);
     }
-    if (isNoGood(obj)) {
-        return visitor.noGood(obj.noGood);
-    }
-    if (isNoGoodDoc(obj)) {
-        return visitor.noGoodDoc(obj.noGoodDoc);
-    }
-    return visitor.unknown(obj);
 }
 
 export const IDeprecatedUnion = {

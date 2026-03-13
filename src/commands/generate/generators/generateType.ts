@@ -344,7 +344,7 @@ function processUnionMembers(
     const visitorProperties: PropertySignatureStructure[] = [];
     const memberInterfaces: InterfaceDeclarationStructure[] = [];
     const functions: FunctionDeclarationStructure[] = [];
-    const visitorStatements: string[] = [];
+    const visitorCaseStatements: string[] = [];
 
     definition.union.forEach(fieldDefinition => {
         const memberName = fieldDefinition.fieldName;
@@ -420,9 +420,9 @@ function processUnionMembers(
             type: `(obj: ${fieldType}) => T`,
             isReadonly: typeGenerationFlags.readonlyInterfaces,
         });
-        visitorStatements.push(`if (${typeGuard.name}(${obj})) {
-            return ${visitor}.${memberName}(${obj}.${memberName});
-        }`);
+        visitorCaseStatements.push(
+            `case ${doubleQuote(memberName)}: return ${visitor}.${memberName}(${obj}.${memberName});`,
+        );
     });
 
     visitorProperties.push({
@@ -431,7 +431,16 @@ function processUnionMembers(
         type: `(obj: ${unionTsType}) => T`,
         isReadonly: typeGenerationFlags.readonlyInterfaces,
     });
-    visitorStatements.push(`return ${visitor}.unknown(${obj});`);
+
+    const visitorStatements: string[] = [];
+    if (visitorCaseStatements.length === 0) {
+        visitorStatements.push(`return ${visitor}.unknown(${obj});`);
+    } else {
+        visitorStatements.push(`switch (${obj}.type) {`);
+        visitorStatements.push(...visitorCaseStatements);
+        visitorStatements.push(`default: return ${visitor}.unknown(${obj});`);
+        visitorStatements.push(`}`);
+    }
 
     return {
         functions,
