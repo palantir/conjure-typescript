@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:11-node-browsers
+      - image: cimg/openjdk:24.0-browsers
     steps:
       - checkout
       - restore_cache:
