@@ -27,6 +27,11 @@ module.exports = {
             tsconfig: 'src/tsconfig.json',
         },
     },
+    // Jest mistakenly believes it has access to all CPU cores on CI of the
+    // underlying host, rather than the 2 CPU cores allocated to it for
+    // CircleCI's medium resource class. Spawning 32-64 workers causes Jest
+    // tests to hang on CI.
+    maxWorkers: process.env.CI ? 2 : undefined,
     moduleFileExtensions: [
         'js',
         'json',
