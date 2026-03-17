@@ -3,12 +3,18 @@
 # To manually manage the CircleCI configuration for this project, remove the .circleci/template.sh file.
 
 version: 2.1
+
+orbs:
+  node: circleci/node@7.2.1
+
 jobs:
   build:
     docker:
       - image: cimg/openjdk:24.0-browsers
     steps:
       - checkout
+      - node/install:
+          node-version: '25.8.1'
       - restore_cache:
           name: Restore Yarn Package Cache
           key: yarn-packages-{{ checksum "yarn.lock" }}
