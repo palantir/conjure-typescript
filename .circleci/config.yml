@@ -2,7 +2,7 @@
 # To request a modification to the general template, file an issue on Excavator.
 # To manually manage the CircleCI configuration for this project, remove the .circleci/template.sh file.
 
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
@@ -47,7 +47,6 @@ jobs:
         command: echo "All required jobs finished successfully"
 
 workflows:
-  version: 2
   build:
     jobs:
       - build:
