@@ -167,7 +167,7 @@ describe("resolveTsTypeForListType", () => {
                 DEFAULT_TYPE_GENERATION_FLAGS,
                 true,
             ),
-        ).toEqual("Array<string>");
+        ).toEqual("ReadonlyArray<string>");
     });
 
     it("returns correct type for read-only interfaces generation flag", () => {
@@ -233,7 +233,7 @@ describe("resolveTsTypeForSetType", () => {
                 DEFAULT_TYPE_GENERATION_FLAGS,
                 true,
             ),
-        ).toEqual("Array<string>");
+        ).toEqual("ReadonlyArray<string>");
     });
 
     it("returns correct type for read-only interfaces generation flag", () => {
