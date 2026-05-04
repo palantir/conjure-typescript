@@ -36,8 +36,8 @@ export interface ITestServiceWithErrors {
     getBranchesDeprecated(datasetRid: string): Promise<IConjureResult<Array<string>, never>>;
     resolveBranch(datasetRid: string, branch: string): Promise<IConjureResult<string | null, never>>;
     testParam(datasetRid: string): Promise<IConjureResult<string | null, never>>;
-    testQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<IConjureResult<number, never>>;
-    testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<IConjureResult<void, never>>;
+    testQueryParams(query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<IConjureResult<number, never>>;
+    testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<IConjureResult<void, never>>;
     testBoolean(): Promise<IConjureResult<boolean, never>>;
     testDouble(): Promise<IConjureResult<number | "NaN", never>>;
     testInteger(): Promise<IConjureResult<number, never>>;
@@ -298,7 +298,7 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
             .catch((error: any) => ({ status: "failure", error }));
     }
 
-    public testQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<IConjureResult<number, never>> {
+    public testQueryParams(query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<IConjureResult<number, never>> {
         return this.bridge
             .call<number>(
                 "TestService",
@@ -322,7 +322,7 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
             .catch((error: any) => ({ status: "failure", error }));
     }
 
-    public testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: Array<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<IConjureResult<void, never>> {
+    public testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<IConjureResult<void, never>> {
         return this.bridge
             .call<void>(
                 "TestService",

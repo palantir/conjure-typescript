@@ -145,7 +145,11 @@ export const resolveTsTypeForListType = (
         isParameterType,
         false,
     );
-    return typeGenerationFlags.readonlyInterfaces ? `ReadonlyArray<${itemType}>` : `Array<${itemType}>`;
+    // Endpoint inputs are emitted as ReadonlyArray to advertise that we won't mutate them, which lets callers pass
+    // either readonly or mutable arrays.
+    return isParameterType || typeGenerationFlags.readonlyInterfaces
+        ? `ReadonlyArray<${itemType}>`
+        : `Array<${itemType}>`;
 };
 
 export const resolveTsTypeForSetType = (
@@ -163,7 +167,9 @@ export const resolveTsTypeForSetType = (
         isParameterType,
         false,
     );
-    return typeGenerationFlags.readonlyInterfaces ? `ReadonlyArray<${itemType}>` : `Array<${itemType}>`;
+    return isParameterType || typeGenerationFlags.readonlyInterfaces
+        ? `ReadonlyArray<${itemType}>`
+        : `Array<${itemType}>`;
 };
 
 export const resolveTsTypeForOptionalType = (
