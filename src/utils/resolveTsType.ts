@@ -145,8 +145,7 @@ export const resolveTsTypeForListType = (
         isParameterType,
         false,
     );
-    // Endpoint inputs are emitted as ReadonlyArray to advertise that we won't mutate them, which lets callers pass
-    // either readonly or mutable arrays.
+    // Inputs are emitted as ReadonlyArray to widen the contract & guarantee to callers that we won't mutate them
     return isParameterType || typeGenerationFlags.readonlyInterfaces
         ? `ReadonlyArray<${itemType}>`
         : `Array<${itemType}>`;
