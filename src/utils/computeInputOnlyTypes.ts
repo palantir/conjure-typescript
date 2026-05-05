@@ -16,7 +16,7 @@
  */
 
 import { IConjureDefinition, IType, ITypeDefinition } from "conjure-api";
-import { createHashableTypeName } from "./hashingUtils";
+import { createHashableTypeName, typeNameOf } from "./hashingUtils";
 
 /**
  * Returns the set of hashable type names that are reachable only from endpoint input positions
@@ -98,15 +98,3 @@ export function computeInputOnlyTypes(definition: IConjureDefinition): Set<strin
     return result;
 }
 
-function typeNameOf(t: ITypeDefinition) {
-    switch (t.type) {
-        case "alias":
-            return t.alias.typeName;
-        case "enum":
-            return t.enum.typeName;
-        case "object":
-            return t.object.typeName;
-        case "union":
-            return t.union.typeName;
-    }
-}
