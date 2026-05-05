@@ -48,15 +48,16 @@ export function generateType(
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
+    isInputOnly: boolean = false,
 ): Promise<void> {
     if (ITypeDefinition.isAlias(definition)) {
-        return generateAlias(definition.alias, knownTypes, simpleAst, typeGenerationFlags);
+        return generateAlias(definition.alias, knownTypes, simpleAst, typeGenerationFlags, isInputOnly);
     } else if (ITypeDefinition.isEnum(definition)) {
         return generateEnum(definition.enum, simpleAst);
     } else if (ITypeDefinition.isObject(definition)) {
-        return generateObject(definition.object, knownTypes, simpleAst, typeGenerationFlags);
+        return generateObject(definition.object, knownTypes, simpleAst, typeGenerationFlags, isInputOnly);
     } else if (ITypeDefinition.isUnion(definition)) {
-        return generateUnion(definition.union, knownTypes, simpleAst, typeGenerationFlags);
+        return generateUnion(definition.union, knownTypes, simpleAst, typeGenerationFlags, isInputOnly);
     } else {
         throw Error("unsupported type: " + definition);
     }
@@ -79,6 +80,7 @@ export async function generateAlias(
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
+    isInputOnly: boolean = false,
 ): Promise<void> {
     if (isFlavorizable(definition.alias, typeGenerationFlags.flavorizedAliases)) {
         const fieldType = resolveTsType(
@@ -86,7 +88,7 @@ export async function generateAlias(
             definition.typeName,
             knownTypes,
             typeGenerationFlags,
-            false,
+            isInputOnly,
             false,
         );
         const sourceFile = simpleAst.createSourceFile(definition.typeName);
@@ -211,6 +213,7 @@ export async function generateObject(
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
+    isInputOnly: boolean = false,
 ) {
     const properties: PropertySignatureStructure[] = [];
     const imports: ImportDeclarationStructure[] = [];
@@ -220,7 +223,7 @@ export async function generateObject(
             definition.typeName,
             knownTypes,
             typeGenerationFlags,
-            false,
+            isInputOnly,
             false,
         );
         const docs = addDeprecatedToDocs(fieldDefinition);
@@ -265,9 +268,16 @@ export async function generateUnion(
     knownTypes: Map<string, ITypeDefinition>,
     simpleAst: SimpleAst,
     typeGenerationFlags: ITypeGenerationFlags,
+    isInputOnly: boolean = false,
 ) {
     const unionTsType = "I" + definition.typeName.name;
-    const unionSourceFileInput = processUnionMembers(unionTsType, definition, knownTypes, typeGenerationFlags);
+    const unionSourceFileInput = processUnionMembers(
+        unionTsType,
+        definition,
+        knownTypes,
+        typeGenerationFlags,
+        isInputOnly,
+    );
 
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
     if (unionSourceFileInput.imports.length !== 0) {
@@ -339,6 +349,7 @@ function processUnionMembers(
     definition: IUnionDefinition,
     knownTypes: Map<string, ITypeDefinition>,
     typeGenerationFlags: ITypeGenerationFlags,
+    isInputOnly: boolean,
 ) {
     const imports: ImportDeclarationStructure[] = [];
     const visitorProperties: PropertySignatureStructure[] = [];
@@ -353,7 +364,7 @@ function processUnionMembers(
             definition.typeName,
             knownTypes,
             typeGenerationFlags,
-            false,
+            isInputOnly,
             false,
         );
         imports.push(...resolveImports(fieldDefinition.type, definition.typeName, knownTypes, typeGenerationFlags));

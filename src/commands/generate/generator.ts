@@ -21,6 +21,7 @@ import * as _ from "lodash";
 import * as path from "path";
 import { IServiceGenerationFlags } from "../../types/serviceGenerationFlags";
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
+import { computeInputOnlyTypes } from "../../utils/computeInputOnlyTypes";
 import { directoryNameForType } from "../../utils/fileUtils";
 import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
 import { generateError } from "./generators/generateError";
@@ -83,9 +84,12 @@ export async function generate(
         );
     }
 
-    definition.types.forEach(typeDefinition =>
-        promises.push(generateType(typeDefinition, knownTypes, simpleAst, typeGenerationFlags)),
-    );
+    const inputOnlyTypes = computeInputOnlyTypes(definition);
+    definition.types.forEach(typeDefinition => {
+        const typeName = typeNameOf(typeDefinition);
+        const isInputOnly = typeName != null && inputOnlyTypes.has(createHashableTypeName(typeName));
+        promises.push(generateType(typeDefinition, knownTypes, simpleAst, typeGenerationFlags, isInputOnly));
+    });
 
     definition.errors.forEach(errorDefinition =>
         promises.push(generateError(errorDefinition, knownTypes, simpleAst, typeGenerationFlags)),
@@ -100,6 +104,19 @@ export async function generate(
             fs.removeSync(outDir);
             throw e;
         });
+}
+
+function typeNameOf(t: ITypeDefinition) {
+    switch (t.type) {
+        case "alias":
+            return t.alias.typeName;
+        case "enum":
+            return t.enum.typeName;
+        case "object":
+            return t.object.typeName;
+        case "union":
+            return t.union.typeName;
+    }
 }
 
 const computeKnownTypes = (types: ITypeDefinition[]): Map<string, ITypeDefinition> => {
