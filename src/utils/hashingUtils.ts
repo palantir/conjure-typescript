@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { ITypeName } from "conjure-api";
+import { ITypeDefinition, ITypeName } from "conjure-api";
 
 const FIELD_SEPARATOR = "|-|";
 
@@ -26,4 +26,17 @@ export const createHashableTypeName = (typeName: ITypeName): string => {
 export const disassembleHashableTypeName = (hash: string): ITypeName => {
     const [packageName, name] = hash.split(FIELD_SEPARATOR);
     return { package: packageName, name };
+};
+
+export const typeNameOf = (definition: ITypeDefinition): ITypeName => {
+    switch (definition.type) {
+        case "alias":
+            return definition.alias.typeName;
+        case "enum":
+            return definition.enum.typeName;
+        case "object":
+            return definition.object.typeName;
+        case "union":
+            return definition.union.typeName;
+    }
 };

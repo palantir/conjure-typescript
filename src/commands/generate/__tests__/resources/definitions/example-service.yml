@@ -32,6 +32,7 @@ types:
         fields:
           fileSystemId: string
           path: string
+          tags: list<string>
 
       AliasedBinary:
         alias: binary

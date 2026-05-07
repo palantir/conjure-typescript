@@ -21,8 +21,9 @@ import * as _ from "lodash";
 import * as path from "path";
 import { IServiceGenerationFlags } from "../../types/serviceGenerationFlags";
 import { ITypeGenerationFlags } from "../../types/typeGenerationFlags";
+import { computeInputOnlyTypes } from "../../utils/computeInputOnlyTypes";
 import { directoryNameForType } from "../../utils/fileUtils";
-import { createHashableTypeName, disassembleHashableTypeName } from "../../utils/hashingUtils";
+import { createHashableTypeName, disassembleHashableTypeName, typeNameOf } from "../../utils/hashingUtils";
 import { generateError } from "./generators/generateError";
 import { generateNonThrowingService } from "./generators/generateNonThrowingService";
 import { generateThrowingService } from "./generators/generateThrowingService";
@@ -83,9 +84,11 @@ export async function generate(
         );
     }
 
-    definition.types.forEach(typeDefinition =>
-        promises.push(generateType(typeDefinition, knownTypes, simpleAst, typeGenerationFlags)),
-    );
+    const inputOnlyTypes = computeInputOnlyTypes(definition);
+    definition.types.forEach(typeDefinition => {
+        const isInputOnly = inputOnlyTypes.has(createHashableTypeName(typeNameOf(typeDefinition)));
+        promises.push(generateType(typeDefinition, knownTypes, simpleAst, typeGenerationFlags, isInputOnly));
+    });
 
     definition.errors.forEach(errorDefinition =>
         promises.push(generateError(errorDefinition, knownTypes, simpleAst, typeGenerationFlags)),
