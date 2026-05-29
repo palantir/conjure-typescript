@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
-export function doubleQuote(value: string): string {
-    return `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
-}
+// Direct port of conjure-core PackageValidator.java + PackagePattern.java
+// Pattern: ^([a-z][a-z0-9]+(\.[a-z][a-z0-9]*)*)?$
 
-export function singleQuote(value: string): string {
-    return `'${value.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
+const PACKAGE_PATTERN = /^([a-z][a-z0-9]+(\.[a-z][a-z0-9]*)*)?$/;
+
+export function validatePackageName(name: string, context: string): void {
+    if (!PACKAGE_PATTERN.test(name)) {
+        throw new Error(`Conjure package names must match pattern ${PACKAGE_PATTERN}: "${name}" in ${context}`);
+    }
 }

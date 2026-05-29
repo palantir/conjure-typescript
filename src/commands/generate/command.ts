@@ -21,6 +21,7 @@ import * as path from "path";
 import { SlsVersion, SlsVersionMatcher } from "sls-version";
 import { Argv, CommandModule } from "yargs";
 import { IPackageJson, IProductDependency, ISlsManifestDependency } from "../../types";
+import { validateConjureDefinition } from "../../utils/conjureValidator";
 import { writeJson } from "../../utils/writeJson";
 import { generate } from "./generator";
 
@@ -208,7 +209,14 @@ export class GenerateCommand implements CommandModule {
 }
 
 export async function loadConjureDefinition(input: string): Promise<IConjureDefinition> {
-    return { errors: [], services: [], types: [], ...JSON.parse(await fs.readFile(input, "utf8")) };
+    const definition: IConjureDefinition = {
+        errors: [],
+        services: [],
+        types: [],
+        ...JSON.parse(await fs.readFile(input, "utf8")),
+    };
+    validateConjureDefinition(definition);
+    return definition;
 }
 
 export async function createPackageJson(
