@@ -110,9 +110,9 @@ export function matchesAnyFieldNameCase(value: string): boolean {
     return matchesCamelCase(value) || matchesKebabCase(value) || matchesSnakeCase(value);
 }
 
-export type FieldNameCase = "camelCase" | "kebabCase" | "snakeCase";
+type FieldNameCase = "camelCase" | "kebabCase" | "snakeCase";
 
-export function detectCase(value: string): FieldNameCase | undefined {
+function detectCase(value: string): FieldNameCase | undefined {
     if (matchesCamelCase(value)) {
         return "camelCase";
     }

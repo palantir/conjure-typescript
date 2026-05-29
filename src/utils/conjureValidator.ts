@@ -92,7 +92,7 @@ function validateUniqueErrorNames(definition: IConjureDefinition): void {
     }
 }
 
-// Compute knownTypes map (same as generator.ts:105-135 but without error types for validation)
+// Compute knownTypes map (same as computeKnownTypes in generator.ts but without error types)
 function computeKnownTypes(definition: IConjureDefinition): Map<string, ITypeDefinition> {
     const knownTypes = new Map<string, ITypeDefinition>();
 

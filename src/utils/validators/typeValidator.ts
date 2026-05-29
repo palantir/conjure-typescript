@@ -51,10 +51,7 @@ export function dealias(type: IType, knownTypes: Map<string, ITypeDefinition>): 
 /**
  * Check if a type resolves to a TypeDefinition (returns the definition), or to a primitive/container (returns undefined).
  */
-export function dealiasToDefinition(
-    type: IType,
-    knownTypes: Map<string, ITypeDefinition>,
-): ITypeDefinition | undefined {
+function dealiasToDefinition(type: IType, knownTypes: Map<string, ITypeDefinition>): ITypeDefinition | undefined {
     if (IType.isReference(type)) {
         const refName = createHashableTypeName(type.reference);
         const typeDef = knownTypes.get(refName);
@@ -331,6 +328,37 @@ export function validateNoIllegalMapKeys(
         } else if (ITypeDefinition.isAlias(typeDef)) {
             if (hasIllegalMapKey(typeDef.alias.alias, knownTypes)) {
                 throw new Error(`Complex type not allowed in map key: alias '${typeDef.alias.typeName.name}'`);
+            }
+        }
+    }
+
+    for (const errorDef of definition.errors) {
+        const allArgs = (errorDef.safeArgs || []).concat(errorDef.unsafeArgs || []);
+        for (const arg of allArgs) {
+            if (hasIllegalMapKey(arg.type, knownTypes)) {
+                throw new Error(
+                    `Complex type not allowed in map key: arg '${arg.fieldName}' ` +
+                        `in error '${errorDef.errorName.name}'`,
+                );
+            }
+        }
+    }
+
+    for (const serviceDef of definition.services) {
+        for (const endpoint of serviceDef.endpoints) {
+            for (const arg of endpoint.args) {
+                if (hasIllegalMapKey(arg.type, knownTypes)) {
+                    throw new Error(
+                        `Complex type not allowed in map key: arg '${arg.argName}' ` +
+                            `in endpoint '${endpoint.endpointName}' of service '${serviceDef.serviceName.name}'`,
+                    );
+                }
+            }
+            if (endpoint.returns != null && hasIllegalMapKey(endpoint.returns, knownTypes)) {
+                throw new Error(
+                    `Complex type not allowed in map key: return type of endpoint '${endpoint.endpointName}' ` +
+                        `in service '${serviceDef.serviceName.name}'`,
+                );
             }
         }
     }
