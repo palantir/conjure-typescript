@@ -18,13 +18,10 @@
 // Direct port of conjure-core ConjureDefinitionValidator.validateAll()
 // Orchestrates all validators in the same order as the Java implementation.
 //
-// Note: Neither this implementation nor the Java original validates `docs` fields,
-// which could contain JSDoc breakout payloads (e.g., docs: "*/ malicious code /*").
-// This is not exploitable in conjure-typescript because ts-morph's AST manipulation
-// rejects the malformed output (throws ManipulationError or NotImplementedError)
-// before any file is written. Field/method-level docs land inside interface bodies
-// where executable code is not valid TypeScript. This does NOT hold for all Conjure
-// generators — e.g., conjure-go emits comments as raw text without AST validation.
+// Note: Neither this implementation nor the Java original validates `docs` fields.
+// JSDoc breakout payloads (e.g., docs: "*/ malicious code /*") are neutralized
+// by sanitizeDocs() in docsUtils.ts, which is applied at every point where IR
+// strings enter generated JSDoc comments.
 
 import { IConjureDefinition, ITypeDefinition } from "conjure-api";
 import { createHashableTypeName } from "./hashingUtils";

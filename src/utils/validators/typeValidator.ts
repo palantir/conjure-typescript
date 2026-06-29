@@ -110,18 +110,9 @@ function collectTypeReferences(type: IType): ITypeName[] {
     if (IType.isReference(type)) {
         return [type.reference];
     }
-    if (IType.isOptional(type)) {
-        return collectTypeReferences(type.optional.itemType);
-    }
-    if (IType.isList(type)) {
-        return collectTypeReferences(type.list.itemType);
-    }
-    if (IType.isSet(type)) {
-        return collectTypeReferences(type.set.itemType);
-    }
-    if (IType.isMap(type)) {
-        return [...collectTypeReferences(type.map.keyType), ...collectTypeReferences(type.map.valueType)];
-    }
+    // Container types (list, set, map, optional) are not traversed — they generate
+    // reference types in TypeScript (Array<T>, T | undefined, etc.) that break
+    // the inline expansion that makes direct recursion invalid.
     return [];
 }
 
@@ -144,13 +135,9 @@ export function validateNoRecursiveTypes(definition: IConjureDefinition): void {
                     refs.add(createHashableTypeName(ref));
                 }
             }
-        } else if (ITypeDefinition.isUnion(typeDef)) {
-            for (const member of typeDef.union.union) {
-                for (const ref of collectTypeReferences(member.type)) {
-                    refs.add(createHashableTypeName(ref));
-                }
-            }
         }
+        // Unions are excluded from recursion detection, matching Java's NoRecursiveTypesValidator.
+        // Union self-references generate valid TypeScript (tagged unions use interfaces).
 
         edges.set(key, refs);
     }
@@ -283,11 +270,18 @@ export function validateNoNestedOptionals(
 function hasIllegalMapKey(type: IType, knownTypes: Map<string, ITypeDefinition>): boolean {
     if (IType.isMap(type)) {
         const keyType = type.map.keyType;
-        // Map keys must be primitives or references (enums/objects after dealiasing)
-        if (!IType.isPrimitive(keyType) && !IType.isReference(keyType)) {
-            return true;
+        // Map keys must be primitives, enums, or objects — not containers.
+        // References are followed through alias chains to check the resolved type.
+        if (!IType.isPrimitive(keyType)) {
+            if (IType.isReference(keyType)) {
+                const resolved = dealias(keyType, knownTypes);
+                if (resolved !== undefined && !IType.isPrimitive(resolved)) {
+                    return true;
+                }
+            } else {
+                return true;
+            }
         }
-        // Also check value recursively
         return hasIllegalMapKey(type.map.valueType, knownTypes);
     }
     if (IType.isOptional(type)) {
