@@ -17,6 +17,16 @@
 
 import { IEndpointDefinition, IEndpointError, IEnumValueDefinition, IFieldDefinition } from "conjure-api";
 
+/**
+ * Sanitizes a docs string to prevent JSDoc comment breakout.
+ * Replaces `* /` (closing comment sequence) to prevent injecting executable
+ * code via malicious docs fields inside generated TypeScript namespaces.
+ */
+export function sanitizeDocs(docs: string): string {
+    // TODO: implement — currently a passthrough stub for TDD
+    return docs;
+}
+
 type DeprecatableDefinitions = IFieldDefinition | IEnumValueDefinition | IEndpointDefinition;
 
 export const addDeprecatedToDocs = <T extends DeprecatableDefinitions>(typeDefintion: T): string | undefined => {

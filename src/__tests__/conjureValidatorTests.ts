@@ -16,6 +16,7 @@
  */
 
 import { IConjureDefinition } from "conjure-api";
+import { sanitizeDocs } from "../utils/docsUtils";
 import { validateConjureDefinition } from "../utils/conjureValidator";
 import {
     convertToCamelCase,
@@ -795,6 +796,95 @@ describe("validateConjureDefinition", () => {
                 ),
             ).toThrow(/Recursive types/);
         });
+
+        it("accepts container-wrapped self-reference (Tree with List<Tree>)", () => {
+            expect(() =>
+                validateConjureDefinition(
+                    makeDef({
+                        types: [
+                            makeObject("Tree", "com.palantir.product", [
+                                field("children", {
+                                    type: "list",
+                                    list: {
+                                        itemType: {
+                                            type: "reference",
+                                            reference: { name: "Tree", package: "com.palantir.product" },
+                                        },
+                                    },
+                                }),
+                            ]),
+                        ],
+                    }),
+                ),
+            ).not.toThrow();
+        });
+
+        it("accepts optional self-reference", () => {
+            expect(() =>
+                validateConjureDefinition(
+                    makeDef({
+                        types: [
+                            makeObject("Node", "com.palantir.product", [
+                                field("next", {
+                                    type: "optional",
+                                    optional: {
+                                        itemType: {
+                                            type: "reference",
+                                            reference: { name: "Node", package: "com.palantir.product" },
+                                        },
+                                    },
+                                }),
+                            ]),
+                        ],
+                    }),
+                ),
+            ).not.toThrow();
+        });
+
+        it("accepts set self-reference", () => {
+            expect(() =>
+                validateConjureDefinition(
+                    makeDef({
+                        types: [
+                            makeObject("Graph", "com.palantir.product", [
+                                field("neighbors", {
+                                    type: "set",
+                                    set: {
+                                        itemType: {
+                                            type: "reference",
+                                            reference: { name: "Graph", package: "com.palantir.product" },
+                                        },
+                                    },
+                                }),
+                            ]),
+                        ],
+                    }),
+                ),
+            ).not.toThrow();
+        });
+
+        it("accepts map value self-reference", () => {
+            expect(() =>
+                validateConjureDefinition(
+                    makeDef({
+                        types: [
+                            makeObject("Index", "com.palantir.product", [
+                                field("entries", {
+                                    type: "map",
+                                    map: {
+                                        keyType: { type: "primitive", primitive: "STRING" },
+                                        valueType: {
+                                            type: "reference",
+                                            reference: { name: "Index", package: "com.palantir.product" },
+                                        },
+                                    },
+                                }),
+                            ]),
+                        ],
+                    }),
+                ),
+            ).not.toThrow();
+        });
     });
 
     describe("nested optionals", () => {
@@ -867,6 +957,39 @@ describe("validateConjureDefinition", () => {
                                         keyType: {
                                             type: "list",
                                             list: { itemType: { type: "primitive", primitive: "STRING" } },
+                                        },
+                                        valueType: { type: "primitive", primitive: "STRING" },
+                                    },
+                                }),
+                            ]),
+                        ],
+                    }),
+                ),
+            ).toThrow(/Complex type not allowed in map key/);
+        });
+
+        it("rejects map key that is an alias to a container type", () => {
+            expect(() =>
+                validateConjureDefinition(
+                    makeDef({
+                        types: [
+                            {
+                                type: "alias",
+                                alias: {
+                                    typeName: { name: "StringList", package: "com.palantir.product" },
+                                    alias: {
+                                        type: "list",
+                                        list: { itemType: { type: "primitive", primitive: "STRING" } },
+                                    },
+                                },
+                            } as any,
+                            makeObject("MyObj", "com.palantir.product", [
+                                field("bad", {
+                                    type: "map",
+                                    map: {
+                                        keyType: {
+                                            type: "reference",
+                                            reference: { name: "StringList", package: "com.palantir.product" },
                                         },
                                         valueType: { type: "primitive", primitive: "STRING" },
                                     },
@@ -1301,6 +1424,36 @@ describe("validateConjureDefinition", () => {
                     }),
                 ),
             ).toThrow(/safety cannot be declared/);
+        });
+    });
+
+    describe("docs sanitization", () => {
+        it("neutralizes JSDoc breakout payload in docs", () => {
+            const maliciousPayload = "*/;require('child_process').execSync('touch /tmp/PWNED');/*";
+            const sanitized = sanitizeDocs(maliciousPayload);
+            expect(sanitized).not.toContain("*/");
+        });
+
+        it("preserves normal docs content", () => {
+            const normalDocs = "This is a normal documentation string.";
+            expect(sanitizeDocs(normalDocs)).toBe(normalDocs);
+        });
+
+        it("handles docs with asterisks that are not breakouts", () => {
+            const docs = "Returns a * b multiplied values";
+            expect(sanitizeDocs(docs)).toBe(docs);
+        });
+
+        it("handles multiple breakout attempts", () => {
+            const docs = "*/alert(1)/* and also */alert(2)/*";
+            const sanitized = sanitizeDocs(docs);
+            expect(sanitized).not.toContain("*/");
+        });
+
+        it("neutralizes breakout in deprecated field", () => {
+            const maliciousDeprecated = "*/;require('child_process').execSync('touch /tmp/PWNED');/*";
+            const sanitized = sanitizeDocs(maliciousDeprecated);
+            expect(sanitized).not.toContain("*/");
         });
     });
 
