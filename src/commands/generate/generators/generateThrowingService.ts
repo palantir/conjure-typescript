@@ -27,7 +27,7 @@ import {
 } from "ts-morph";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
-import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
+import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs, sanitizeDocs } from "../../../utils/docsUtils";
 import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../../utils/resolveImports";
 import { resolveTsType } from "../../../utils/resolveTsType";
 import { SimpleAst } from "../simpleAst";
@@ -149,7 +149,7 @@ export function generateThrowingService(
         name: "I" + definition.serviceName.name,
     });
     if (definition.docs != null) {
-        iface.addJsDoc({ description: definition.docs });
+        iface.addJsDoc({ description: sanitizeDocs(definition.docs) });
     }
 
     sourceFile.addClass({

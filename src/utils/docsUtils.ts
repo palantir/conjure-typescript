@@ -17,20 +17,30 @@
 
 import { IEndpointDefinition, IEndpointError, IEnumValueDefinition, IFieldDefinition } from "conjure-api";
 
+/**
+ * Sanitizes a docs string to prevent JSDoc comment breakout.
+ * Replaces `* /` (closing comment sequence) to prevent injecting executable
+ * code via malicious docs fields inside generated TypeScript namespaces.
+ */
+export function sanitizeDocs(docs: string): string {
+    return docs.replace(/\*\//g, "* /");
+}
+
 type DeprecatableDefinitions = IFieldDefinition | IEnumValueDefinition | IEndpointDefinition;
 
 export const addDeprecatedToDocs = <T extends DeprecatableDefinitions>(typeDefintion: T): string | undefined => {
-    if (typeDefintion.deprecated != null && typeDefintion.deprecated != null) {
-        if (typeDefintion.docs != null && typeDefintion.docs != null) {
-            // Do not add deprecated JSDoc if already exists
-            if (typeDefintion.docs.indexOf("@deprecated") === -1) {
-                return `${typeDefintion.docs}\n@deprecated ${typeDefintion.deprecated}`;
+    const docs = typeDefintion.docs != null ? sanitizeDocs(typeDefintion.docs) : undefined;
+    const deprecated = typeDefintion.deprecated != null ? sanitizeDocs(typeDefintion.deprecated) : undefined;
+    if (deprecated != null) {
+        if (docs != null) {
+            if (docs.indexOf("@deprecated") === -1) {
+                return `${docs}\n@deprecated ${deprecated}`;
             }
         } else {
-            return `@deprecated ${typeDefintion.deprecated}`;
+            return `@deprecated ${deprecated}`;
         }
     }
-    return typeDefintion.docs != null ? typeDefintion.docs : undefined;
+    return docs;
 };
 
 export const addIncubatingToDocs = (
@@ -66,8 +76,8 @@ export const addErrorsToDocs = (
 
 const formattedEndpointError = (errorDefinition: IEndpointError): string => {
     let formattedString = `{I${errorDefinition.error.name}}`;
-    if (errorDefinition.docs != null && errorDefinition.docs != null) {
-        formattedString += ` ${errorDefinition.docs}`;
+    if (errorDefinition.docs != null) {
+        formattedString += ` ${sanitizeDocs(errorDefinition.docs)}`;
     }
     return formattedString;
 };

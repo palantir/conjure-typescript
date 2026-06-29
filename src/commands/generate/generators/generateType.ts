@@ -35,7 +35,7 @@ import {
     VariableStatementStructure,
 } from "ts-morph";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
-import { addDeprecatedToDocs } from "../../../utils/docsUtils";
+import { addDeprecatedToDocs, sanitizeDocs } from "../../../utils/docsUtils";
 import { isFlavorizable } from "../../../utils/flavorizingUtils";
 import { isValidFunctionName } from "../../../utils/functionUtils";
 import { doubleQuote, singleQuote } from "../../../utils/quotesUtils";
@@ -101,7 +101,7 @@ export async function generateAlias(
             ].join("\n"),
         });
         if (definition.docs) {
-            typeAlias.addJsDoc(definition.docs);
+            typeAlias.addJsDoc(sanitizeDocs(definition.docs));
         }
         sourceFile.formatText();
         return sourceFile.save();
@@ -159,7 +159,7 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
             statements: [...typeAliases, ...variableDeclarations],
         });
         if (definition.docs != null) {
-            namespaceDefinition.addJsDoc(definition.docs);
+            namespaceDefinition.addJsDoc(sanitizeDocs(definition.docs));
         }
         sourceFile.addTypeAlias({
             isExported: true,
@@ -181,7 +181,7 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
             isExported: true,
         });
         if (definition.docs != null) {
-            variableStatement.addJsDoc(definition.docs);
+            variableStatement.addJsDoc(sanitizeDocs(definition.docs));
         }
         sourceFile.addTypeAlias({
             isExported: true,
@@ -247,8 +247,8 @@ export async function generateObject(
         name: "I" + definition.typeName.name,
         properties,
     });
-    if (definition.docs != null && definition.docs != null) {
-        iface.addJsDoc({ description: definition.docs });
+    if (definition.docs != null) {
+        iface.addJsDoc({ description: sanitizeDocs(definition.docs) });
     }
 
     sourceFile.formatText();
@@ -277,7 +277,7 @@ export async function generateUnion(
     sourceFile.addFunctions(unionSourceFileInput.functions);
 
     sourceFile.addTypeAlias({
-        docs: definition.docs != null ? [{ description: definition.docs }] : undefined,
+        docs: definition.docs != null ? [{ description: sanitizeDocs(definition.docs) }] : undefined,
         isExported: true,
         name: unionTsType,
         type:
@@ -411,7 +411,10 @@ function processUnionMembers(
             ],
             returnType: interfaceName,
             // deprecate creation of deprecated types
-            docs: fieldDefinition.deprecated != null ? [`@deprecated ${fieldDefinition.deprecated}`] : undefined,
+            docs:
+                fieldDefinition.deprecated != null
+                    ? [`@deprecated ${sanitizeDocs(fieldDefinition.deprecated)}`]
+                    : undefined,
         });
 
         visitorProperties.push({
