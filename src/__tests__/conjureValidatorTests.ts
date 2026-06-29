@@ -16,8 +16,8 @@
  */
 
 import { IConjureDefinition } from "conjure-api";
-import { sanitizeDocs } from "../utils/docsUtils";
 import { validateConjureDefinition } from "../utils/conjureValidator";
+import { sanitizeDocs } from "../utils/docsUtils";
 import {
     convertToCamelCase,
     matchesCamelCase,
