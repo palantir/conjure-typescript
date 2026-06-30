@@ -26,8 +26,10 @@ import {
     VariableDeclarationKind,
 } from "ts-morph";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
+import { buildDescriptorExpr } from "../../../utils/buildDescriptorExpr";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
+import { relativePath } from "../../../utils/fileUtils";
 import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../../utils/resolveImports";
 import { resolveTsType } from "../../../utils/resolveTsType";
 import { SimpleAst } from "../simpleAst";
@@ -48,6 +50,12 @@ const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
     isTypeOnly: true,
 };
 
+const DESERIALIZE_IMPORT: ImportDeclarationStructure = {
+    kind: StructureKind.ImportDeclaration,
+    moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
+    namedImports: [{ name: "deserialize" }],
+};
+
 export function generateThrowingService(
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
@@ -59,6 +67,10 @@ export function generateThrowingService(
     const endpointSignatures: MethodSignatureStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
     const imports: ImportDeclarationStructure[] = [HTTP_API_BRIDGE_IMPORT];
+
+    if (typeGenerationFlags.nullSafeDeserialization) {
+        imports.push(DESERIALIZE_IMPORT);
+    }
 
     sourceFile.addVariableStatement({
         declarationKind: VariableDeclarationKind.Const,
@@ -115,6 +127,30 @@ export function generateThrowingService(
         docs = addIncubatingToDocs(endpointDefinition, docs);
         docs = addErrorsToDocs(endpointDefinition, docs);
 
+        let descriptorExpr: string | undefined;
+        if (typeGenerationFlags.nullSafeDeserialization && endpointDefinition.returns != null) {
+            const { expr, builders, refs } = buildDescriptorExpr(
+                endpointDefinition.returns,
+                knownTypes,
+                typeGenerationFlags,
+            );
+            descriptorExpr = expr;
+            builders.forEach(b =>
+                imports.push({
+                    kind: StructureKind.ImportDeclaration,
+                    moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
+                    namedImports: [{ name: b }],
+                }),
+            );
+            refs.forEach(ref =>
+                imports.push({
+                    kind: StructureKind.ImportDeclaration,
+                    moduleSpecifier: relativePath(definition.serviceName, ref),
+                    namedImports: [{ name: `_${ref.name}` }],
+                }),
+            );
+        }
+
         const { signature, implementation } = generateThrowingEndpoint({
             serviceDefinition: definition,
             endpointDefinition,
@@ -122,6 +158,7 @@ export function generateThrowingService(
             knownTypes,
             parameters,
             docs,
+            descriptorExpr,
         });
 
         endpointSignatures.push(signature);

@@ -45,9 +45,12 @@ type generateNonThrowingEndpointBodyArgs = {
     knownTypes: Map<string, ITypeDefinition>;
     resultType: string;
     serviceDefinition: IServiceDefinition;
+    /** When provided, the bridge result is passed through `deserialize(descriptorExpr, result)`. */
+    descriptorExpr?: string;
 };
 
 function generateNonThrowingEndpointBody({
+    descriptorExpr,
     endpointDefinition,
     knownTypes,
     resultType,
@@ -137,10 +140,16 @@ function generateNonThrowingEndpointBody({
         writer.writeLine(
             `${responseMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${responseMediaType}"`}`,
         );
-        writer
-            .writeLine(")")
-            .writeLine(`.then(result => ({ status: "success" as const, result }))`)
-            .writeLine(`.catch((error: any) => ({ status: "failure", error }));`);
+        writer.writeLine(")");
+        if (descriptorExpr != null) {
+            writer
+                .writeLine(`.then((__result) => ({ status: "success" as const, result: deserialize(${descriptorExpr}, __result) }))`)
+                .writeLine(`.catch((error: any) => ({ status: "failure", error }));`);
+        } else {
+            writer
+                .writeLine(`.then(result => ({ status: "success" as const, result }))`)
+                .writeLine(`.catch((error: any) => ({ status: "failure", error }));`);
+        }
     };
 }
 
@@ -148,6 +157,8 @@ type GenerateNonThrowingEndpointArgs = generateNonThrowingEndpointBodyArgs & {
     docs: string | undefined;
     errorsType: string;
     parameters: ParameterDeclarationStructure[];
+    /** When provided, wraps the bridge result with `deserialize(descriptorExpr, result)`. */
+    descriptorExpr?: string;
 };
 
 type GenerateNonThrowingEndpointReturn = {
@@ -156,6 +167,7 @@ type GenerateNonThrowingEndpointReturn = {
 };
 
 export function generateNonThrowingEndpoint({
+    descriptorExpr,
     docs,
     errorsType,
     endpointDefinition,
@@ -177,6 +189,7 @@ export function generateNonThrowingEndpoint({
         implementation: {
             kind: StructureKind.Method,
             statements: generateNonThrowingEndpointBody({
+                descriptorExpr,
                 endpointDefinition,
                 knownTypes,
                 resultType,

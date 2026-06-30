@@ -27,8 +27,10 @@ import {
     VariableDeclarationKind,
 } from "ts-morph";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
+import { buildDescriptorExpr } from "../../../utils/buildDescriptorExpr";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
+import { relativePath } from "../../../utils/fileUtils";
 import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../../utils/resolveImports";
 import { resolveMediaType } from "../../../utils/resolveMediaType";
 import { resolveTsType } from "../../../utils/resolveTsType";
@@ -70,6 +72,14 @@ export function generateNonThrowingService(
     const endpointSignatures: MethodSignatureStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
     const imports: ImportDeclarationStructure[] = [CONJURE_CLIENT_IMPORTS];
+
+    if (typeGenerationFlags.nullSafeDeserialization) {
+        imports.push({
+            kind: StructureKind.ImportDeclaration,
+            moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
+            namedImports: [{ name: "deserialize" }],
+        });
+    }
 
     sourceFile.addVariableStatement({
         declarationKind: VariableDeclarationKind.Const,
@@ -146,6 +156,34 @@ export function generateNonThrowingService(
         }
         const errorsType = errorNames.join(" | ");
 
+        let descriptorExpr: string | undefined;
+        if (
+            typeGenerationFlags.nullSafeDeserialization &&
+            endpointDefinition.returns != null &&
+            responseMediaType !== MediaType.APPLICATION_OCTET_STREAM
+        ) {
+            const { expr, builders, refs } = buildDescriptorExpr(
+                endpointDefinition.returns,
+                knownTypes,
+                typeGenerationFlags,
+            );
+            descriptorExpr = expr;
+            builders.forEach(b =>
+                imports.push({
+                    kind: StructureKind.ImportDeclaration,
+                    moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
+                    namedImports: [{ name: b }],
+                }),
+            );
+            refs.forEach(ref =>
+                imports.push({
+                    kind: StructureKind.ImportDeclaration,
+                    moduleSpecifier: relativePath(definition.serviceName, ref),
+                    namedImports: [{ name: `_${ref.name}` }],
+                }),
+            );
+        }
+
         // If the endpoint is a streaming endpoint, we don't want to wrap the result in an `IConjureResult`
         // and instead return the raw result type. This means the method will be throwing.
         const { signature, implementation } =
@@ -169,6 +207,7 @@ export function generateNonThrowingService(
                       knownTypes,
                       parameters,
                       docs,
+                      descriptorExpr,
                   });
 
         endpointSignatures.push(signature);

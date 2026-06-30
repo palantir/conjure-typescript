@@ -28,4 +28,11 @@ export interface ITypeGenerationFlags {
      * When set to true, generated interfaces will have read-only properties and use ReadonlyArray instead of Array.
      */
     readonly readonlyInterfaces: boolean;
+
+    /**
+     * When set to true, generated services apply Conjure §5.6.1 null-safe deserialization to all responses,
+     * and each generated type exports a ConjureType descriptor constant (`_TypeName`) used by the engine.
+     * Requires conjure-client ≥ <PR-1-version>.
+     */
+    readonly nullSafeDeserialization: boolean;
 }

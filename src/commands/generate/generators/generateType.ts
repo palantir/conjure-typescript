@@ -35,7 +35,10 @@ import {
     VariableStatementStructure,
 } from "ts-morph";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
+import { buildDescriptorExpr } from "../../../utils/buildDescriptorExpr";
+import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
 import { addDeprecatedToDocs } from "../../../utils/docsUtils";
+import { relativePath } from "../../../utils/fileUtils";
 import { isFlavorizable } from "../../../utils/flavorizingUtils";
 import { isValidFunctionName } from "../../../utils/functionUtils";
 import { doubleQuote, singleQuote } from "../../../utils/quotesUtils";
@@ -52,7 +55,7 @@ export function generateType(
     if (ITypeDefinition.isAlias(definition)) {
         return generateAlias(definition.alias, knownTypes, simpleAst, typeGenerationFlags);
     } else if (ITypeDefinition.isEnum(definition)) {
-        return generateEnum(definition.enum, simpleAst);
+        return generateEnum(definition.enum, simpleAst, typeGenerationFlags);
     } else if (ITypeDefinition.isObject(definition)) {
         return generateObject(definition.object, knownTypes, simpleAst, typeGenerationFlags);
     } else if (ITypeDefinition.isUnion(definition)) {
@@ -103,6 +106,18 @@ export async function generateAlias(
         if (definition.docs) {
             typeAlias.addJsDoc(definition.docs);
         }
+
+        if (typeGenerationFlags.nullSafeDeserialization) {
+            const inner = buildDescriptorExpr(definition.alias, knownTypes, typeGenerationFlags);
+            addDescriptorConst(
+                sourceFile,
+                definition.typeName,
+                `alias(${inner.expr})`,
+                ["alias", ...inner.builders],
+                inner.refs,
+            );
+        }
+
         sourceFile.formatText();
         return sourceFile.save();
     }
@@ -124,7 +139,11 @@ export async function generateAlias(
  * We do not use TypeScript Enums because they can not be assigned to an equivalent enum, making interop across
  * libraries more difficult
  */
-export async function generateEnum(definition: IEnumDefinition, simpleAst: SimpleAst): Promise<void> {
+export async function generateEnum(
+    definition: IEnumDefinition,
+    simpleAst: SimpleAst,
+    typeGenerationFlags?: ITypeGenerationFlags,
+): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
 
     if (definition.values.length > 0) {
@@ -192,6 +211,10 @@ export async function generateEnum(definition: IEnumDefinition, simpleAst: Simpl
         });
     }
 
+    if (typeGenerationFlags?.nullSafeDeserialization) {
+        addDescriptorConst(sourceFile, definition.typeName, "enumType()", ["enumType"], []);
+    }
+
     sourceFile.formatText();
     return sourceFile.save();
 }
@@ -249,6 +272,23 @@ export async function generateObject(
     });
     if (definition.docs != null && definition.docs != null) {
         iface.addJsDoc({ description: definition.docs });
+    }
+
+    if (typeGenerationFlags.nullSafeDeserialization) {
+        const allBuilders = new Set<string>(["object"]);
+        const allRefs: import("conjure-api").ITypeName[] = [];
+        const fieldEntries: string[] = definition.fields.map(fieldDefinition => {
+            const { expr, builders, refs } = buildDescriptorExpr(
+                fieldDefinition.type,
+                knownTypes,
+                typeGenerationFlags,
+            );
+            builders.forEach(b => allBuilders.add(b));
+            allRefs.push(...refs);
+            return `"${fieldDefinition.fieldName}": ${expr}`;
+        });
+        const descriptorExpr = `object({ ${fieldEntries.join(", ")} })`;
+        addDescriptorConst(sourceFile, definition.typeName, descriptorExpr, Array.from(allBuilders), allRefs);
     }
 
     sourceFile.formatText();
@@ -329,6 +369,23 @@ export async function generateUnion(
             name,
         });
     });
+
+    if (typeGenerationFlags.nullSafeDeserialization) {
+        const allBuilders = new Set<string>(["union"]);
+        const allRefs: import("conjure-api").ITypeName[] = [];
+        const variantEntries: string[] = definition.union.map(fieldDefinition => {
+            const { expr, builders, refs } = buildDescriptorExpr(
+                fieldDefinition.type,
+                knownTypes,
+                typeGenerationFlags,
+            );
+            builders.forEach(b => allBuilders.add(b));
+            allRefs.push(...refs);
+            return `"${fieldDefinition.fieldName}": ${expr}`;
+        });
+        const descriptorExpr = `union({ ${variantEntries.join(", ")} })`;
+        addDescriptorConst(sourceFile, definition.typeName, descriptorExpr, Array.from(allBuilders), allRefs);
+    }
 
     sourceFile.formatText();
     return sourceFile.save();
@@ -453,4 +510,43 @@ function processUnionMembers(
 
 function capitalize(value: string): string {
     return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+/**
+ * Emits `export const _TypeName = <descriptorExpr>;` into `sourceFile`, along with the
+ * conjure-client builder imports and any cross-type `_OtherType` descriptor imports required.
+ */
+function addDescriptorConst(
+    sourceFile: ReturnType<SimpleAst["createSourceFile"]>,
+    typeName: import("conjure-api").ITypeName,
+    descriptorExpr: string,
+    builders: string[],
+    refs: import("conjure-api").ITypeName[],
+): void {
+    // Import conjure-client builders
+    if (builders.length > 0) {
+        sourceFile.addImportDeclaration({
+            kind: StructureKind.ImportDeclaration,
+            moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
+            namedImports: builders.map(b => ({ name: b })),
+        });
+    }
+
+    // Import descriptor constants from other type modules
+    for (const ref of refs) {
+        if (ref.name === typeName.name && ref.package === typeName.package) {
+            continue; // self-reference — resolved via thunk, no import needed
+        }
+        sourceFile.addImportDeclaration({
+            kind: StructureKind.ImportDeclaration,
+            moduleSpecifier: relativePath(typeName, ref),
+            namedImports: [{ name: `_${ref.name}` }],
+        });
+    }
+
+    sourceFile.addVariableStatement({
+        declarationKind: VariableDeclarationKind.Const,
+        isExported: true,
+        declarations: [{ name: `_${typeName.name}`, initializer: descriptorExpr }],
+    });
 }
