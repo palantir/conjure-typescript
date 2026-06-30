@@ -123,9 +123,9 @@ function buildExprForReference(
 function primitiveBuilderName(primitive: PrimitiveType): string {
     switch (primitive) {
         case PrimitiveType.STRING:
-            return "string";
+            return "stringType";
         case PrimitiveType.BOOLEAN:
-            return "boolean";
+            return "booleanType";
         case PrimitiveType.INTEGER:
             return "integer";
         case PrimitiveType.SAFELONG:
@@ -143,7 +143,7 @@ function primitiveBuilderName(primitive: PrimitiveType): string {
         case PrimitiveType.DATETIME:
             return "datetime";
         case PrimitiveType.ANY:
-            return "any";
+            return "anyType";
         default:
             throw new Error(`Unknown primitive type: ${primitive}`);
     }
