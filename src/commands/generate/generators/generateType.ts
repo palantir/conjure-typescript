@@ -20,6 +20,7 @@ import {
     IObjectDefinition,
     IType,
     ITypeDefinition,
+    ITypeName,
     IUnionDefinition,
 } from "conjure-api";
 import {
@@ -276,7 +277,7 @@ export async function generateObject(
 
     if (typeGenerationFlags.useDeserializer) {
         const allBuilders = new Set<string>(["object"]);
-        const allRefs: Array<import("conjure-api").ITypeName> = [];
+        const allRefs: ITypeName[] = [];
         const fieldEntries: string[] = definition.fields.map(fieldDefinition => {
             const { expr, builders, refs } = buildDescriptorExpr(
                 fieldDefinition.type,
@@ -372,7 +373,7 @@ export async function generateUnion(
 
     if (typeGenerationFlags.useDeserializer) {
         const allBuilders = new Set<string>(["union"]);
-        const allRefs: Array<import("conjure-api").ITypeName> = [];
+        const allRefs: ITypeName[] = [];
         const variantEntries: string[] = definition.union.map(fieldDefinition => {
             const { expr, builders, refs } = buildDescriptorExpr(
                 fieldDefinition.type,
@@ -518,10 +519,10 @@ function capitalize(value: string): string {
  */
 function addDescriptorConst(
     sourceFile: ReturnType<SimpleAst["createSourceFile"]>,
-    typeName: import("conjure-api").ITypeName,
+    typeName: ITypeName,
     descriptorExpr: string,
     builders: string[],
-    refs: Array<import("conjure-api").ITypeName>,
+    refs: ITypeName[],
 ): void {
     // Import conjure-client builders
     if (builders.length > 0) {

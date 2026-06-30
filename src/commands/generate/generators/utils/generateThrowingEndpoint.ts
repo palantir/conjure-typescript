@@ -180,7 +180,13 @@ export function generateThrowingEndpoint({
         },
         implementation: {
             kind: StructureKind.Method,
-            statements: generateThrowingEndpointBody({ descriptorExpr, endpointDefinition, knownTypes, resultType, serviceDefinition }),
+            statements: generateThrowingEndpointBody({
+                descriptorExpr,
+                endpointDefinition,
+                knownTypes,
+                resultType,
+                serviceDefinition,
+            }),
             name: endpointDefinition.endpointName,
             parameters,
             returnType,

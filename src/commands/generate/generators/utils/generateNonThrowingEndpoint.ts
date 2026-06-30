@@ -143,7 +143,9 @@ function generateNonThrowingEndpointBody({
         writer.writeLine(")");
         if (descriptorExpr != null) {
             writer
-                .writeLine(`.then((__result) => ({ status: "success" as const, result: deserialize(${descriptorExpr}, __result) }))`)
+                .writeLine(
+                    `.then((__result) => ({ status: "success" as const, result: deserialize(${descriptorExpr}, __result) }))`,
+                )
                 .writeLine(`.catch((error: any) => ({ status: "failure", error }));`);
         } else {
             writer
