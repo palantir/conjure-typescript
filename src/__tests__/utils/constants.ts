@@ -43,3 +43,8 @@ export const READONLY_TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
     ...DEFAULT_TYPE_GENERATION_FLAGS,
     readonlyInterfaces: true,
 };
+
+export const USE_DESERIALIZER_TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
+    ...DEFAULT_TYPE_GENERATION_FLAGS,
+    useDeserializer: true,
+};
