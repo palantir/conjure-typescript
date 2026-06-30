@@ -277,7 +277,7 @@ export async function generateObject(
     if (typeGenerationFlags.useDeserializer) {
         const allBuilders = new Set<string>(["object"]);
         const allRefs: Array<import("conjure-api").ITypeName> = [];
-        const fieldEntries: Array<string> = definition.fields.map(fieldDefinition => {
+        const fieldEntries: string[] = definition.fields.map(fieldDefinition => {
             const { expr, builders, refs } = buildDescriptorExpr(
                 fieldDefinition.type,
                 knownTypes,
@@ -373,7 +373,7 @@ export async function generateUnion(
     if (typeGenerationFlags.useDeserializer) {
         const allBuilders = new Set<string>(["union"]);
         const allRefs: Array<import("conjure-api").ITypeName> = [];
-        const variantEntries: Array<string> = definition.union.map(fieldDefinition => {
+        const variantEntries: string[] = definition.union.map(fieldDefinition => {
             const { expr, builders, refs } = buildDescriptorExpr(
                 fieldDefinition.type,
                 knownTypes,
@@ -520,7 +520,7 @@ function addDescriptorConst(
     sourceFile: ReturnType<SimpleAst["createSourceFile"]>,
     typeName: import("conjure-api").ITypeName,
     descriptorExpr: string,
-    builders: Array<string>,
+    builders: string[],
     refs: Array<import("conjure-api").ITypeName>,
 ): void {
     // Import conjure-client builders
