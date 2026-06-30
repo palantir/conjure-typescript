@@ -279,11 +279,7 @@ export async function generateObject(
         const allBuilders = new Set<string>(["object"]);
         const allRefs: ITypeName[] = [];
         const fieldEntries: string[] = definition.fields.map(fieldDefinition => {
-            const { expr, builders, refs } = buildDescriptorExpr(
-                fieldDefinition.type,
-                knownTypes,
-                typeGenerationFlags,
-            );
+            const { expr, builders, refs } = buildDescriptorExpr(fieldDefinition.type, knownTypes, typeGenerationFlags);
             builders.forEach(b => allBuilders.add(b));
             allRefs.push(...refs);
             return `"${fieldDefinition.fieldName}": ${expr}`;
@@ -375,11 +371,7 @@ export async function generateUnion(
         const allBuilders = new Set<string>(["union"]);
         const allRefs: ITypeName[] = [];
         const variantEntries: string[] = definition.union.map(fieldDefinition => {
-            const { expr, builders, refs } = buildDescriptorExpr(
-                fieldDefinition.type,
-                knownTypes,
-                typeGenerationFlags,
-            );
+            const { expr, builders, refs } = buildDescriptorExpr(fieldDefinition.type, knownTypes, typeGenerationFlags);
             builders.forEach(b => allBuilders.add(b));
             allRefs.push(...refs);
             return `"${fieldDefinition.fieldName}": ${expr}`;
