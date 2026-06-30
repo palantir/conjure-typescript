@@ -73,7 +73,7 @@ export function generateNonThrowingService(
     const endpointImplementations: MethodDeclarationStructure[] = [];
     const imports: ImportDeclarationStructure[] = [CONJURE_CLIENT_IMPORTS];
 
-    if (typeGenerationFlags.nullSafeDeserialization) {
+    if (typeGenerationFlags.useDeserializer) {
         imports.push({
             kind: StructureKind.ImportDeclaration,
             moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
@@ -158,7 +158,7 @@ export function generateNonThrowingService(
 
         let descriptorExpr: string | undefined;
         if (
-            typeGenerationFlags.nullSafeDeserialization &&
+            typeGenerationFlags.useDeserializer &&
             endpointDefinition.returns != null &&
             responseMediaType !== MediaType.APPLICATION_OCTET_STREAM
         ) {

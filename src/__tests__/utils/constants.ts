@@ -21,7 +21,7 @@ import { IServiceGenerationFlags } from "../../types/serviceGenerationFlags";
 export const DEFAULT_TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
     flavorizedAliases: false,
     readonlyInterfaces: false,
-    nullSafeDeserialization: false,
+    useDeserializer: false,
 };
 
 export const DEFAULT_SERVICE_GENERATION_FLAGS: IServiceGenerationFlags = {

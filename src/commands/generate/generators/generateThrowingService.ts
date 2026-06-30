@@ -68,7 +68,7 @@ export function generateThrowingService(
     const endpointImplementations: MethodDeclarationStructure[] = [];
     const imports: ImportDeclarationStructure[] = [HTTP_API_BRIDGE_IMPORT];
 
-    if (typeGenerationFlags.nullSafeDeserialization) {
+    if (typeGenerationFlags.useDeserializer) {
         imports.push(DESERIALIZE_IMPORT);
     }
 
@@ -128,7 +128,7 @@ export function generateThrowingService(
         docs = addErrorsToDocs(endpointDefinition, docs);
 
         let descriptorExpr: string | undefined;
-        if (typeGenerationFlags.nullSafeDeserialization && endpointDefinition.returns != null) {
+        if (typeGenerationFlags.useDeserializer && endpointDefinition.returns != null) {
             const { expr, builders, refs } = buildDescriptorExpr(
                 endpointDefinition.returns,
                 knownTypes,

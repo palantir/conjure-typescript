@@ -30,9 +30,16 @@ export interface ITypeGenerationFlags {
     readonly readonlyInterfaces: boolean;
 
     /**
-     * When set to true, generated services apply Conjure §5.6.1 null-safe deserialization to all responses,
-     * and each generated type exports a ConjureType descriptor constant (`_TypeName`) used by the engine.
-     * Requires conjure-client ≥ <PR-1-version>.
+     * When set to true, a schema-driven deserialization pass is applied to every service response using
+     * the `deserialize` engine from conjure-client. Each generated type exports a ConjureType descriptor
+     * constant (`_TypeName`) that describes its wire shape to the engine.
+     *
+     * The engine applies Conjure §5.6 rules: null/absent list|set|map → empty collection; null/absent
+     * optional → undefined; integer/safelong range validation; double "NaN"/"Infinity"/"-Infinity" strings
+     * converted to JS numbers; no implicit type casting (§5.6.2); unknown union variants pass through (§4.4).
+     *
+     * Requires conjure-client with the companion deserialization engine.
+     * Addresses: palantir/conjure-typescript#48, #78, #156.
      */
-    readonly nullSafeDeserialization: boolean;
+    readonly useDeserializer: boolean;
 }

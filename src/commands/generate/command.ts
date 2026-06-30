@@ -78,7 +78,7 @@ export interface IGenerateCommandArgs {
     /**
      * Apply Conjure §5.6.1 null-safe deserialization to all service responses
      */
-    nullSafeDeserialization?: boolean;
+    useDeserializer?: boolean;
 }
 
 interface ICleanedGenerateCommandArgs {
@@ -154,10 +154,12 @@ export class GenerateCommand implements CommandModule {
                 describe: "Generate services whose methods return thrown API errors as results",
                 type: "boolean",
             })
-            .option("nullSafeDeserialization", {
+            .option("useDeserializer", {
                 default: false,
                 describe:
-                    "Apply Conjure §5.6.1 null-safe deserialization to all service responses and emit type descriptor constants",
+                    "Enable schema-driven response deserialization (§5.6): coerces null collections to empty, " +
+                    "null optionals to undefined, validates integer/safelong ranges, converts double NaN/Infinity " +
+                    "wire strings to JS numbers. Emits _TypeName descriptor constants alongside each generated type.",
                 type: "boolean",
             })
             .demand(2);
@@ -173,7 +175,7 @@ export class GenerateCommand implements CommandModule {
             {
                 flavorizedAliases: args.flavorizedAliases ?? false,
                 readonlyInterfaces: args.readonlyInterfaces ?? false,
-                nullSafeDeserialization: args.nullSafeDeserialization ?? false,
+                useDeserializer: args.useDeserializer ?? false,
             },
             {
                 generateNonThrowingServices: args.generateNonThrowingServices,

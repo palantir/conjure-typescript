@@ -107,7 +107,7 @@ export async function generateAlias(
             typeAlias.addJsDoc(definition.docs);
         }
 
-        if (typeGenerationFlags.nullSafeDeserialization) {
+        if (typeGenerationFlags.useDeserializer) {
             const inner = buildDescriptorExpr(definition.alias, knownTypes, typeGenerationFlags);
             addDescriptorConst(
                 sourceFile,
@@ -211,7 +211,7 @@ export async function generateEnum(
         });
     }
 
-    if (typeGenerationFlags?.nullSafeDeserialization) {
+    if (typeGenerationFlags?.useDeserializer) {
         addDescriptorConst(sourceFile, definition.typeName, "enumType()", ["enumType"], []);
     }
 
@@ -274,7 +274,7 @@ export async function generateObject(
         iface.addJsDoc({ description: definition.docs });
     }
 
-    if (typeGenerationFlags.nullSafeDeserialization) {
+    if (typeGenerationFlags.useDeserializer) {
         const allBuilders = new Set<string>(["object"]);
         const allRefs: import("conjure-api").ITypeName[] = [];
         const fieldEntries: string[] = definition.fields.map(fieldDefinition => {
@@ -370,7 +370,7 @@ export async function generateUnion(
         });
     });
 
-    if (typeGenerationFlags.nullSafeDeserialization) {
+    if (typeGenerationFlags.useDeserializer) {
         const allBuilders = new Set<string>(["union"]);
         const allRefs: import("conjure-api").ITypeName[] = [];
         const variantEntries: string[] = definition.union.map(fieldDefinition => {
