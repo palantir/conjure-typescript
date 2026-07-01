@@ -96,7 +96,6 @@ describe("generateJsonTypes — IFooJSON interface generation", () => {
                 values: [{ value: "A" }, { value: "B" }],
             },
             simpleAst,
-            JSON_TYPES_GENERATION_FLAGS,
         );
         const contents = fs.readFileSync(path.join(outDir, "types/simpleEnum.ts"), "utf8");
         expect(contents).not.toContain("JSON");

@@ -67,7 +67,7 @@ export function generateType(
     if (ITypeDefinition.isAlias(definition)) {
         return generateAlias(definition.alias, knownTypes, simpleAst, typeGenerationFlags);
     } else if (ITypeDefinition.isEnum(definition)) {
-        return generateEnum(definition.enum, simpleAst, typeGenerationFlags);
+        return generateEnum(definition.enum, simpleAst);
     } else if (ITypeDefinition.isObject(definition)) {
         return generateObject(definition.object, knownTypes, simpleAst, typeGenerationFlags);
     } else if (ITypeDefinition.isUnion(definition)) {
@@ -143,7 +143,6 @@ export async function generateAlias(
 export async function generateEnum(
     definition: IEnumDefinition,
     simpleAst: SimpleAst,
-    _typeGenerationFlags?: ITypeGenerationFlags,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
 
