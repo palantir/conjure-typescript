@@ -26,7 +26,7 @@ import {
     VariableDeclarationKind,
 } from "ts-morph";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
-import { buildDescriptorExpr } from "../../../utils/buildDescriptorExpr";
+import { buildFromJsonServiceExpr } from "../../../utils/buildFromJsonExpr";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
 import { relativePath } from "../../../utils/fileUtils";
@@ -50,12 +50,6 @@ const HTTP_API_BRIDGE_IMPORT: ImportDeclarationStructure = {
     isTypeOnly: true,
 };
 
-const DESERIALIZE_IMPORT: ImportDeclarationStructure = {
-    kind: StructureKind.ImportDeclaration,
-    moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
-    namedImports: [{ name: "deserialize" }],
-};
-
 export function generateThrowingService(
     definition: IServiceDefinition,
     knownTypes: Map<string, ITypeDefinition>,
@@ -67,10 +61,6 @@ export function generateThrowingService(
     const endpointSignatures: MethodSignatureStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
     const imports: ImportDeclarationStructure[] = [HTTP_API_BRIDGE_IMPORT];
-
-    if (typeGenerationFlags.useDeserializer) {
-        imports.push(DESERIALIZE_IMPORT);
-    }
 
     sourceFile.addVariableStatement({
         declarationKind: VariableDeclarationKind.Const,
@@ -127,28 +117,26 @@ export function generateThrowingService(
         docs = addIncubatingToDocs(endpointDefinition, docs);
         docs = addErrorsToDocs(endpointDefinition, docs);
 
-        let descriptorExpr: string | undefined;
-        if (typeGenerationFlags.useDeserializer && endpointDefinition.returns != null) {
-            const { expr, builders, refs } = buildDescriptorExpr(
+        let bridgeGenericType: string | undefined;
+        let mappingFnExpr: string | undefined;
+
+        if (typeGenerationFlags.applyFromJson && endpointDefinition.returns != null) {
+            const fromJsonResult = buildFromJsonServiceExpr(
                 endpointDefinition.returns,
                 knownTypes,
                 typeGenerationFlags,
             );
-            descriptorExpr = expr;
-            builders.forEach(b =>
-                imports.push({
-                    kind: StructureKind.ImportDeclaration,
-                    moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
-                    namedImports: [{ name: b }],
-                }),
-            );
-            refs.forEach(ref =>
-                imports.push({
-                    kind: StructureKind.ImportDeclaration,
-                    moduleSpecifier: relativePath(definition.serviceName, ref),
-                    namedImports: [{ name: `_${ref.name}` }],
-                }),
-            );
+            if (fromJsonResult.mappingFnExpr != null) {
+                bridgeGenericType = fromJsonResult.bridgeType;
+                mappingFnExpr = fromJsonResult.mappingFnExpr;
+                fromJsonResult.refs.forEach(ref =>
+                    imports.push({
+                        kind: StructureKind.ImportDeclaration,
+                        moduleSpecifier: relativePath(definition.serviceName, ref),
+                        namedImports: [{ name: `from${ref.name}Json` }],
+                    }),
+                );
+            }
         }
 
         const { signature, implementation } = generateThrowingEndpoint({
@@ -158,7 +146,8 @@ export function generateThrowingService(
             knownTypes,
             parameters,
             docs,
-            descriptorExpr,
+            bridgeGenericType,
+            mappingFnExpr,
         });
 
         endpointSignatures.push(signature);

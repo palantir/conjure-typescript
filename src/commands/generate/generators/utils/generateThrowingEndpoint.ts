@@ -40,22 +40,31 @@ import { resolveStringConversion } from "../../../../utils/resolveStringConversi
 const BRIDGE = "bridge";
 const UNDEFINED_CONSTANT = "__undefined";
 
-type generateNonThrowingEndpointBodyArgs = {
+type generateThrowingEndpointBodyArgs = {
     endpointDefinition: IEndpointDefinition;
     knownTypes: Map<string, ITypeDefinition>;
     resultType: string;
     serviceDefinition: IServiceDefinition;
-    /** When provided, the bridge result is passed through `deserialize(descriptorExpr, result)`. */
-    descriptorExpr?: string;
+    /**
+     * When provided, the bridge call uses this as the generic type parameter instead of `resultType`.
+     * Used when `applyFromJson` is active and the bridge should receive the JSON variant type.
+     */
+    bridgeGenericType?: string;
+    /**
+     * When provided, this expression is passed to `.then()` after the bridge call.
+     * E.g. `"fromFooJson"` or `"(__result) => __result ?? []"`.
+     */
+    mappingFnExpr?: string;
 };
 
 function generateThrowingEndpointBody({
-    descriptorExpr,
+    bridgeGenericType,
     endpointDefinition,
     knownTypes,
+    mappingFnExpr,
     resultType,
     serviceDefinition,
-}: generateNonThrowingEndpointBodyArgs): (writer: CodeBlockWriter) => void {
+}: generateThrowingEndpointBodyArgs): (writer: CodeBlockWriter) => void {
     const bodyArgs: IArgumentDefinition[] = [];
     const headerArgs: IArgumentDefinition[] = [];
     const queryArgs: IArgumentDefinition[] = [];
@@ -101,9 +110,11 @@ function generateThrowingEndpointBody({
         return `"${paramId}": ${argDefinition.argName},`;
     });
 
+    const callGeneric = bridgeGenericType ?? resultType;
+
     return writer => {
         writer
-            .write(`return this.${BRIDGE}.call<${resultType}>(`)
+            .write(`return this.${BRIDGE}.call<${callGeneric}>(`)
             .writeLine(`"${serviceDefinition.serviceName.name}",`)
             .writeLine(`"${endpointDefinition.endpointName}",`)
             .writeLine(`"${endpointDefinition.httpMethod}",`)
@@ -139,35 +150,34 @@ function generateThrowingEndpointBody({
         writer.writeLine(
             `${responseMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${responseMediaType}"`}`,
         );
-        if (descriptorExpr != null) {
-            writer.writeLine(").then((__result) => deserialize(" + descriptorExpr + ", __result));");
+        if (mappingFnExpr != null) {
+            writer.writeLine(").then(" + mappingFnExpr + ");");
         } else {
             writer.write(");");
         }
     };
 }
 
-type GenerateNonThrowingEndpointArgs = generateNonThrowingEndpointBodyArgs & {
+type GenerateThrowingEndpointArgs = generateThrowingEndpointBodyArgs & {
     docs: string | undefined;
     parameters: ParameterDeclarationStructure[];
-    /** When provided, wraps the bridge result with `deserialize(descriptorExpr, result)`. */
-    descriptorExpr?: string;
 };
 
-type GenerateNonThrowingEndpointReturn = {
+type GenerateThrowingEndpointReturn = {
     implementation: MethodDeclarationStructure;
     signature: MethodSignatureStructure;
 };
 
 export function generateThrowingEndpoint({
     docs,
-    descriptorExpr,
+    bridgeGenericType,
+    mappingFnExpr,
     endpointDefinition,
     knownTypes,
     parameters,
     resultType,
     serviceDefinition,
-}: GenerateNonThrowingEndpointArgs): GenerateNonThrowingEndpointReturn {
+}: GenerateThrowingEndpointArgs): GenerateThrowingEndpointReturn {
     const returnType = `Promise<${resultType}>`;
 
     return {
@@ -181,7 +191,8 @@ export function generateThrowingEndpoint({
         implementation: {
             kind: StructureKind.Method,
             statements: generateThrowingEndpointBody({
-                descriptorExpr,
+                bridgeGenericType,
+                mappingFnExpr,
                 endpointDefinition,
                 knownTypes,
                 resultType,

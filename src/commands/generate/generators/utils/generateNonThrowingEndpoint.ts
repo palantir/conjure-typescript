@@ -45,14 +45,23 @@ type generateNonThrowingEndpointBodyArgs = {
     knownTypes: Map<string, ITypeDefinition>;
     resultType: string;
     serviceDefinition: IServiceDefinition;
-    /** When provided, the bridge result is passed through `deserialize(descriptorExpr, result)`. */
-    descriptorExpr?: string;
+    /**
+     * When provided, the bridge call uses this as the generic type parameter instead of `resultType`.
+     * Used when `applyFromJson` is active and the bridge should receive the JSON variant type.
+     */
+    bridgeGenericType?: string;
+    /**
+     * When provided, this expression (applied to `__result`) replaces the raw result in the success branch.
+     * E.g. `"fromFooJson(__result)"` or `"__result ?? []"`.
+     */
+    resultApplyExpr?: string;
 };
 
 function generateNonThrowingEndpointBody({
-    descriptorExpr,
+    bridgeGenericType,
     endpointDefinition,
     knownTypes,
+    resultApplyExpr,
     resultType,
     serviceDefinition,
 }: generateNonThrowingEndpointBodyArgs): (writer: CodeBlockWriter) => void {
@@ -101,10 +110,12 @@ function generateNonThrowingEndpointBody({
         return `"${paramId}": ${argDefinition.argName},`;
     });
 
+    const callGeneric = bridgeGenericType ?? resultType;
+
     return writer => {
         writer
             .write(`return this.${BRIDGE}`)
-            .writeLine(`.call<${resultType}>(`)
+            .writeLine(`.call<${callGeneric}>(`)
             .writeLine(`"${serviceDefinition.serviceName.name}",`)
             .writeLine(`"${endpointDefinition.endpointName}",`)
             .writeLine(`"${endpointDefinition.httpMethod}",`)
@@ -141,10 +152,10 @@ function generateNonThrowingEndpointBody({
             `${responseMediaType === MediaType.APPLICATION_JSON ? UNDEFINED_CONSTANT : `"${responseMediaType}"`}`,
         );
         writer.writeLine(")");
-        if (descriptorExpr != null) {
+        if (resultApplyExpr != null) {
             writer
                 .writeLine(
-                    `.then((__result) => ({ status: "success" as const, result: deserialize(${descriptorExpr}, __result) }))`,
+                    `.then((__result) => ({ status: "success" as const, result: ${resultApplyExpr} }))`,
                 )
                 .writeLine(`.catch((error: any) => ({ status: "failure", error }));`);
         } else {
@@ -159,8 +170,6 @@ type GenerateNonThrowingEndpointArgs = generateNonThrowingEndpointBodyArgs & {
     docs: string | undefined;
     errorsType: string;
     parameters: ParameterDeclarationStructure[];
-    /** When provided, wraps the bridge result with `deserialize(descriptorExpr, result)`. */
-    descriptorExpr?: string;
 };
 
 type GenerateNonThrowingEndpointReturn = {
@@ -169,7 +178,8 @@ type GenerateNonThrowingEndpointReturn = {
 };
 
 export function generateNonThrowingEndpoint({
-    descriptorExpr,
+    bridgeGenericType,
+    resultApplyExpr,
     docs,
     errorsType,
     endpointDefinition,
@@ -191,7 +201,8 @@ export function generateNonThrowingEndpoint({
         implementation: {
             kind: StructureKind.Method,
             statements: generateNonThrowingEndpointBody({
-                descriptorExpr,
+                bridgeGenericType,
+                resultApplyExpr,
                 endpointDefinition,
                 knownTypes,
                 resultType,

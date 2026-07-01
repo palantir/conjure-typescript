@@ -36,16 +36,27 @@ import {
     VariableStatementStructure,
 } from "ts-morph";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
-import { buildDescriptorExpr } from "../../../utils/buildDescriptorExpr";
-import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
+import { buildFromJsonFieldExpr } from "../../../utils/buildFromJsonExpr";
 import { addDeprecatedToDocs } from "../../../utils/docsUtils";
 import { relativePath } from "../../../utils/fileUtils";
 import { isFlavorizable } from "../../../utils/flavorizingUtils";
 import { isValidFunctionName } from "../../../utils/functionUtils";
+import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { doubleQuote, singleQuote } from "../../../utils/quotesUtils";
 import { resolveImports, sortImports } from "../../../utils/resolveImports";
+import { resolveJsonTsType } from "../../../utils/resolveJsonTsType";
 import { resolveTsType } from "../../../utils/resolveTsType";
 import { SimpleAst } from "../simpleAst";
+
+/** Returns true when JSON interfaces should be generated (any of the three flags is set). */
+function shouldGenerateJsonTypes(flags: ITypeGenerationFlags): boolean {
+    return flags.generateJsonTypes || flags.generateFromJson || flags.applyFromJson;
+}
+
+/** Returns true when fromJson functions should be generated. */
+function shouldGenerateFromJson(flags: ITypeGenerationFlags): boolean {
+    return flags.generateFromJson || flags.applyFromJson;
+}
 
 export function generateType(
     definition: ITypeDefinition,
@@ -106,17 +117,6 @@ export async function generateAlias(
         });
         if (definition.docs) {
             typeAlias.addJsDoc(definition.docs);
-        }
-
-        if (typeGenerationFlags.useDeserializer) {
-            const inner = buildDescriptorExpr(definition.alias, knownTypes, typeGenerationFlags);
-            addDescriptorConst(
-                sourceFile,
-                definition.typeName,
-                `alias(${inner.expr})`,
-                ["alias", ...inner.builders],
-                inner.refs,
-            );
         }
 
         sourceFile.formatText();
@@ -212,10 +212,6 @@ export async function generateEnum(
         });
     }
 
-    if (typeGenerationFlags?.useDeserializer) {
-        addDescriptorConst(sourceFile, definition.typeName, "enumType()", ["enumType"], []);
-    }
-
     sourceFile.formatText();
     return sourceFile.save();
 }
@@ -275,17 +271,12 @@ export async function generateObject(
         iface.addJsDoc({ description: definition.docs });
     }
 
-    if (typeGenerationFlags.useDeserializer) {
-        const allBuilders = new Set<string>(["object"]);
-        const allRefs: ITypeName[] = [];
-        const fieldEntries: string[] = definition.fields.map(fieldDefinition => {
-            const { expr, builders, refs } = buildDescriptorExpr(fieldDefinition.type, knownTypes, typeGenerationFlags);
-            builders.forEach(b => allBuilders.add(b));
-            allRefs.push(...refs);
-            return `"${fieldDefinition.fieldName}": ${expr}`;
-        });
-        const descriptorExpr = `object({ ${fieldEntries.join(", ")} })`;
-        addDescriptorConst(sourceFile, definition.typeName, descriptorExpr, Array.from(allBuilders), allRefs);
+    if (shouldGenerateJsonTypes(typeGenerationFlags)) {
+        addJsonInterface(sourceFile, definition, knownTypes, typeGenerationFlags);
+    }
+
+    if (shouldGenerateFromJson(typeGenerationFlags)) {
+        addFromJsonFunction(sourceFile, definition, knownTypes, typeGenerationFlags);
     }
 
     sourceFile.formatText();
@@ -367,17 +358,12 @@ export async function generateUnion(
         });
     });
 
-    if (typeGenerationFlags.useDeserializer) {
-        const allBuilders = new Set<string>(["union"]);
-        const allRefs: ITypeName[] = [];
-        const variantEntries: string[] = definition.union.map(fieldDefinition => {
-            const { expr, builders, refs } = buildDescriptorExpr(fieldDefinition.type, knownTypes, typeGenerationFlags);
-            builders.forEach(b => allBuilders.add(b));
-            allRefs.push(...refs);
-            return `"${fieldDefinition.fieldName}": ${expr}`;
-        });
-        const descriptorExpr = `union({ ${variantEntries.join(", ")} })`;
-        addDescriptorConst(sourceFile, definition.typeName, descriptorExpr, Array.from(allBuilders), allRefs);
+    if (shouldGenerateJsonTypes(typeGenerationFlags)) {
+        addUnionJsonType(sourceFile, definition, knownTypes, typeGenerationFlags);
+    }
+
+    if (shouldGenerateFromJson(typeGenerationFlags)) {
+        addUnionFromJsonFunction(sourceFile, definition, knownTypes, typeGenerationFlags);
     }
 
     sourceFile.formatText();
@@ -506,40 +492,287 @@ function capitalize(value: string): string {
 }
 
 /**
- * Emits `export const _TypeName = <descriptorExpr>;` into `sourceFile`, along with the
- * conjure-client builder imports and any cross-type `_OtherType` descriptor imports required.
+ * Emits the `IFooJSON` interface alongside the regular `IFoo` interface in the object's source file.
+ * Each field uses the JSON-accurate type (collections are nullable, object refs use IBarJSON).
+ * Also emits any additional imports needed for IBarJSON references.
  */
-function addDescriptorConst(
+function addJsonInterface(
     sourceFile: ReturnType<SimpleAst["createSourceFile"]>,
-    typeName: ITypeName,
-    descriptorExpr: string,
-    builders: string[],
-    refs: ITypeName[],
+    definition: IObjectDefinition,
+    knownTypes: Map<string, ITypeDefinition>,
+    typeGenerationFlags: ITypeGenerationFlags,
 ): void {
-    // Import conjure-client builders
-    if (builders.length > 0) {
-        sourceFile.addImportDeclaration({
-            kind: StructureKind.ImportDeclaration,
-            moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
-            namedImports: builders.map(b => ({ name: b })),
-        });
-    }
+    const jsonProperties: PropertySignatureStructure[] = [];
+    const jsonImports: ImportDeclarationStructure[] = [];
+    const jsonImportedRefs = new Set<string>();
 
-    // Import descriptor constants from other type modules
-    for (const ref of refs) {
-        if (ref.name === typeName.name && ref.package === typeName.package) {
-            continue; // self-reference — resolved via thunk, no import needed
-        }
-        sourceFile.addImportDeclaration({
-            kind: StructureKind.ImportDeclaration,
-            moduleSpecifier: relativePath(typeName, ref),
-            namedImports: [{ name: `_${ref.name}` }],
-        });
-    }
+    definition.fields.forEach(fieldDefinition => {
+        const jsonFieldType = resolveJsonTsType(
+            fieldDefinition.type,
+            definition.typeName,
+            knownTypes,
+            typeGenerationFlags,
+            false,
+            false,
+        );
 
-    sourceFile.addVariableStatement({
-        declarationKind: VariableDeclarationKind.Const,
-        isExported: true,
-        declarations: [{ name: `_${typeName.name}`, initializer: descriptorExpr }],
+        jsonProperties.push({
+            kind: StructureKind.PropertySignature,
+            hasQuestionToken: IType.isOptional(fieldDefinition.type),
+            name: singleQuote(fieldDefinition.fieldName),
+            type: jsonFieldType,
+        });
+
+        // Collect imports for IFooJSON references
+        collectJsonTypeImports(
+            fieldDefinition.type,
+            definition.typeName,
+            knownTypes,
+            typeGenerationFlags,
+            jsonImports,
+            jsonImportedRefs,
+        );
     });
+
+    if (jsonImports.length > 0) {
+        sourceFile.addImportDeclarations(sortImports(jsonImports));
+    }
+
+    sourceFile.addInterface({
+        isExported: true,
+        name: `I${definition.typeName.name}JSON`,
+        properties: jsonProperties,
+    });
+}
+
+/**
+ * Emits the `fromFooJson(json: IFooJSON): IFoo` function into the object's source file.
+ */
+function addFromJsonFunction(
+    sourceFile: ReturnType<SimpleAst["createSourceFile"]>,
+    definition: IObjectDefinition,
+    knownTypes: Map<string, ITypeDefinition>,
+    typeGenerationFlags: ITypeGenerationFlags,
+): void {
+    const fromJsonImports: ImportDeclarationStructure[] = [];
+    const fromJsonImportedRefs = new Set<string>();
+    const fieldExprs: string[] = [];
+
+    definition.fields.forEach(fieldDefinition => {
+        const { expr, refs } = buildFromJsonFieldExpr(
+            fieldDefinition.type,
+            `json.${fieldDefinition.fieldName}`,
+            knownTypes,
+            typeGenerationFlags,
+        );
+        fieldExprs.push(`${fieldDefinition.fieldName}: ${expr}`);
+
+        refs.forEach(ref => {
+            const key = createHashableTypeName(ref);
+            if (!fromJsonImportedRefs.has(key) && !(ref.name === definition.typeName.name && ref.package === definition.typeName.package)) {
+                fromJsonImportedRefs.add(key);
+                fromJsonImports.push({
+                    kind: StructureKind.ImportDeclaration,
+                    moduleSpecifier: relativePath(definition.typeName, ref),
+                    namedImports: [{ name: `from${ref.name}Json` }],
+                });
+            }
+        });
+    });
+
+    if (fromJsonImports.length > 0) {
+        sourceFile.addImportDeclarations(sortImports(fromJsonImports));
+    }
+
+    const typeName = definition.typeName.name;
+    sourceFile.addFunction({
+        isExported: true,
+        name: `from${typeName}Json`,
+        parameters: [{ name: "json", type: `I${typeName}JSON` }],
+        returnType: `I${typeName}`,
+        statements: `return {\n${fieldExprs.map(e => `    ${e},`).join("\n")}\n};`,
+    });
+}
+
+/**
+ * Emits the `IFooJSON` type alias for a union type.
+ * Each variant member type gets JSON treatment (collections nullable, object refs use IBarJSON).
+ */
+function addUnionJsonType(
+    sourceFile: ReturnType<SimpleAst["createSourceFile"]>,
+    definition: IUnionDefinition,
+    knownTypes: Map<string, ITypeDefinition>,
+    typeGenerationFlags: ITypeGenerationFlags,
+): void {
+    const jsonImports: ImportDeclarationStructure[] = [];
+    const jsonImportedRefs = new Set<string>();
+
+    const memberTypeStrings = definition.union.map(fieldDefinition => {
+        const jsonFieldType = resolveJsonTsType(
+            fieldDefinition.type,
+            definition.typeName,
+            knownTypes,
+            typeGenerationFlags,
+            false,
+            false,
+        );
+
+        collectJsonTypeImports(
+            fieldDefinition.type,
+            definition.typeName,
+            knownTypes,
+            typeGenerationFlags,
+            jsonImports,
+            jsonImportedRefs,
+        );
+
+        return `{ '${fieldDefinition.fieldName}': ${jsonFieldType}; 'type': "${fieldDefinition.fieldName}" }`;
+    });
+
+    // Include unknown-variant catch-all
+    memberTypeStrings.push(`{ 'type': string; [key: string]: unknown }`);
+
+    if (jsonImports.length > 0) {
+        sourceFile.addImportDeclarations(sortImports(jsonImports));
+    }
+
+    sourceFile.addTypeAlias({
+        isExported: true,
+        name: `I${definition.typeName.name}JSON`,
+        type: memberTypeStrings.join(" | "),
+    });
+}
+
+/**
+ * Emits the `fromFooJson(json: IFooJSON): IFoo` function for a union type.
+ * Switches on `json.type` and applies per-variant transformations.
+ */
+function addUnionFromJsonFunction(
+    sourceFile: ReturnType<SimpleAst["createSourceFile"]>,
+    definition: IUnionDefinition,
+    knownTypes: Map<string, ITypeDefinition>,
+    typeGenerationFlags: ITypeGenerationFlags,
+): void {
+    const fromJsonImports: ImportDeclarationStructure[] = [];
+    const fromJsonImportedRefs = new Set<string>();
+
+    const caseStatements = definition.union.map(fieldDefinition => {
+        const memberName = fieldDefinition.fieldName;
+        const { expr, refs } = buildFromJsonFieldExpr(
+            fieldDefinition.type,
+            `json.${memberName}`,
+            knownTypes,
+            typeGenerationFlags,
+        );
+
+        refs.forEach(ref => {
+            const key = createHashableTypeName(ref);
+            if (!fromJsonImportedRefs.has(key) && !(ref.name === definition.typeName.name && ref.package === definition.typeName.package)) {
+                fromJsonImportedRefs.add(key);
+                fromJsonImports.push({
+                    kind: StructureKind.ImportDeclaration,
+                    moduleSpecifier: relativePath(definition.typeName, ref),
+                    namedImports: [{ name: `from${ref.name}Json` }],
+                });
+            }
+        });
+
+        return `case "${memberName}": return { type: "${memberName}", ${memberName}: ${expr} };`;
+    });
+
+    if (fromJsonImports.length > 0) {
+        sourceFile.addImportDeclarations(sortImports(fromJsonImports));
+    }
+
+    const typeName = definition.typeName.name;
+    const unionType = `I${typeName}`;
+    const jsonType = `I${typeName}JSON`;
+
+    const switchStatements = [
+        `switch (json.type) {`,
+        ...caseStatements,
+        `default: return json as unknown as ${unionType};`,
+        `}`,
+    ].join("\n");
+
+    sourceFile.addFunction({
+        isExported: true,
+        name: `from${typeName}Json`,
+        parameters: [{ name: "json", type: jsonType }],
+        returnType: unionType,
+        statements: switchStatements,
+    });
+}
+
+/**
+ * Collects import declarations needed for `IFooJSON` references within a field type.
+ * Adds `{ IBarJSON }` imports for object/union reference fields.
+ */
+function collectJsonTypeImports(
+    fieldType: IType,
+    baseType: ITypeName,
+    knownTypes: Map<string, ITypeDefinition>,
+    flags: ITypeGenerationFlags,
+    imports: ImportDeclarationStructure[],
+    importedRefs: Set<string>,
+): void {
+    switch (fieldType.type) {
+        case "primitive":
+            return;
+        case "list":
+            collectJsonTypeImports(fieldType.list.itemType, baseType, knownTypes, flags, imports, importedRefs);
+            return;
+        case "set":
+            collectJsonTypeImports(fieldType.set.itemType, baseType, knownTypes, flags, imports, importedRefs);
+            return;
+        case "map":
+            collectJsonTypeImports(fieldType.map.valueType, baseType, knownTypes, flags, imports, importedRefs);
+            return;
+        case "optional":
+            collectJsonTypeImports(fieldType.optional.itemType, baseType, knownTypes, flags, imports, importedRefs);
+            return;
+        case "external":
+            collectJsonTypeImports(fieldType.external.fallback, baseType, knownTypes, flags, imports, importedRefs);
+            return;
+        case "reference": {
+            const referencedType = fieldType.reference;
+            const definition = knownTypes.get(createHashableTypeName(referencedType));
+            if (definition == null) {
+                throw new Error(
+                    `Unknown reference type. package: '${referencedType.package}', name: '${referencedType.name}'`,
+                );
+            }
+
+            if (ITypeDefinition.isEnum(definition)) {
+                // Enums unchanged — no JSON import needed, but the regular import already handles it.
+                return;
+            }
+
+            if (ITypeDefinition.isAlias(definition)) {
+                if (!isFlavorizable(definition.alias.alias, flags.flavorizedAliases)) {
+                    // Non-flavorized alias inlines transparently.
+                    collectJsonTypeImports(definition.alias.alias, baseType, knownTypes, flags, imports, importedRefs);
+                    return;
+                }
+                // Flavorized alias: unchanged, no extra import.
+                return;
+            }
+
+            // Object or union: import IFooJSON from same module.
+            if (referencedType.name === baseType.name && referencedType.package === baseType.package) {
+                return; // self-reference — no import needed
+            }
+
+            const key = createHashableTypeName(referencedType);
+            if (!importedRefs.has(key)) {
+                importedRefs.add(key);
+                imports.push({
+                    kind: StructureKind.ImportDeclaration,
+                    moduleSpecifier: relativePath(baseType, referencedType),
+                    namedImports: [{ name: `I${referencedType.name}JSON` }],
+                });
+            }
+            return;
+        }
+    }
 }

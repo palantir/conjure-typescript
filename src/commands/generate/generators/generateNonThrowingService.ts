@@ -27,7 +27,7 @@ import {
     VariableDeclarationKind,
 } from "ts-morph";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
-import { buildDescriptorExpr } from "../../../utils/buildDescriptorExpr";
+import { buildFromJsonServiceExpr } from "../../../utils/buildFromJsonExpr";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
 import { relativePath } from "../../../utils/fileUtils";
@@ -72,14 +72,6 @@ export function generateNonThrowingService(
     const endpointSignatures: MethodSignatureStructure[] = [];
     const endpointImplementations: MethodDeclarationStructure[] = [];
     const imports: ImportDeclarationStructure[] = [CONJURE_CLIENT_IMPORTS];
-
-    if (typeGenerationFlags.useDeserializer) {
-        imports.push({
-            kind: StructureKind.ImportDeclaration,
-            moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
-            namedImports: [{ name: "deserialize" }],
-        });
-    }
 
     sourceFile.addVariableStatement({
         declarationKind: VariableDeclarationKind.Const,
@@ -156,32 +148,30 @@ export function generateNonThrowingService(
         }
         const errorsType = errorNames.join(" | ");
 
-        let descriptorExpr: string | undefined;
+        let bridgeGenericType: string | undefined;
+        let resultApplyExpr: string | undefined;
+
         if (
-            typeGenerationFlags.useDeserializer &&
+            typeGenerationFlags.applyFromJson &&
             endpointDefinition.returns != null &&
             responseMediaType !== MediaType.APPLICATION_OCTET_STREAM
         ) {
-            const { expr, builders, refs } = buildDescriptorExpr(
+            const fromJsonResult = buildFromJsonServiceExpr(
                 endpointDefinition.returns,
                 knownTypes,
                 typeGenerationFlags,
             );
-            descriptorExpr = expr;
-            builders.forEach(b =>
-                imports.push({
-                    kind: StructureKind.ImportDeclaration,
-                    moduleSpecifier: CONJURE_CLIENT_MODULE_SPECIFIER,
-                    namedImports: [{ name: b }],
-                }),
-            );
-            refs.forEach(ref =>
-                imports.push({
-                    kind: StructureKind.ImportDeclaration,
-                    moduleSpecifier: relativePath(definition.serviceName, ref),
-                    namedImports: [{ name: `_${ref.name}` }],
-                }),
-            );
+            if (fromJsonResult.resultApplyExpr != null) {
+                bridgeGenericType = fromJsonResult.bridgeType;
+                resultApplyExpr = fromJsonResult.resultApplyExpr;
+                fromJsonResult.refs.forEach(ref =>
+                    imports.push({
+                        kind: StructureKind.ImportDeclaration,
+                        moduleSpecifier: relativePath(definition.serviceName, ref),
+                        namedImports: [{ name: `from${ref.name}Json` }],
+                    }),
+                );
+            }
         }
 
         // If the endpoint is a streaming endpoint, we don't want to wrap the result in an `IConjureResult`
@@ -207,7 +197,8 @@ export function generateNonThrowingService(
                       knownTypes,
                       parameters,
                       docs,
-                      descriptorExpr,
+                      bridgeGenericType,
+                      resultApplyExpr,
                   });
 
         endpointSignatures.push(signature);

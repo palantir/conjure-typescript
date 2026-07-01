@@ -76,9 +76,19 @@ export interface IGenerateCommandArgs {
     generateNonThrowingServices: boolean;
 
     /**
-     * Apply Conjure §5.6.1 null-safe deserialization to all service responses
+     * Generate IFooJSON wire-accurate type interfaces alongside each object/union type
      */
-    useDeserializer?: boolean;
+    generateJsonTypes?: boolean;
+
+    /**
+     * Generate fromFooJson() deserializer functions alongside each object/union type
+     */
+    generateFromJson?: boolean;
+
+    /**
+     * Automatically apply fromFooJson() in generated service methods
+     */
+    applyFromJson?: boolean;
 }
 
 interface ICleanedGenerateCommandArgs {
@@ -154,12 +164,27 @@ export class GenerateCommand implements CommandModule {
                 describe: "Generate services whose methods return thrown API errors as results",
                 type: "boolean",
             })
-            .option("useDeserializer", {
+            .option("generateJsonTypes", {
                 default: false,
                 describe:
-                    "Enable schema-driven response deserialization (§5.6): coerces null collections to empty, " +
-                    "null optionals to undefined, validates integer/safelong ranges, converts double NaN/Infinity " +
-                    "wire strings to JS numbers. Emits _TypeName descriptor constants alongside each generated type.",
+                    "Generate IFooJSON interfaces alongside each object/union type representing the JSON wire format " +
+                    "(collections are T | null | undefined, object refs use IBarJSON). Zero runtime cost.",
+                type: "boolean",
+            })
+            .option("generateFromJson", {
+                default: false,
+                describe:
+                    "Generate fromFooJson(json: IFooJSON): IFoo deserializer functions alongside each object/union type " +
+                    "applying Conjure §5.6 rules (null collections → empty, recursive object deserialization). " +
+                    "Implies --generateJsonTypes.",
+                type: "boolean",
+            })
+            .option("applyFromJson", {
+                default: false,
+                describe:
+                    "Automatically apply fromFooJson() to service method responses. The bridge call generic is updated " +
+                    "to the JSON variant type and the result is deserialized transparently. Binary endpoints are exempt. " +
+                    "Implies --generateFromJson and --generateJsonTypes. Addresses: palantir/conjure-typescript#48.",
                 type: "boolean",
             })
             .demand(2);
@@ -169,13 +194,18 @@ export class GenerateCommand implements CommandModule {
         const [, , output] = args._;
         const { rawSource } = args;
         const { conjureDefinition, packageJson, tsConfig, gitIgnore } = await this.parseCommandLineArguments(args);
+        const applyFromJson = args.applyFromJson ?? false;
+        const generateFromJson = applyFromJson || (args.generateFromJson ?? false);
+        const generateJsonTypes = generateFromJson || (args.generateJsonTypes ?? false);
         const generatePromise = generate(
             conjureDefinition,
             output,
             {
                 flavorizedAliases: args.flavorizedAliases ?? false,
                 readonlyInterfaces: args.readonlyInterfaces ?? false,
-                useDeserializer: args.useDeserializer ?? false,
+                generateJsonTypes,
+                generateFromJson,
+                applyFromJson,
             },
             {
                 generateNonThrowingServices: args.generateNonThrowingServices,

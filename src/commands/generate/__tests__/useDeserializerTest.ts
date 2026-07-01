@@ -21,16 +21,22 @@ import * as path from "path";
 import { directory } from "tempy";
 import { createHashableTypeName } from "../../../utils/hashingUtils";
 import {
+    APPLY_FROM_JSON_GENERATION_FLAGS,
     DEFAULT_TYPE_GENERATION_FLAGS,
     FLAVORED_TYPE_GENERATION_FLAGS,
-    USE_DESERIALIZER_TYPE_GENERATION_FLAGS,
+    FROM_JSON_GENERATION_FLAGS,
+    JSON_TYPES_GENERATION_FLAGS,
 } from "../../../__tests__/utils/constants";
 import { generateAlias, generateEnum, generateObject, generateUnion } from "../generators/generateType";
 import { generateNonThrowingService } from "../generators/generateNonThrowingService";
 import { generateThrowingService } from "../generators/generateThrowingService";
 import { SimpleAst } from "../simpleAst";
 
-describe("useDeserializer type generation", () => {
+// ---------------------------------------------------------------------------
+// generateJsonTypes — IFooJSON interface generation
+// ---------------------------------------------------------------------------
+
+describe("generateJsonTypes — IFooJSON interface generation", () => {
     let outDir: string;
     let simpleAst: SimpleAst;
 
@@ -39,249 +45,243 @@ describe("useDeserializer type generation", () => {
         simpleAst = new SimpleAst(outDir);
     });
 
-    describe("enum", () => {
-        it("emits _TypeName = enumType() descriptor constant", async () => {
-            await generateEnum(
-                {
-                    typeName: { name: "SimpleEnum", package: "com.palantir.types" },
-                    values: [{ value: "A" }, { value: "B" }],
-                },
-                simpleAst,
-                USE_DESERIALIZER_TYPE_GENERATION_FLAGS,
-            );
-            const contents = fs.readFileSync(path.join(outDir, "types/simpleEnum.ts"), "utf8");
-            expect(contents).toContain(`from "conjure-client"`);
-            expect(contents).toContain("enumType");
-            expect(contents).toContain("export const _SimpleEnum = enumType();");
-        });
-
-        it("does not emit descriptor constant when flag is off", async () => {
-            await generateEnum(
-                {
-                    typeName: { name: "SimpleEnum", package: "com.palantir.types" },
-                    values: [{ value: "A" }, { value: "B" }],
-                },
-                simpleAst,
-                DEFAULT_TYPE_GENERATION_FLAGS,
-            );
-            const contents = fs.readFileSync(path.join(outDir, "types/simpleEnum.ts"), "utf8");
-            expect(contents).not.toContain("_SimpleEnum");
-            expect(contents).not.toContain("enumType");
-        });
-    });
-
-    describe("object", () => {
-        it("emits _TypeName = object({...}) with primitive field descriptors", async () => {
-            await generateObject(
-                {
-                    fields: [
-                        { fieldName: "count", type: IType.primitive(PrimitiveType.INTEGER) },
-                        { fieldName: "name", type: IType.primitive(PrimitiveType.STRING) },
-                    ],
-                    typeName: { name: "SimpleObject", package: "com.palantir.types" },
-                },
-                new Map(),
-                simpleAst,
-                USE_DESERIALIZER_TYPE_GENERATION_FLAGS,
-            );
-            const contents = fs.readFileSync(path.join(outDir, "types/simpleObject.ts"), "utf8");
-            expect(contents).toContain(`from "conjure-client"`);
-            expect(contents).toContain("integer");
-            expect(contents).toContain("stringType");
-            expect(contents).toContain("object");
-            expect(contents).toContain(
-                `export const _SimpleObject = object({ "count": integer(), "name": stringType() });`,
-            );
-        });
-
-        it("emits reference(() => _TypeName) for cross-type object fields", async () => {
-            const enumTypeName = { name: "StatusEnum", package: "com.palantir.types" };
-            const enumDef = ITypeDefinition.enum_({ typeName: enumTypeName, values: [{ value: "OK" }] });
-            await generateObject(
-                {
-                    fields: [{ fieldName: "status", type: IType.reference(enumTypeName) }],
-                    typeName: { name: "StatusHolder", package: "com.palantir.types" },
-                },
-                new Map([[createHashableTypeName(enumTypeName), enumDef]]),
-                simpleAst,
-                USE_DESERIALIZER_TYPE_GENERATION_FLAGS,
-            );
-            const contents = fs.readFileSync(path.join(outDir, "types/statusHolder.ts"), "utf8");
-            expect(contents).toContain(`_StatusEnum`);
-            expect(contents).toContain(`reference(() => _StatusEnum)`);
-            expect(contents).toContain(
-                `export const _StatusHolder = object({ "status": reference(() => _StatusEnum) });`,
-            );
-        });
-
-        it("inlines non-flavorized alias transparently in object descriptor", async () => {
-            const stringAliasName = { name: "RawAlias", package: "com.palantir.types" };
-            const stringAlias = ITypeDefinition.alias({
-                alias: { primitive: PrimitiveType.STRING, type: "primitive" },
-                typeName: stringAliasName,
-            });
-            await generateObject(
-                {
-                    fields: [{ fieldName: "value", type: IType.reference(stringAliasName) }],
-                    typeName: { name: "AliasHolder", package: "com.palantir.types" },
-                },
-                new Map([[createHashableTypeName(stringAliasName), stringAlias]]),
-                simpleAst,
-                USE_DESERIALIZER_TYPE_GENERATION_FLAGS,
-            );
-            const contents = fs.readFileSync(path.join(outDir, "types/aliasHolder.ts"), "utf8");
-            // Non-flavorized alias inlines to the underlying primitive descriptor
-            expect(contents).toContain(`export const _AliasHolder = object({ "value": stringType() });`);
-            expect(contents).not.toContain("reference");
-        });
-
-        it("does not emit descriptor constant when flag is off", async () => {
-            await generateObject(
-                {
-                    fields: [{ fieldName: "count", type: IType.primitive(PrimitiveType.INTEGER) }],
-                    typeName: { name: "SimpleObject", package: "com.palantir.types" },
-                },
-                new Map(),
-                simpleAst,
-                DEFAULT_TYPE_GENERATION_FLAGS,
-            );
-            const contents = fs.readFileSync(path.join(outDir, "types/simpleObject.ts"), "utf8");
-            expect(contents).not.toContain("_SimpleObject");
-        });
-    });
-
-    describe("union", () => {
-        it("emits _TypeName = union({...}) with primitive variant descriptors", async () => {
-            await generateUnion(
-                {
-                    typeName: { name: "SimpleUnion", package: "com.palantir.types" },
-                    union: [
-                        { fieldName: "integer", type: IType.primitive(PrimitiveType.INTEGER) },
-                        { fieldName: "string", type: IType.primitive(PrimitiveType.STRING) },
-                    ],
-                },
-                new Map(),
-                simpleAst,
-                USE_DESERIALIZER_TYPE_GENERATION_FLAGS,
-            );
-            const contents = fs.readFileSync(path.join(outDir, "types/simpleUnion.ts"), "utf8");
-            expect(contents).toContain(`from "conjure-client"`);
-            expect(contents).toContain("union");
-            expect(contents).toContain(
-                `export const _SimpleUnion = union({ "integer": integer(), "string": stringType() });`,
-            );
-        });
-
-        it("emits optional and list field descriptors in union", async () => {
-            await generateUnion(
-                {
-                    typeName: { name: "ComplexUnion", package: "com.palantir.types" },
-                    union: [
-                        {
-                            fieldName: "items",
-                            type: IType.list({ itemType: IType.primitive(PrimitiveType.STRING) }),
-                        },
-                        {
-                            fieldName: "value",
-                            type: IType.optional({ itemType: IType.primitive(PrimitiveType.INTEGER) }),
-                        },
-                    ],
-                },
-                new Map(),
-                simpleAst,
-                USE_DESERIALIZER_TYPE_GENERATION_FLAGS,
-            );
-            const contents = fs.readFileSync(path.join(outDir, "types/complexUnion.ts"), "utf8");
-            expect(contents).toContain(`"items": list(stringType())`);
-            expect(contents).toContain(`"value": optional(integer())`);
-        });
-
-        it("does not emit descriptor constant when flag is off", async () => {
-            await generateUnion(
-                {
-                    typeName: { name: "SimpleUnion", package: "com.palantir.types" },
-                    union: [{ fieldName: "x", type: IType.primitive(PrimitiveType.STRING) }],
-                },
-                new Map(),
-                simpleAst,
-                DEFAULT_TYPE_GENERATION_FLAGS,
-            );
-            const contents = fs.readFileSync(path.join(outDir, "types/simpleUnion.ts"), "utf8");
-            expect(contents).not.toContain("_SimpleUnion");
-        });
-    });
-
-    describe("flavorized alias", () => {
-        it("emits _TypeName = alias(rid()) descriptor constant", async () => {
-            await generateAlias(
-                {
-                    alias: IType.primitive(PrimitiveType.RID),
-                    typeName: { name: "EntityRid", package: "com.palantir.types" },
-                },
-                new Map(),
-                simpleAst,
-                { ...FLAVORED_TYPE_GENERATION_FLAGS, useDeserializer: true },
-            );
-            const contents = fs.readFileSync(path.join(outDir, "types/entityRid.ts"), "utf8");
-            expect(contents).toContain(`from "conjure-client"`);
-            expect(contents).toContain("alias");
-            expect(contents).toContain("rid");
-            expect(contents).toContain("export const _EntityRid = alias(rid());");
-        });
-
-        it("does not emit descriptor constant for flavorized alias when flag is off", async () => {
-            await generateAlias(
-                {
-                    alias: IType.primitive(PrimitiveType.RID),
-                    typeName: { name: "EntityRid", package: "com.palantir.types" },
-                },
-                new Map(),
-                simpleAst,
-                FLAVORED_TYPE_GENERATION_FLAGS,
-            );
-            const contents = fs.readFileSync(path.join(outDir, "types/entityRid.ts"), "utf8");
-            expect(contents).not.toContain("_EntityRid");
-        });
-    });
-});
-
-describe("useDeserializer throwing service generation", () => {
-    let outDir: string;
-    let simpleAst: SimpleAst;
-
-    beforeEach(() => {
-        outDir = directory();
-        simpleAst = new SimpleAst(outDir);
-    });
-
-    it("wraps primitive return type with deserialize", async () => {
-        await generateThrowingService(
+    it("emits IFooJSON interface with nullable collection fields", async () => {
+        await generateObject(
             {
-                endpoints: [
-                    {
-                        args: [],
-                        endpointName: "getCount",
-                        httpMethod: HttpMethod.GET,
-                        httpPath: "/count",
-                        markers: [],
-                        returns: { primitive: PrimitiveType.INTEGER, type: "primitive" },
-                        tags: [],
-                        errors: [],
-                    },
+                fields: [
+                    { fieldName: "items", type: IType.list({ itemType: IType.primitive(PrimitiveType.STRING) }) },
+                    { fieldName: "count", type: IType.primitive(PrimitiveType.INTEGER) },
                 ],
-                serviceName: { name: "CountService", package: "com.palantir.services" },
+                typeName: { name: "SimpleObject", package: "com.palantir.types" },
             },
             new Map(),
             simpleAst,
-            USE_DESERIALIZER_TYPE_GENERATION_FLAGS,
+            JSON_TYPES_GENERATION_FLAGS,
         );
-        const contents = fs.readFileSync(path.join(outDir, "services/countService.ts"), "utf8");
-        expect(contents).toContain("deserialize");
-        expect(contents).toContain("integer");
-        expect(contents).toContain(".then((__result) => deserialize(integer(), __result));");
+        const contents = fs.readFileSync(path.join(outDir, "types/simpleObject.ts"), "utf8");
+        expect(contents).toContain("ISimpleObjectJSON");
+        // list field is nullable in JSON
+        expect(contents).toContain("Array<string> | null | undefined");
+        // primitive field is unchanged
+        expect(contents).toContain("count");
+        // Regular interface still present
+        expect(contents).toContain("ISimpleObject");
     });
 
-    it("wraps object return type with reference descriptor", async () => {
+    it("emits IFooJSON with IBarJSON reference for object fields", async () => {
+        const childTypeName = { name: "ChildObject", package: "com.palantir.types" };
+        const childDef = ITypeDefinition.object({
+            typeName: childTypeName,
+            fields: [{ fieldName: "id", type: IType.primitive(PrimitiveType.STRING) }],
+        });
+        await generateObject(
+            {
+                fields: [{ fieldName: "child", type: IType.reference(childTypeName) }],
+                typeName: { name: "ParentObject", package: "com.palantir.types" },
+            },
+            new Map([[createHashableTypeName(childTypeName), childDef]]),
+            simpleAst,
+            JSON_TYPES_GENERATION_FLAGS,
+        );
+        const contents = fs.readFileSync(path.join(outDir, "types/parentObject.ts"), "utf8");
+        expect(contents).toContain("IParentObjectJSON");
+        // Reference field uses the JSON variant
+        expect(contents).toContain("IChildObjectJSON");
+    });
+
+    it("does not emit IFooJSON for enums", async () => {
+        await generateEnum(
+            {
+                typeName: { name: "SimpleEnum", package: "com.palantir.types" },
+                values: [{ value: "A" }, { value: "B" }],
+            },
+            simpleAst,
+            JSON_TYPES_GENERATION_FLAGS,
+        );
+        const contents = fs.readFileSync(path.join(outDir, "types/simpleEnum.ts"), "utf8");
+        expect(contents).not.toContain("JSON");
+        expect(contents).not.toContain("fromSimpleEnumJson");
+    });
+
+    it("does not emit IFooJSON for flavorized aliases", async () => {
+        await generateAlias(
+            {
+                alias: IType.primitive(PrimitiveType.RID),
+                typeName: { name: "EntityRid", package: "com.palantir.types" },
+            },
+            new Map(),
+            simpleAst,
+            { ...FLAVORED_TYPE_GENERATION_FLAGS, generateJsonTypes: true },
+        );
+        const contents = fs.readFileSync(path.join(outDir, "types/entityRid.ts"), "utf8");
+        expect(contents).not.toContain("JSON");
+        expect(contents).not.toContain("fromEntityRidJson");
+    });
+
+    it("does not emit IFooJSON when all flags are off", async () => {
+        await generateObject(
+            {
+                fields: [
+                    { fieldName: "items", type: IType.list({ itemType: IType.primitive(PrimitiveType.STRING) }) },
+                ],
+                typeName: { name: "SimpleObject", package: "com.palantir.types" },
+            },
+            new Map(),
+            simpleAst,
+            DEFAULT_TYPE_GENERATION_FLAGS,
+        );
+        const contents = fs.readFileSync(path.join(outDir, "types/simpleObject.ts"), "utf8");
+        expect(contents).not.toContain("ISimpleObjectJSON");
+        expect(contents).not.toContain("fromSimpleObjectJson");
+    });
+
+    it("emits IFooJSON for unions with nullable collection variants", async () => {
+        await generateUnion(
+            {
+                typeName: { name: "SimpleUnion", package: "com.palantir.types" },
+                union: [
+                    { fieldName: "items", type: IType.list({ itemType: IType.primitive(PrimitiveType.STRING) }) },
+                    { fieldName: "count", type: IType.primitive(PrimitiveType.INTEGER) },
+                ],
+            },
+            new Map(),
+            simpleAst,
+            JSON_TYPES_GENERATION_FLAGS,
+        );
+        const contents = fs.readFileSync(path.join(outDir, "types/simpleUnion.ts"), "utf8");
+        expect(contents).toContain("ISimpleUnionJSON");
+        expect(contents).toContain("Array<string> | null | undefined");
+    });
+});
+
+// ---------------------------------------------------------------------------
+// generateFromJson — fromFooJson() function generation
+// ---------------------------------------------------------------------------
+
+describe("generateFromJson — fromFooJson() function generation", () => {
+    let outDir: string;
+    let simpleAst: SimpleAst;
+
+    beforeEach(() => {
+        outDir = directory();
+        simpleAst = new SimpleAst(outDir);
+    });
+
+    it("emits fromFooJson with ?? [] for list fields", async () => {
+        await generateObject(
+            {
+                fields: [
+                    { fieldName: "items", type: IType.list({ itemType: IType.primitive(PrimitiveType.STRING) }) },
+                    { fieldName: "count", type: IType.primitive(PrimitiveType.INTEGER) },
+                ],
+                typeName: { name: "SimpleObject", package: "com.palantir.types" },
+            },
+            new Map(),
+            simpleAst,
+            FROM_JSON_GENERATION_FLAGS,
+        );
+        const contents = fs.readFileSync(path.join(outDir, "types/simpleObject.ts"), "utf8");
+        expect(contents).toContain("fromSimpleObjectJson");
+        expect(contents).toContain("ISimpleObjectJSON");
+        // list field null-coerced
+        expect(contents).toContain("json.items ?? []");
+        // primitive field passed through unchanged
+        expect(contents).toContain("json.count");
+    });
+
+    it("emits fromFooJson calling fromBarJson for reference fields", async () => {
+        const childTypeName = { name: "ChildObject", package: "com.palantir.types" };
+        const childDef = ITypeDefinition.object({
+            typeName: childTypeName,
+            fields: [{ fieldName: "id", type: IType.primitive(PrimitiveType.STRING) }],
+        });
+        await generateObject(
+            {
+                fields: [{ fieldName: "child", type: IType.reference(childTypeName) }],
+                typeName: { name: "ParentObject", package: "com.palantir.types" },
+            },
+            new Map([[createHashableTypeName(childTypeName), childDef]]),
+            simpleAst,
+            FROM_JSON_GENERATION_FLAGS,
+        );
+        const contents = fs.readFileSync(path.join(outDir, "types/parentObject.ts"), "utf8");
+        expect(contents).toContain("fromParentObjectJson");
+        expect(contents).toContain("fromChildObjectJson");
+        expect(contents).toContain("fromChildObjectJson(json.child)");
+    });
+
+    it("inlines non-flavorized alias transparently in fromFooJson", async () => {
+        const stringAliasName = { name: "RawAlias", package: "com.palantir.types" };
+        const stringAlias = ITypeDefinition.alias({
+            alias: { primitive: PrimitiveType.STRING, type: "primitive" },
+            typeName: stringAliasName,
+        });
+        await generateObject(
+            {
+                fields: [{ fieldName: "value", type: IType.reference(stringAliasName) }],
+                typeName: { name: "AliasHolder", package: "com.palantir.types" },
+            },
+            new Map([[createHashableTypeName(stringAliasName), stringAlias]]),
+            simpleAst,
+            FROM_JSON_GENERATION_FLAGS,
+        );
+        const contents = fs.readFileSync(path.join(outDir, "types/aliasHolder.ts"), "utf8");
+        expect(contents).toContain("fromAliasHolderJson");
+        // Non-flavorized alias: field value passed through directly (string is not null-coerced)
+        expect(contents).toContain("json.value");
+        expect(contents).not.toContain("fromRawAliasJson");
+    });
+
+    it("emits fromFooJson with switch statement for unions", async () => {
+        await generateUnion(
+            {
+                typeName: { name: "SimpleUnion", package: "com.palantir.types" },
+                union: [
+                    { fieldName: "items", type: IType.list({ itemType: IType.primitive(PrimitiveType.STRING) }) },
+                    { fieldName: "count", type: IType.primitive(PrimitiveType.INTEGER) },
+                ],
+            },
+            new Map(),
+            simpleAst,
+            FROM_JSON_GENERATION_FLAGS,
+        );
+        const contents = fs.readFileSync(path.join(outDir, "types/simpleUnion.ts"), "utf8");
+        expect(contents).toContain("fromSimpleUnionJson");
+        expect(contents).toContain(`switch (json.type)`);
+        expect(contents).toContain(`case "items"`);
+        expect(contents).toContain("json.items ?? []");
+        expect(contents).toContain(`case "count"`);
+    });
+
+    it("does not emit fromFooJson when generateFromJson flag is off", async () => {
+        await generateObject(
+            {
+                fields: [{ fieldName: "items", type: IType.list({ itemType: IType.primitive(PrimitiveType.STRING) }) }],
+                typeName: { name: "SimpleObject", package: "com.palantir.types" },
+            },
+            new Map(),
+            simpleAst,
+            DEFAULT_TYPE_GENERATION_FLAGS,
+        );
+        const contents = fs.readFileSync(path.join(outDir, "types/simpleObject.ts"), "utf8");
+        expect(contents).not.toContain("fromSimpleObjectJson");
+    });
+});
+
+// ---------------------------------------------------------------------------
+// applyFromJson — throwing service generation
+// ---------------------------------------------------------------------------
+
+describe("applyFromJson throwing service generation", () => {
+    let outDir: string;
+    let simpleAst: SimpleAst;
+
+    beforeEach(() => {
+        outDir = directory();
+        simpleAst = new SimpleAst(outDir);
+    });
+
+    it("wraps object return type with fromFooJson", async () => {
         const objectTypeName = { name: "MyObject", package: "com.palantir.services" };
         const objectDef = ITypeDefinition.object({
             typeName: objectTypeName,
@@ -305,16 +305,42 @@ describe("useDeserializer throwing service generation", () => {
             },
             new Map([[createHashableTypeName(objectTypeName), objectDef]]),
             simpleAst,
-            USE_DESERIALIZER_TYPE_GENERATION_FLAGS,
+            APPLY_FROM_JSON_GENERATION_FLAGS,
         );
         const contents = fs.readFileSync(path.join(outDir, "services/objectService.ts"), "utf8");
-        expect(contents).toContain("deserialize");
-        expect(contents).toContain("_MyObject");
-        expect(contents).toContain("reference");
-        expect(contents).toContain(".then((__result) => deserialize(reference(() => _MyObject), __result));");
+        expect(contents).toContain("fromMyObjectJson");
+        expect(contents).toContain("IMyObjectJSON");
+        expect(contents).toContain(".then(fromMyObjectJson)");
+        expect(contents).toContain(".call<IMyObjectJSON>(");
     });
 
-    it("does not emit deserialize for void return type", async () => {
+    it("does not wrap primitive return type", async () => {
+        await generateThrowingService(
+            {
+                endpoints: [
+                    {
+                        args: [],
+                        endpointName: "getCount",
+                        httpMethod: HttpMethod.GET,
+                        httpPath: "/count",
+                        markers: [],
+                        returns: { primitive: PrimitiveType.INTEGER, type: "primitive" },
+                        tags: [],
+                        errors: [],
+                    },
+                ],
+                serviceName: { name: "CountService", package: "com.palantir.services" },
+            },
+            new Map(),
+            simpleAst,
+            APPLY_FROM_JSON_GENERATION_FLAGS,
+        );
+        const contents = fs.readFileSync(path.join(outDir, "services/countService.ts"), "utf8");
+        expect(contents).not.toContain("fromCountJson");
+        expect(contents).not.toContain(".then(");
+    });
+
+    it("does not wrap void return type", async () => {
         await generateThrowingService(
             {
                 endpoints: [
@@ -332,40 +358,82 @@ describe("useDeserializer throwing service generation", () => {
             },
             new Map(),
             simpleAst,
-            USE_DESERIALIZER_TYPE_GENERATION_FLAGS,
+            APPLY_FROM_JSON_GENERATION_FLAGS,
         );
         const contents = fs.readFileSync(path.join(outDir, "services/voidService.ts"), "utf8");
-        expect(contents).not.toContain("deserialize");
+        expect(contents).not.toContain(".then(");
     });
 
-    it("does not wrap with deserialize when flag is off", async () => {
+    it("wraps list<object> return type with null-coercing map", async () => {
+        const objectTypeName = { name: "Item", package: "com.palantir.services" };
+        const objectDef = ITypeDefinition.object({
+            typeName: objectTypeName,
+            fields: [{ fieldName: "id", type: IType.primitive(PrimitiveType.STRING) }],
+        });
         await generateThrowingService(
             {
                 endpoints: [
                     {
                         args: [],
-                        endpointName: "getCount",
+                        endpointName: "getItems",
                         httpMethod: HttpMethod.GET,
-                        httpPath: "/count",
+                        httpPath: "/items",
                         markers: [],
-                        returns: { primitive: PrimitiveType.INTEGER, type: "primitive" },
+                        returns: IType.list({ itemType: IType.reference(objectTypeName) }),
                         tags: [],
                         errors: [],
                     },
                 ],
-                serviceName: { name: "CountService", package: "com.palantir.services" },
+                serviceName: { name: "ItemService", package: "com.palantir.services" },
             },
-            new Map(),
+            new Map([[createHashableTypeName(objectTypeName), objectDef]]),
+            simpleAst,
+            APPLY_FROM_JSON_GENERATION_FLAGS,
+        );
+        const contents = fs.readFileSync(path.join(outDir, "services/itemService.ts"), "utf8");
+        expect(contents).toContain("fromItemJson");
+        expect(contents).toContain("Array<IItemJSON> | null | undefined");
+        expect(contents).toContain("fromItemJson");
+        expect(contents).toContain(".map((item) => fromItemJson(item))");
+    });
+
+    it("does not apply fromJson when flag is off", async () => {
+        const objectTypeName = { name: "MyObject", package: "com.palantir.services" };
+        const objectDef = ITypeDefinition.object({
+            typeName: objectTypeName,
+            fields: [{ fieldName: "id", type: IType.primitive(PrimitiveType.STRING) }],
+        });
+        await generateThrowingService(
+            {
+                endpoints: [
+                    {
+                        args: [],
+                        endpointName: "getObject",
+                        httpMethod: HttpMethod.GET,
+                        httpPath: "/object",
+                        markers: [],
+                        returns: IType.reference(objectTypeName),
+                        tags: [],
+                        errors: [],
+                    },
+                ],
+                serviceName: { name: "ObjectService", package: "com.palantir.services" },
+            },
+            new Map([[createHashableTypeName(objectTypeName), objectDef]]),
             simpleAst,
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
-        const contents = fs.readFileSync(path.join(outDir, "services/countService.ts"), "utf8");
-        expect(contents).not.toContain("deserialize");
+        const contents = fs.readFileSync(path.join(outDir, "services/objectService.ts"), "utf8");
+        expect(contents).not.toContain("fromMyObjectJson");
         expect(contents).not.toContain(".then(");
     });
 });
 
-describe("useDeserializer non-throwing service generation", () => {
+// ---------------------------------------------------------------------------
+// applyFromJson — non-throwing service generation
+// ---------------------------------------------------------------------------
+
+describe("applyFromJson non-throwing service generation", () => {
     let outDir: string;
     let simpleAst: SimpleAst;
 
@@ -374,35 +442,41 @@ describe("useDeserializer non-throwing service generation", () => {
         simpleAst = new SimpleAst(outDir);
     });
 
-    it("wraps primitive return type with deserialize inside IConjureResult", async () => {
+    it("wraps object return type with fromFooJson inside IConjureResult", async () => {
+        const objectTypeName = { name: "MyObject", package: "com.palantir.services" };
+        const objectDef = ITypeDefinition.object({
+            typeName: objectTypeName,
+            fields: [{ fieldName: "id", type: IType.primitive(PrimitiveType.STRING) }],
+        });
         await generateNonThrowingService(
             {
                 endpoints: [
                     {
                         args: [],
-                        endpointName: "getCount",
+                        endpointName: "getObject",
                         httpMethod: HttpMethod.GET,
-                        httpPath: "/count",
+                        httpPath: "/object",
                         markers: [],
-                        returns: { primitive: PrimitiveType.INTEGER, type: "primitive" },
+                        returns: IType.reference(objectTypeName),
                         tags: [],
                         errors: [],
                     },
                 ],
-                serviceName: { name: "CountService", package: "com.palantir.services" },
+                serviceName: { name: "ObjectService", package: "com.palantir.services" },
             },
-            new Map(),
+            new Map([[createHashableTypeName(objectTypeName), objectDef]]),
             simpleAst,
-            USE_DESERIALIZER_TYPE_GENERATION_FLAGS,
+            APPLY_FROM_JSON_GENERATION_FLAGS,
         );
-        const contents = fs.readFileSync(path.join(outDir, "services/countServiceWithErrors.ts"), "utf8");
-        expect(contents).toContain("deserialize");
+        const contents = fs.readFileSync(path.join(outDir, "services/objectServiceWithErrors.ts"), "utf8");
+        expect(contents).toContain("fromMyObjectJson");
+        expect(contents).toContain("IMyObjectJSON");
         expect(contents).toContain(
-            `.then((__result) => ({ status: "success" as const, result: deserialize(integer(), __result) }))`,
+            `.then((__result) => ({ status: "success" as const, result: fromMyObjectJson(__result) }))`,
         );
     });
 
-    it("does not wrap with deserialize when flag is off", async () => {
+    it("does not apply fromJson when flag is off", async () => {
         await generateNonThrowingService(
             {
                 endpoints: [
@@ -424,11 +498,16 @@ describe("useDeserializer non-throwing service generation", () => {
             DEFAULT_TYPE_GENERATION_FLAGS,
         );
         const contents = fs.readFileSync(path.join(outDir, "services/countServiceWithErrors.ts"), "utf8");
-        expect(contents).not.toContain("deserialize");
+        expect(contents).not.toContain("fromCountJson");
         expect(contents).toContain(`.then(result => ({ status: "success" as const, result }))`);
     });
 
     it("does not deserialize binary (octet-stream) streaming endpoints", async () => {
+        const objectTypeName = { name: "MyObject", package: "com.palantir.services" };
+        const objectDef = ITypeDefinition.object({
+            typeName: objectTypeName,
+            fields: [{ fieldName: "id", type: IType.primitive(PrimitiveType.STRING) }],
+        });
         await generateNonThrowingService(
             {
                 endpoints: [
@@ -445,12 +524,13 @@ describe("useDeserializer non-throwing service generation", () => {
                 ],
                 serviceName: { name: "BinaryService", package: "com.palantir.services" },
             },
-            new Map(),
+            new Map([[createHashableTypeName(objectTypeName), objectDef]]),
             simpleAst,
-            USE_DESERIALIZER_TYPE_GENERATION_FLAGS,
+            APPLY_FROM_JSON_GENERATION_FLAGS,
         );
         const contents = fs.readFileSync(path.join(outDir, "services/binaryServiceWithErrors.ts"), "utf8");
-        // Binary (octet-stream) endpoints are exempt from deserialization per the spec
-        expect(contents).not.toContain("deserialize");
+        // Binary endpoints are exempt from fromJson application
+        expect(contents).not.toContain("fromMyObjectJson");
+        expect(contents).not.toContain("IMyObjectJSON");
     });
 });
