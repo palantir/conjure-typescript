@@ -143,7 +143,7 @@ export async function generateAlias(
 export async function generateEnum(
     definition: IEnumDefinition,
     simpleAst: SimpleAst,
-    typeGenerationFlags?: ITypeGenerationFlags,
+    _typeGenerationFlags?: ITypeGenerationFlags,
 ): Promise<void> {
     const sourceFile = simpleAst.createSourceFile(definition.typeName);
 
