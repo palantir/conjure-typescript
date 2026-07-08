@@ -21,6 +21,9 @@ import { IServiceGenerationFlags } from "../../types/serviceGenerationFlags";
 export const DEFAULT_TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
     flavorizedAliases: false,
     readonlyInterfaces: false,
+    generateJsonTypes: false,
+    generateFromJson: false,
+    applyFromJson: false,
 };
 
 export const DEFAULT_SERVICE_GENERATION_FLAGS: IServiceGenerationFlags = {
@@ -41,4 +44,22 @@ export const FLAVORED_TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
 export const READONLY_TYPE_GENERATION_FLAGS: ITypeGenerationFlags = {
     ...DEFAULT_TYPE_GENERATION_FLAGS,
     readonlyInterfaces: true,
+};
+
+export const JSON_TYPES_GENERATION_FLAGS: ITypeGenerationFlags = {
+    ...DEFAULT_TYPE_GENERATION_FLAGS,
+    generateJsonTypes: true,
+};
+
+export const FROM_JSON_GENERATION_FLAGS: ITypeGenerationFlags = {
+    ...DEFAULT_TYPE_GENERATION_FLAGS,
+    generateJsonTypes: true,
+    generateFromJson: true,
+};
+
+export const APPLY_FROM_JSON_GENERATION_FLAGS: ITypeGenerationFlags = {
+    ...DEFAULT_TYPE_GENERATION_FLAGS,
+    generateJsonTypes: true,
+    generateFromJson: true,
+    applyFromJson: true,
 };

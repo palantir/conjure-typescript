@@ -27,8 +27,10 @@ import {
     VariableDeclarationKind,
 } from "ts-morph";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
+import { buildFromJsonServiceExpr } from "../../../utils/buildFromJsonExpr";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
+import { relativePath } from "../../../utils/fileUtils";
 import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../../utils/resolveImports";
 import { resolveMediaType } from "../../../utils/resolveMediaType";
 import { resolveTsType } from "../../../utils/resolveTsType";
@@ -146,6 +148,32 @@ export function generateNonThrowingService(
         }
         const errorsType = errorNames.join(" | ");
 
+        let bridgeGenericType: string | undefined;
+        let resultApplyExpr: string | undefined;
+
+        if (
+            typeGenerationFlags.applyFromJson &&
+            endpointDefinition.returns != null &&
+            responseMediaType !== MediaType.APPLICATION_OCTET_STREAM
+        ) {
+            const fromJsonResult = buildFromJsonServiceExpr(
+                endpointDefinition.returns,
+                knownTypes,
+                typeGenerationFlags,
+            );
+            if (fromJsonResult.resultApplyExpr != null) {
+                bridgeGenericType = fromJsonResult.bridgeType;
+                resultApplyExpr = fromJsonResult.resultApplyExpr;
+                fromJsonResult.refs.forEach(ref =>
+                    imports.push({
+                        kind: StructureKind.ImportDeclaration,
+                        moduleSpecifier: relativePath(definition.serviceName, ref),
+                        namedImports: [{ name: `from${ref.name}Json` }],
+                    }),
+                );
+            }
+        }
+
         // If the endpoint is a streaming endpoint, we don't want to wrap the result in an `IConjureResult`
         // and instead return the raw result type. This means the method will be throwing.
         const { signature, implementation } =
@@ -169,6 +197,8 @@ export function generateNonThrowingService(
                       knownTypes,
                       parameters,
                       docs,
+                      bridgeGenericType,
+                      resultApplyExpr,
                   });
 
         endpointSignatures.push(signature);

@@ -26,8 +26,10 @@ import {
     VariableDeclarationKind,
 } from "ts-morph";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
+import { buildFromJsonServiceExpr } from "../../../utils/buildFromJsonExpr";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
+import { relativePath } from "../../../utils/fileUtils";
 import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../../utils/resolveImports";
 import { resolveTsType } from "../../../utils/resolveTsType";
 import { SimpleAst } from "../simpleAst";
@@ -115,6 +117,28 @@ export function generateThrowingService(
         docs = addIncubatingToDocs(endpointDefinition, docs);
         docs = addErrorsToDocs(endpointDefinition, docs);
 
+        let bridgeGenericType: string | undefined;
+        let mappingFnExpr: string | undefined;
+
+        if (typeGenerationFlags.applyFromJson && endpointDefinition.returns != null) {
+            const fromJsonResult = buildFromJsonServiceExpr(
+                endpointDefinition.returns,
+                knownTypes,
+                typeGenerationFlags,
+            );
+            if (fromJsonResult.mappingFnExpr != null) {
+                bridgeGenericType = fromJsonResult.bridgeType;
+                mappingFnExpr = fromJsonResult.mappingFnExpr;
+                fromJsonResult.refs.forEach(ref =>
+                    imports.push({
+                        kind: StructureKind.ImportDeclaration,
+                        moduleSpecifier: relativePath(definition.serviceName, ref),
+                        namedImports: [{ name: `from${ref.name}Json` }],
+                    }),
+                );
+            }
+        }
+
         const { signature, implementation } = generateThrowingEndpoint({
             serviceDefinition: definition,
             endpointDefinition,
@@ -122,6 +146,8 @@ export function generateThrowingService(
             knownTypes,
             parameters,
             docs,
+            bridgeGenericType,
+            mappingFnExpr,
         });
 
         endpointSignatures.push(signature);
