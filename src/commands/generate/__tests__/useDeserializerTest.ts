@@ -27,9 +27,9 @@ import {
     FROM_JSON_GENERATION_FLAGS,
     JSON_TYPES_GENERATION_FLAGS,
 } from "../../../__tests__/utils/constants";
-import { generateAlias, generateEnum, generateObject, generateUnion } from "../generators/generateType";
 import { generateNonThrowingService } from "../generators/generateNonThrowingService";
 import { generateThrowingService } from "../generators/generateThrowingService";
+import { generateAlias, generateEnum, generateObject, generateUnion } from "../generators/generateType";
 import { SimpleAst } from "../simpleAst";
 
 // ---------------------------------------------------------------------------
