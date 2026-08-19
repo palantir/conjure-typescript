@@ -17,7 +17,7 @@
 
 import { ITypeName } from "conjure-api";
 import * as path from "path";
-import { Project, SourceFile } from "ts-morph";
+import { ExportDeclarationStructure, OptionalKind, Project, SourceFile } from "ts-morph";
 import { directoryNameForType, moduleNameForType } from "../../utils/fileUtils";
 
 const TS_EXTENSION = ".ts";
@@ -42,18 +42,18 @@ export class SimpleAst {
     }
 
     public async generateIndexFiles(): Promise<void[]> {
-        const moduleTypes: Map<string, string[]> = new Map();
+        const moduleFiles: Map<string, SourceFile[]> = new Map();
         this.ast.getSourceFiles().forEach(file => {
             const packageName = file.getDirectory().getBaseName();
-            const allTypes = (moduleTypes.get(packageName) || []).concat(file.getBaseNameWithoutExtension());
-            moduleTypes.set(packageName, allTypes);
+            const allFiles = (moduleFiles.get(packageName) || []).concat(file);
+            moduleFiles.set(packageName, allFiles);
         });
 
         const rootIndex = this.ast.createSourceFile(path.join(this.outDir, "index.ts"));
-        const moduleArray = Array.from(moduleTypes.entries());
-        const indexPromises = moduleArray.map(([packageName, types]) => {
+        const moduleArray = Array.from(moduleFiles.entries());
+        const indexPromises = moduleArray.map(([packageName, files]) => {
             const moduleIndex = this.ast.createSourceFile(path.join(this.outDir, packageName, "index.ts"));
-            moduleIndex.addExportDeclarations(types.map(type => ({ moduleSpecifier: `./${type}` })));
+            files.forEach(file => moduleIndex.addExportDeclarations(exportDeclarationsForFile(file)));
             return moduleIndex.save();
         });
 
@@ -77,4 +77,47 @@ export class SimpleAst {
 
 export function typeNameToFilePath(type: ITypeName): string {
     return path.join(directoryNameForType(type), moduleNameForType(type) + TS_EXTENSION);
+}
+
+interface IExportableDeclaration {
+    getName(): string | undefined;
+    isExported(): boolean;
+}
+
+/**
+ * Named re-exports let bundlers resolve a package's exports from its index alone, so modules nothing
+ * references are never parsed. `export *` forces them to read every file in the package.
+ */
+function exportDeclarationsForFile(file: SourceFile): Array<OptionalKind<ExportDeclarationStructure>> {
+    const moduleSpecifier = `./${file.getBaseNameWithoutExtension()}`;
+    const valueNames = exportedNames([
+        ...file.getClasses(),
+        ...file.getEnums(),
+        ...file.getFunctions(),
+        ...file.getModules(),
+        ...file.getVariableDeclarations(),
+    ]);
+    // Enums and unions declare a type and a value of the same name, and the value export covers both.
+    const typeNames = exportedNames([...file.getInterfaces(), ...file.getTypeAliases()]).filter(
+        name => valueNames.indexOf(name) === -1,
+    );
+
+    const declarations: Array<OptionalKind<ExportDeclarationStructure>> = [];
+    if (valueNames.length > 0) {
+        declarations.push({ moduleSpecifier, namedExports: valueNames });
+    }
+    // Without `export type`, consumers that transpile file by file emit a runtime re-export of a
+    // binding that only exists at type level.
+    if (typeNames.length > 0) {
+        declarations.push({ isTypeOnly: true, moduleSpecifier, namedExports: typeNames });
+    }
+    return declarations;
+}
+
+function exportedNames(declarations: IExportableDeclaration[]): string[] {
+    const names = declarations
+        .filter(declaration => declaration.isExported())
+        .map(declaration => declaration.getName())
+        .filter((name): name is string => name != null);
+    return Array.from(new Set(names)).sort();
 }

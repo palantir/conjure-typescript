@@ -20,11 +20,11 @@ import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";
 import { createHashableTypeName } from "../../../utils/hashingUtils";
-import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
+import { DEFAULT_TYPE_GENERATION_FLAGS, FLAVORED_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
 import { generateError } from "../generators/generateError";
 import { generateNonThrowingService } from "../generators/generateNonThrowingService";
 import { generateThrowingService } from "../generators/generateThrowingService";
-import { generateEnum } from "../generators/generateType";
+import { generateAlias, generateEnum, generateObject, generateUnion } from "../generators/generateType";
 import { SimpleAst } from "../simpleAst";
 
 describe("simpleAst", () => {
@@ -151,14 +151,65 @@ describe("simpleAst", () => {
 
         const package1Index = path.join(outDir, "package1/index.ts");
         const package1Contents = fs.readFileSync(package1Index, "utf8");
-        expect(package1Contents).toEqual(`export * from "./myError";
+        expect(package1Contents).toEqual(`export { isMyError } from "./myError";
+export type { IMyError } from "./myError";
 `);
 
         const package2Index = path.join(outDir, "package2/index.ts");
         const package2Contents = fs.readFileSync(package2Index, "utf8");
-        expect(package2Contents).toEqual(`export * from "./myEnum";
-export * from "./myService";
-export * from "./myServiceWithErrors";
+        expect(package2Contents).toEqual(`export { MyEnum } from "./myEnum";
+export { MyService } from "./myService";
+export type { IMyService } from "./myService";
+export { MyServiceWithErrors } from "./myServiceWithErrors";
+export type { IMyServiceWithErrors } from "./myServiceWithErrors";
+`);
+    });
+
+    it("re-exports aliases and objects as types only.", async () => {
+        await generateAlias(
+            {
+                typeName: { name: "MyAlias", package: "com.palantir.package1" },
+                alias: { primitive: PrimitiveType.STRING, type: "primitive" },
+            },
+            new Map(),
+            simpleAst,
+            FLAVORED_TYPE_GENERATION_FLAGS,
+        );
+
+        await generateObject(
+            {
+                typeName: { name: "MyObject", package: "com.palantir.package1" },
+                fields: [{ fieldName: "foo", type: { primitive: PrimitiveType.STRING, type: "primitive" } }],
+            },
+            new Map(),
+            simpleAst,
+            DEFAULT_TYPE_GENERATION_FLAGS,
+        );
+
+        await simpleAst.generateIndexFiles();
+
+        const packageIndex = path.join(outDir, "package1/index.ts");
+        expect(fs.readFileSync(packageIndex, "utf8")).toEqual(`export type { IMyAlias } from "./myAlias";
+export type { IMyObject } from "./myObject";
+`);
+    });
+
+    it("re-exports a union's value and type declarations under a single name.", async () => {
+        await generateUnion(
+            {
+                typeName: { name: "MyUnion", package: "com.palantir.package1" },
+                union: [{ fieldName: "foo", type: { primitive: PrimitiveType.STRING, type: "primitive" } }],
+            },
+            new Map(),
+            simpleAst,
+            DEFAULT_TYPE_GENERATION_FLAGS,
+        );
+
+        await simpleAst.generateIndexFiles();
+
+        const packageIndex = path.join(outDir, "package1/index.ts");
+        expect(fs.readFileSync(packageIndex, "utf8")).toEqual(`export { IMyUnion } from "./myUnion";
+export type { IMyUnionVisitor, IMyUnion_Foo } from "./myUnion";
 `);
     });
 });
