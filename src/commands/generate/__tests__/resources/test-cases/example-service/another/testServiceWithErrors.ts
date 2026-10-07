@@ -17,13 +17,13 @@ export interface ITestServiceWithErrors {
      */
     getFileSystems(): Promise<IConjureResult<{ [key: string]: IBackingFileSystem }, never>>;
     createDataset(request: ICreateDatasetRequest, testHeaderArg: string): Promise<IConjureResult<IDataset, never>>;
-    getDataset(datasetRid: string): Promise<IConjureResult<IDataset | null, never>>;
+    getDataset(datasetRid: string): Promise<IConjureResult<IDataset | null | undefined, never>>;
     /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
     getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
     /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
     getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
     /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
-    maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null>;
+    maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null | undefined>;
     getAliasedString(datasetRid: string): Promise<IConjureResult<string, never>>;
     uploadRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<IConjureResult<void, never>>;
     uploadAliasedRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<IConjureResult<void, never>>;
@@ -34,14 +34,14 @@ export interface ITestServiceWithErrors {
      * @deprecated use getBranches instead
      */
     getBranchesDeprecated(datasetRid: string): Promise<IConjureResult<Array<string>, never>>;
-    resolveBranch(datasetRid: string, branch: string): Promise<IConjureResult<string | null, never>>;
-    testParam(datasetRid: string): Promise<IConjureResult<string | null, never>>;
+    resolveBranch(datasetRid: string, branch: string): Promise<IConjureResult<string | null | undefined, never>>;
+    testParam(datasetRid: string): Promise<IConjureResult<string | null | undefined, never>>;
     testQueryParams(query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<IConjureResult<number, never>>;
     testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<IConjureResult<void, never>>;
     testBoolean(): Promise<IConjureResult<boolean, never>>;
     testDouble(): Promise<IConjureResult<number | "NaN", never>>;
     testInteger(): Promise<IConjureResult<number, never>>;
-    testPostOptional(maybeString?: string | null): Promise<IConjureResult<string | null, never>>;
+    testPostOptional(maybeString?: string | null): Promise<IConjureResult<string | null | undefined, never>>;
     testOptionalIntegerAndDouble(maybeInteger?: number | null, maybeDouble?: number | "NaN" | null): Promise<IConjureResult<void, never>>;
 }
 
@@ -87,9 +87,9 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
             .catch((error: any) => ({ status: "failure", error }));
     }
 
-    public getDataset(datasetRid: string): Promise<IConjureResult<IDataset | null, never>> {
+    public getDataset(datasetRid: string): Promise<IConjureResult<IDataset | null | undefined, never>> {
         return this.bridge
-            .call<IDataset | null>(
+            .call<IDataset | null | undefined>(
                 "TestService",
                 "getDataset",
                 "GET",
@@ -144,8 +144,8 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
     }
 
     /** This method calls a streaming endpoint. The method will throw if the endpoint throws an error. */
-    public maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null> {
-        return this.bridge.call<ReadableStream<Uint8Array> | null>(
+    public maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null | undefined> {
+        return this.bridge.call<ReadableStream<Uint8Array> | null | undefined>(
             "TestService",
             "maybeGetRawData",
             "GET",
@@ -257,9 +257,9 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
             .catch((error: any) => ({ status: "failure", error }));
     }
 
-    public resolveBranch(datasetRid: string, branch: string): Promise<IConjureResult<string | null, never>> {
+    public resolveBranch(datasetRid: string, branch: string): Promise<IConjureResult<string | null | undefined, never>> {
         return this.bridge
-            .call<string | null>(
+            .call<string | null | undefined>(
                 "TestService",
                 "resolveBranch",
                 "GET",
@@ -278,9 +278,9 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
             .catch((error: any) => ({ status: "failure", error }));
     }
 
-    public testParam(datasetRid: string): Promise<IConjureResult<string | null, never>> {
+    public testParam(datasetRid: string): Promise<IConjureResult<string | null | undefined, never>> {
         return this.bridge
-            .call<string | null>(
+            .call<string | null | undefined>(
                 "TestService",
                 "testParam",
                 "GET",
@@ -400,9 +400,9 @@ export class TestServiceWithErrors implements ITestServiceWithErrors {
             .catch((error: any) => ({ status: "failure", error }));
     }
 
-    public testPostOptional(maybeString?: string | null): Promise<IConjureResult<string | null, never>> {
+    public testPostOptional(maybeString?: string | null): Promise<IConjureResult<string | null | undefined, never>> {
         return this.bridge
-            .call<string | null>(
+            .call<string | null | undefined>(
                 "TestService",
                 "testPostOptional",
                 "POST",

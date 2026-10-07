@@ -144,6 +144,33 @@ export class MyService implements IMyService {
 }`);
     });
 
+    it("includes undefined in an optional return type for 204 responses", async () => {
+        await generateThrowingService(
+            {
+                endpoints: [
+                    {
+                        args: [],
+                        endpointName: "getOptional",
+                        httpMethod: HttpMethod.GET,
+                        httpPath: "/getOptional",
+                        markers: [],
+                        returns: IType.optional({ itemType: IType.primitive(PrimitiveType.STRING) }),
+                        tags: [],
+                        errors: [],
+                    },
+                ],
+                serviceName: { name: "OptionalReturnService", package: "com.palantir.services" },
+            },
+            new Map(),
+            simpleAst,
+            DEFAULT_TYPE_GENERATION_FLAGS,
+        );
+        const outFile = path.join(outDir, "services/optionalReturnService.ts");
+        const contents = fs.readFileSync(outFile, "utf8");
+        expect(contents).toContain("getOptional(): Promise<string | null | undefined>;");
+        expect(contents).toContain("public getOptional(): Promise<string | null | undefined> {");
+    });
+
     it("handles binary body and return types", async () => {
         await generateThrowingService(
             {

@@ -1,0 +1,8 @@
+type: fix
+fix:
+  description: Optional return types now include `undefined` in addition to `null`.
+    A method with an optional return was typed `Promise<T | null>`, but a `204 No
+    Content` response deserializes to `undefined` at runtime; it is now typed
+    `Promise<T | null | undefined>`.
+  links:
+  - https://github.com/palantir/conjure-typescript/pull/398

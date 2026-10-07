@@ -106,6 +106,11 @@ export function generateThrowingService(
                 false,
                 true,
             );
+            if (IType.isOptional(endpointDefinition.returns)) {
+                // An optional return resolves to `T | null` for a JSON `null` body, but a 204 No Content
+                // response deserializes to `undefined` at runtime, so the return type must allow both.
+                resultType += " | undefined";
+            }
             imports.push(
                 ...resolveImports(endpointDefinition.returns, definition.serviceName, knownTypes, typeGenerationFlags),
             );

@@ -18,10 +18,10 @@ export interface ITestService {
      */
     getFileSystems(): Promise<{ [key: string]: IBackingFileSystem }>;
     createDataset(request: ICreateDatasetRequest, testHeaderArg: string): Promise<IDataset>;
-    getDataset(datasetRid: string): Promise<IDataset | null>;
+    getDataset(datasetRid: string): Promise<IDataset | null | undefined>;
     getRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
     getAliasedRawData(datasetRid: string): Promise<ReadableStream<Uint8Array>>;
-    maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null>;
+    maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null | undefined>;
     getAliasedString(datasetRid: string): Promise<IAliasedString>;
     uploadRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<void>;
     uploadAliasedRawData(input: ReadableStream<Uint8Array> | BufferSource | Blob): Promise<void>;
@@ -32,14 +32,14 @@ export interface ITestService {
      * @deprecated use getBranches instead
      */
     getBranchesDeprecated(datasetRid: string): Promise<Array<string>>;
-    resolveBranch(datasetRid: string, branch: string): Promise<string | null>;
-    testParam(datasetRid: string): Promise<string | null>;
+    resolveBranch(datasetRid: string, branch: string): Promise<string | null | undefined>;
+    testParam(datasetRid: string): Promise<string | null | undefined>;
     testQueryParams(query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<number>;
     testNoResponseQueryParams(query: string, something: string, implicit: string, setEnd: ReadonlyArray<string>, optionalMiddle?: string | null, optionalEnd?: string | null): Promise<void>;
     testBoolean(): Promise<boolean>;
     testDouble(): Promise<number | "NaN">;
     testInteger(): Promise<number>;
-    testPostOptional(maybeString?: string | null): Promise<string | null>;
+    testPostOptional(maybeString?: string | null): Promise<string | null | undefined>;
     testOptionalIntegerAndDouble(maybeInteger?: number | null, maybeDouble?: number | "NaN" | null): Promise<void>;
 }
 
@@ -83,8 +83,8 @@ export class TestService implements ITestService {
         );
     }
 
-    public getDataset(datasetRid: string): Promise<IDataset | null> {
-        return this.bridge.call<IDataset | null>(
+    public getDataset(datasetRid: string): Promise<IDataset | null | undefined> {
+        return this.bridge.call<IDataset | null | undefined>(
             "TestService",
             "getDataset",
             "GET",
@@ -134,8 +134,8 @@ export class TestService implements ITestService {
         );
     }
 
-    public maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null> {
-        return this.bridge.call<ReadableStream<Uint8Array> | null>(
+    public maybeGetRawData(datasetRid: string): Promise<ReadableStream<Uint8Array> | null | undefined> {
+        return this.bridge.call<ReadableStream<Uint8Array> | null | undefined>(
             "TestService",
             "maybeGetRawData",
             "GET",
@@ -237,8 +237,8 @@ export class TestService implements ITestService {
         );
     }
 
-    public resolveBranch(datasetRid: string, branch: string): Promise<string | null> {
-        return this.bridge.call<string | null>(
+    public resolveBranch(datasetRid: string, branch: string): Promise<string | null | undefined> {
+        return this.bridge.call<string | null | undefined>(
             "TestService",
             "resolveBranch",
             "GET",
@@ -255,8 +255,8 @@ export class TestService implements ITestService {
         );
     }
 
-    public testParam(datasetRid: string): Promise<string | null> {
-        return this.bridge.call<string | null>(
+    public testParam(datasetRid: string): Promise<string | null | undefined> {
+        return this.bridge.call<string | null | undefined>(
             "TestService",
             "testParam",
             "GET",
@@ -359,8 +359,8 @@ export class TestService implements ITestService {
         );
     }
 
-    public testPostOptional(maybeString?: string | null): Promise<string | null> {
-        return this.bridge.call<string | null>(
+    public testPostOptional(maybeString?: string | null): Promise<string | null | undefined> {
+        return this.bridge.call<string | null | undefined>(
             "TestService",
             "testPostOptional",
             "POST",
