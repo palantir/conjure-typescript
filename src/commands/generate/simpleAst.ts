@@ -52,8 +52,11 @@ export class SimpleAst {
         const rootIndex = this.ast.createSourceFile(path.join(this.outDir, "index.ts"));
         const moduleArray = Array.from(moduleTypes.entries());
         const indexPromises = moduleArray.map(([packageName, types]) => {
-            const moduleIndex = this.ast.createSourceFile(path.join(this.outDir, packageName, "index.ts"));
-            moduleIndex.addExportDeclarations(types.map(type => ({ moduleSpecifier: `./${type}` })));
+            const indexPath = path.join(this.outDir, packageName, "index.ts");
+            const moduleIndex = this.ast.getSourceFile(indexPath) || this.ast.createSourceFile(indexPath);
+            moduleIndex.addExportDeclarations(
+                types.filter(type => type !== "index").map(type => ({ moduleSpecifier: `./${type}` })),
+            );
             return moduleIndex.save();
         });
 
