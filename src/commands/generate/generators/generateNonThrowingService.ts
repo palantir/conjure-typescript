@@ -29,6 +29,7 @@ import {
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
 import { CONJURE_CLIENT_MODULE_SPECIFIER } from "../../../utils/constants";
 import { addDeprecatedToDocs, addErrorsToDocs, addIncubatingToDocs } from "../../../utils/docsUtils";
+import { argumentName } from "../../../utils/functionUtils";
 import { resolveImports, resolveImportsForReferenceType, sortImports } from "../../../utils/resolveImports";
 import { resolveMediaType } from "../../../utils/resolveMediaType";
 import { resolveTsType } from "../../../utils/resolveTsType";
@@ -102,7 +103,7 @@ export function generateNonThrowingService(
                 return {
                     kind: StructureKind.Parameter,
                     hasQuestionToken: IType.isOptional(argDefinition.type),
-                    name: argDefinition.argName,
+                    name: argumentName(argDefinition.argName, endpointDefinition.args),
                     type: parameterType,
                 };
             });

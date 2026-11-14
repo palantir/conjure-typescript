@@ -33,6 +33,7 @@ import {
     Scope,
     StructureKind,
 } from "ts-morph";
+import { argumentName } from "../../../../utils/functionUtils";
 import { parsePathParamsFromPath } from "../../../../utils/parsePathParamsFromPath";
 import { resolveMediaType } from "../../../../utils/resolveMediaType";
 import { resolveStringConversion } from "../../../../utils/resolveStringConversion";
@@ -73,7 +74,8 @@ function generateThrowingEndpointBody({
         throw Error("endpoint cannot have more than one body arg, found: " + bodyArgs.length);
     }
 
-    const data = bodyArgs.length === 0 ? UNDEFINED_CONSTANT : bodyArgs[0].argName;
+    const data =
+        bodyArgs.length === 0 ? UNDEFINED_CONSTANT : argumentName(bodyArgs[0].argName, endpointDefinition.args);
     // It's not quite correct to default to application/json for body less and return less requests.
     // We do this to preserve existing behaviour.
     const requestMediaType =
@@ -88,14 +90,14 @@ function generateThrowingEndpointBody({
             throw Error("header arguments must define a 'param-id': " + argDefinition.argName);
         }
         const stringConversion = resolveStringConversion(argDefinition.type);
-        return `"${paramId}": ${argDefinition.argName}${stringConversion},`;
+        return `"${paramId}": ${argumentName(argDefinition.argName, endpointDefinition.args)}${stringConversion},`;
     });
     const formattedQueryArgs = queryArgs.map(argDefinition => {
         const paramId = (argDefinition.paramType as IParameterType_Query).query.paramId;
         if (paramId == null) {
             throw Error("query arguments must define a 'param-id': " + argDefinition.argName);
         }
-        return `"${paramId}": ${argDefinition.argName},`;
+        return `"${paramId}": ${argumentName(argDefinition.argName, endpointDefinition.args)},`;
     });
 
     return writer => {
@@ -127,7 +129,9 @@ function generateThrowingEndpointBody({
             writer.writeLine(`${UNDEFINED_CONSTANT},`);
         } else {
             writer.write("[");
-            pathParamsFromPath.forEach(pathArgName => writer.writeLine(pathArgName + ","));
+            pathParamsFromPath.forEach(pathArgName =>
+                writer.writeLine(argumentName(pathArgName, endpointDefinition.args) + ","),
+            );
             writer.writeLine("],");
         }
         writer.writeLine(
