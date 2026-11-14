@@ -16,19 +16,26 @@
  */
 
 import {
+    HttpMethod,
     IAliasDefinition,
     IConjureDefinition,
     IEnumDefinition,
     IObjectDefinition,
+    IParameterType,
     IServiceDefinition,
+    IType,
     ITypeDefinition,
     ITypeDefinitionVisitor,
     ITypeName,
     IUnionDefinition,
+    PrimitiveType,
 } from "conjure-api";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { directory } from "tempy";
+import { ModuleKind, Project, ScriptTarget } from "ts-morph";
+import * as ts from "typescript";
+import { runInNewContext } from "vm";
 import { IServiceGenerationFlags } from "../../../types/serviceGenerationFlags";
 import { ITypeGenerationFlags } from "../../../types/typeGenerationFlags";
 import { isFlavorizable } from "../../../utils/flavorizingUtils";
@@ -41,7 +48,9 @@ import {
 } from "../../../__tests__/utils/constants";
 import { loadConjureDefinition } from "../command";
 import { generate } from "../generator";
-import { typeNameToFilePath } from "../simpleAst";
+import { generateNonThrowingService } from "../generators/generateNonThrowingService";
+import { generateThrowingService } from "../generators/generateThrowingService";
+import { SimpleAst, typeNameToFilePath } from "../simpleAst";
 import { assertOutputAndExpectedAreEqual } from "./testTypesGeneratorTest";
 
 describe("generator", () => {
@@ -295,3 +304,82 @@ const typeNameVisitor: ITypeDefinitionVisitor<ITypeName> = {
         throw new Error(`unknown type ${p1}`);
     },
 };
+
+describe("reserved argument names", () => {
+    it.each([false, true])("compiles and preserves wire values for non-throwing: %s", async nonThrowing => {
+        const outDir = directory();
+        const definition: IServiceDefinition = {
+            serviceName: { name: "ReservedService", package: "com.palantir.services" },
+            endpoints: [
+                {
+                    endpointName: "callReserved",
+                    httpMethod: HttpMethod.POST,
+                    httpPath: "/test/{class}",
+                    markers: [],
+                    tags: [],
+                    errors: [],
+                    args: [
+                        ["function", IParameterType.header({ paramId: "Function" })],
+                        ["delete", IParameterType.query({ paramId: "delete" })],
+                        ["class", IParameterType.path({})],
+                        ["return", IParameterType.body({})],
+                        ["function_", IParameterType.header({ paramId: "Other" })],
+                        ["arguments", IParameterType.header({ paramId: "Arguments" })],
+                        ["eval", IParameterType.header({ paramId: "Eval" })],
+                        ["await", IParameterType.header({ paramId: "Await" })],
+                    ].map(([argName, paramType]) => ({
+                        argName: argName as string,
+                        paramType: paramType as IParameterType,
+                        type: IType.primitive(PrimitiveType.STRING),
+                        markers: [],
+                        tags: [],
+                    })),
+                },
+            ],
+        };
+        const generator = nonThrowing ? generateNonThrowingService : generateThrowingService;
+        await generator(definition, new Map(), new SimpleAst(outDir), DEFAULT_TYPE_GENERATION_FLAGS);
+        const className = nonThrowing ? "ReservedServiceWithErrors" : "ReservedService";
+        const fileName = nonThrowing ? "reservedServiceWithErrors.ts" : "reservedService.ts";
+        const source = fs.readFileSync(path.join(outDir, "services", fileName), "utf8");
+        const project = new Project({
+            compilerOptions: {
+                strict: true,
+                types: [],
+                skipLibCheck: true,
+                target: ScriptTarget.ES2015,
+                module: ModuleKind.CommonJS,
+            },
+        });
+        project.createSourceFile(path.join(__dirname, "reservedGenerated.ts"), source);
+        expect(project.getPreEmitDiagnostics().map(diagnostic => diagnostic.getMessageText())).toEqual([]);
+        const compiled = ts.transpileModule(source, { compilerOptions: { module: ModuleKind.CommonJS } });
+        const generatedExports: any = {};
+        runInNewContext(compiled.outputText, { exports: generatedExports });
+        const call = jest.fn().mockResolvedValue(undefined);
+        const client = new generatedExports[className]({ call });
+        await client.callReserved("header", "query", "path", "body", "other", "arguments", "eval", "await");
+        expect(call).toHaveBeenCalledWith(
+            "ReservedService",
+            "callReserved",
+            "POST",
+            "/test/{class}",
+            "body",
+            { Function: "header", Other: "other", Arguments: "arguments", Eval: "eval", Await: "await" },
+            { delete: "query" },
+            ["path"],
+            undefined,
+            undefined,
+        );
+        expect(definition.endpoints[0].args.map(arg => arg.argName)).toEqual([
+            "function",
+            "delete",
+            "class",
+            "return",
+            "function_",
+            "arguments",
+            "eval",
+            "await",
+        ]);
+    });
+});

@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import { IArgumentDefinition } from "conjure-api";
+
 // Keywords taken from https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md#221-reserved-words
 // with the addition of some build tools' specific keywords like "module"
 const RESERVED_KEYWORDS = new Set([
@@ -71,4 +73,15 @@ const STRICT_MODE_RESERVED_KEYWORDS = new Set([
 
 export function isValidFunctionName(value: string) {
     return !STRICT_MODE_RESERVED_KEYWORDS.has(value) && !RESERVED_KEYWORDS.has(value);
+}
+
+export function argumentName(name: string, args: IArgumentDefinition[]): string {
+    if (isValidFunctionName(name) && name !== "await" && name !== "eval" && name !== "arguments") {
+        return name;
+    }
+    let escaped = name + "_";
+    while (args.some(arg => arg.argName === escaped)) {
+        escaped += "_";
+    }
+    return escaped;
 }
