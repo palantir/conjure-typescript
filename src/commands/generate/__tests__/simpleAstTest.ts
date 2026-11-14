@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-import { ErrorCode, HttpMethod, PrimitiveType } from "conjure-api";
+import { ErrorCode, HttpMethod, IType, ITypeDefinition, PrimitiveType } from "conjure-api";
 import * as fs from "fs";
 import * as path from "path";
 import { directory } from "tempy";
+import { Project } from "ts-morph";
 import { createHashableTypeName } from "../../../utils/hashingUtils";
 import { DEFAULT_TYPE_GENERATION_FLAGS } from "../../../__tests__/utils/constants";
 import { generateError } from "../generators/generateError";
 import { generateNonThrowingService } from "../generators/generateNonThrowingService";
 import { generateThrowingService } from "../generators/generateThrowingService";
-import { generateEnum } from "../generators/generateType";
+import { generateEnum, generateType } from "../generators/generateType";
 import { SimpleAst } from "../simpleAst";
 
 describe("simpleAst", () => {
@@ -34,6 +35,40 @@ describe("simpleAst", () => {
     beforeEach(() => {
         outDir = directory();
         simpleAst = new SimpleAst(outDir);
+    });
+
+    it.each([false, true])("supports a type named Index with multiple packages: %s", async multiplePackages => {
+        const indexName = { name: "Index", package: "com.palantir.package1" };
+        const indexDefinition = ITypeDefinition.object({ typeName: indexName, fields: [] });
+        const knownTypes = new Map([[createHashableTypeName(indexName), indexDefinition]]);
+        await generateType(indexDefinition, knownTypes, simpleAst, DEFAULT_TYPE_GENERATION_FLAGS);
+        await generateType(
+            ITypeDefinition.object({
+                typeName: { name: "Container", package: "com.palantir.package1" },
+                fields: [{ fieldName: "index", type: IType.reference(indexName) }],
+            }),
+            knownTypes,
+            simpleAst,
+            DEFAULT_TYPE_GENERATION_FLAGS,
+        );
+        if (multiplePackages) {
+            await generateType(
+                ITypeDefinition.object({ typeName: { name: "Other", package: "com.palantir.package2" }, fields: [] }),
+                knownTypes,
+                simpleAst,
+                DEFAULT_TYPE_GENERATION_FLAGS,
+            );
+        }
+
+        await simpleAst.generateIndexFiles();
+
+        const moduleIndex = fs.readFileSync(path.join(outDir, "package1/index.ts"), "utf8");
+        expect(moduleIndex).toContain("export interface IIndex");
+        expect(moduleIndex).toContain('export * from "./container";');
+        expect(moduleIndex).not.toContain('export * from "./index";');
+        const project = new Project({ compilerOptions: { strict: true, types: [] } });
+        project.addSourceFilesAtPaths(path.join(outDir, "**/*.ts"));
+        expect(project.getPreEmitDiagnostics()).toEqual([]);
     });
 
     it("generate index file with multiple packages.", async () => {
